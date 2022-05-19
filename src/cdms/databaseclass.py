@@ -34,17 +34,21 @@ class Database:
     def __exit__(self, exc_type, exc_value, traceback):
         self.close()
 
-
     def login(self, kind, username, password):
         query = f"SELECT * FROM {kind} WHERE username = ? AND password = ?;"
         self.cursor.execute(query, (username, password))
         return self.cursor.fetchone()
 
     def searchPerson(self, kind, firstname, lastname):
-        print(kind, firstname, lastname)
+        # print(kind, firstname, lastname)
         query = f"SELECT * FROM {kind} WHERE firstname = ? AND lastname = ?;"
         self.cursor.execute(query, (firstname, lastname))
         return self.cursor.fetchone()
+
+    def getAllofKind(self, kind):
+        query = f"SELECT * FROM {kind};"
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
 
     def get(self, table, columns, limit=None, where=1):
 
@@ -81,11 +85,12 @@ class Database:
                              "pass": password})
         self.commit()
 
-
     def createClient(self, client: Client):
-        self.cursor.execute(f"INSERT INTO client (firstname,lastname,streetname,housenumber,zipcode,city,emailaddress,mobilephone, date)VALUES (:first, :last,:street,:house,:zip,:city,:email,:mobile,:date)",
-                            {"first": client.firstname, "last": client.lastname, "street": client.street, "house": client.housenumber, "zip": client.zipcode, "city": client.city, "email": client.mail, "mobile": client.mobile_number, "date": client.registration_date})
-
+        self.cursor.execute(
+            f"INSERT INTO client (firstname,lastname,streetname,housenumber,zipcode,city,emailaddress,mobilephone, date)VALUES (:first, :last,:street,:house,:zip,:city,:email,:mobile,:date)",
+            {"first": client.firstname, "last": client.lastname, "street": client.street, "house": client.housenumber,
+             "zip": client.zipcode, "city": client.city, "email": client.mail, "mobile": client.mobile_number,
+             "date": client.registration_date})
 
         self.commit()
 
@@ -123,23 +128,25 @@ class Database:
         """
         self.cursor.execute(query)
 
-    def updatePassword(self, table, password, id):
+    def updatePassword(self, kind, password, username):
 
-        try:
-            query = "UPDATE ? SET password = ? WHERE id = ?;", (table, password, id)
-            self.cursor.execute(query)
-            """
-            import datetime
-            from cdms.helperClass import Helper
-            username = Helper().checkLoggedIn()
-            datetime = datetime.datetime.now().strftime("%a %w %b %Y")
-            description = f"{username} password has been updated"
-            suspicous = "yes"
-            self.cursor.execute(f"Logging", '`username`, `datetime`, `description`, `suspicious`',
-                                f"'{username}', '{datetime}', '{description}', '{suspicous}'")
-            """
-        except:
-            print("something went wrong")
+        # try:
+        print(kind, password, username)
+        query = f"UPDATE {kind} SET password = ? WHERE username = ?;"
+        args = (password, username)
+        self.cursor.execute(query, args)
+        """
+        import datetime
+        from cdms.helperClass import Helper
+        username = Helper().checkLoggedIn()
+        datetime = datetime.datetime.now().strftime("%a %w %b %Y")
+        description = f"{username} password has been updated"
+        suspicous = "yes"
+        self.cursor.execute(f"Logging", '`username`, `datetime`, `description`, `suspicious`',
+                            f"'{username}', '{datetime}', '{description}', '{suspicous}'")
+        """
+        # except:
+        #     print("something went wrong")
 
     def query(self, sql, values=None):
         if values is None:

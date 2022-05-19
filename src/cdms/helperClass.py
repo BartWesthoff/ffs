@@ -33,8 +33,6 @@ class Helper:
 
     @staticmethod
     def Decrypt(text):
-
-        print("text to be decripted: " + text)
         key = 4
         decrypted_message = ""
         alphabet = "abcdefghijklmnopqrstuvwxyz"

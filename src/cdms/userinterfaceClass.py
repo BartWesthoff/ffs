@@ -22,8 +22,6 @@ class userinterface:
             self.mainscreen()
 
     def loginscreen(self):
-
-        global loginusername, loginpassword
         choice = self.choices(["advisor", "System administrators", "Super administrator"])
 
         print(choice)
@@ -38,9 +36,7 @@ class userinterface:
             print("Incorrect input, try again.")
             self.loginscreen()
         loop = True
-        count = 0
         loginusername = ""
-        loginpassword = ""
         data = ""
         while loop:
 
@@ -53,18 +49,9 @@ class userinterface:
             loginpassword = Helper().Encrypt(loginpassword)
             database = Database("analyse.db")
 
-            try:
-                print(loginusername)
-                print(loginpassword)
-                print(_type)
-                data = database.login(kind=f'{_type}', username=loginusername, password=loginpassword)
-                if data is not None:
-                    break
-
-
-            except:
-                print("Username or password not correct! try again")
-                print(data)
+            data = database.login(kind=f'{_type}', username=loginusername, password=loginpassword)
+            if data is not None:
+                break
             print(data)
 
         Helper().logUsername(loginusername)
@@ -98,7 +85,7 @@ class userinterface:
             'Modify advisor': PersonCRUD().modifyPerson,
             'Delete advisor': PersonCRUD().deletePerson,
             "add a new system administrator": PersonCRUD().addPerson,  # new from previous inheritance
-            "change password": PersonCRUD().changePassword,  # check if from existing employee
+            "changing advisor password works |change password": PersonCRUD().changePassword,  # check if from existing employee
             "make a backup": Helper().makeBackup,
             "see log(s)": Helper().seelogs,
             "Logout": userinterface().mainscreen
@@ -107,39 +94,10 @@ class userinterface:
         }
         options = list(callToAction.keys())
         choice = self.choices(options)
-        # if choice == 1:
-        #     callToAction[options[choice - 1]]()
-        #     self.superadminmenu()
-        # elif choice == 2:
-        #     callToAction[options[choice - 1]]("client")
-        #     self.superadminmenu()
-        #
-        # elif choice == 3:
-        #     callToAction[options[choice - 1]]("client")
-        #     self.superadminmenu()
-        #
-        # elif choice == 4:
-        #     callToAction[options[choice - 1]]("client")
-        #     self.superadminmenu()
-        # elif choice == 5:
-        #     callToAction[options[choice - 1]]("client")
-        #     self.superadminmenu()
 
         if choice in [1, 2, 3, 4, 5]:
             callToAction[options[choice - 1]]("client")
             self.superadminmenu()
-
-        # elif choice == 6:
-        #     print("went into adding a advisor")
-        #     callToAction[options[choice - 1]]("advisor")
-        #     self.superadminmenu()
-        # elif choice == 7:
-        #     callToAction[options[choice - 1]]("advisor")
-        #     self.superadminmenu()
-        # elif choice == 8:
-        #     callToAction[options[choice - 1]]("advisor")
-        #     self.superadminmenu()
-
         elif choice in [6, 7, 8]:
             callToAction[options[choice - 1]]("advisor")
             self.superadminmenu()
@@ -176,42 +134,14 @@ class userinterface:
             "make a backup": Helper().makeBackup,
             "see log(s)": Helper().seelogs,
             "Logout": userinterface().mainscreen
-
-            ## TODO To reset an existing advisor’s password (a temporary password)
         }
 
         options = list(callToAction.keys())
         choice = self.choices(options)
-        # if choice == 1:
-        #     pass
-        # elif choice == 2:
-        #     PersonCRUD().searchPerson("client")
-        #     self.superadminmenu()
-        #
-        # elif choice == 3:
-        #     PersonCRUD().addPerson("client")
-        #     self.superadminmenu()
-        #
-        # elif choice == 4:
-        #     PersonCRUD().modifyPerson("client")
-        #     self.superadminmenu()
-        # elif choice == 5:
-        #     PersonCRUD().deletePerson("client")
-        #     self.superadminmenu()
-
         if choice in [1, 2, 3, 4, 5]:
             PersonCRUD().searchPerson("client")
             self.superadminmenu()
 
-        # elif choice == 6:
-        #     PersonCRUD().addPerson("advisor")
-        #     self.superadminmenu()
-        # elif choice == 7:
-        #     PersonCRUD().modifyPerson("advisor")
-        #     self.superadminmenu()
-        # elif choice == 8:
-        #     PersonCRUD().deletePerson("advisor")
-        #     self.superadminmenu()
         elif choice in [6, 7, 8]:
             PersonCRUD().searchPerson("advisor")
             self.superadminmenu()
@@ -232,10 +162,10 @@ class userinterface:
 
     def advisormenu(self):
         callToAction = {
-            'Check client': PersonCRUD().searchPerson,
-            'add client': PersonCRUD().addPerson,
-            'Modify client': PersonCRUD().modifyPerson,
-            "change password": PersonCRUD().changePassword,
+            'works | Check client': PersonCRUD().searchPerson,
+            'works | add client': PersonCRUD().addPerson,
+            'works | Modify client': PersonCRUD().modifyPerson,
+            "change password for advisor": PersonCRUD().changePassword,
             "Logout": userinterface().mainscreen
         }
         options = list(callToAction.keys())

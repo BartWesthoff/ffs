@@ -26,8 +26,8 @@ class PersonCRUD:
             database.createEmployee(kind, firstname, lastname, username, password)
 
         elif kind.lower() == "client":
-            client = Client().dummyClient()  # todo change to real client
-            # client = Client().createClient()
+            # client = Client().dummyClient()  # todo change to real client
+            client = Client().createClient()
             database.createClient(client)
         database.commit()
         database.close()
@@ -41,27 +41,32 @@ class PersonCRUD:
         database = Database("analyse.db")
         while loop:
             firstname = input("firstname?: ")
-            # firstname = Helper().Encrypt(firstname)
+            firstname = Helper().Encrypt(firstname)
 
             lastname = input("lastname?: ")
-            # lastname = Helper().Encrypt(lastname)
+            lastname = Helper().Encrypt(lastname)
             # data = database.get(columns='*', table=f'{kind}',
             #                     where=f"`firstname`='{firstname}' AND `lastname`='{lastname}'")
             data = database.searchPerson(kind=kind, firstname=firstname, lastname=lastname)
             database.commit()
-            client = Client().toClient(data)
-            print("ID            |", client.id)
-            print("Firstname     |", client.firstname)
-            print("Lastname      |", client.lastname)
-            print("Street        |", client.street)
-            print("Housenumber   |", client.housenumber)
-            print("Zipcode       |", client.zipcode)
-            print("City          |", client.city)
-            print("mail          |", client.mail)
-            print("Phone         |", client.mobile_number)
-            print("creation date |", client.registration_date)
+            if data is not None:
 
-            loop = False
+                client = Client().toClient(data)
+
+                print("ID            |", client.id)
+                print("Firstname     |", Helper.Decrypt(client.firstname))
+                print("Lastname      |", Helper.Decrypt(client.lastname))
+                print("Street        |", Helper.Decrypt(client.street))
+                print("Housenumber   |", client.housenumber)
+                print("Zipcode       |", Helper.Decrypt(client.zipcode))
+                print("City          |", Helper.Decrypt(client.city))
+                print("mail          |", Helper.Decrypt(client.mail))
+                print("Phone         |", client.mobile_number)
+                print("creation date |", client.registration_date)
+
+                loop = False
+            elif data is None:
+                print("Client not found, try again.")
 
         database.close()
 
@@ -93,14 +98,11 @@ class PersonCRUD:
         _lastname = input(f"What is the lastname of the {kind}?: ")
         _firstname = Helper().Encrypt(_firstname)
         _lastname = Helper().Encrypt(_lastname)
-        data = database.get(columns='*', table=f'{kind}',
-                            where=f"`firstname`='{_firstname}' AND `lastname`='{_lastname}'")
-        for row in data:
-            # TODO misschien overbodig
-            if row[1] != _firstname and row[2] != _lastname:
-                print("Client not found, try again.")
-                self.modifyPerson(kind)
-        attr = ["firstname", "lastname", "username"]
+        data = database.searchPerson(kind=kind, firstname=_firstname, lastname=_lastname)
+        if data is None:
+            print("Client not found, try again.")
+            self.modifyPerson(kind)
+        attr = ["firstname", "lastname"]
         choices = []
         for att in attr:
             choices.append(f"Modify {att}")
@@ -109,7 +111,8 @@ class PersonCRUD:
         new_data = input(f"What will be the new {attr[choice - 1]}")
         new_data = Helper().Encrypt(new_data)
         database.query(
-            f"UPDATE {kind} SET {attr[choice - 1]} = '{new_data}' WHERE firstname = '{_firstname}' AND lastname = '{_lastname}';")
+            f"UPDATE {kind} SET {attr[choice - 1]} = ? WHERE firstname = ? AND lastname = ?;",
+            (new_data, _firstname, _lastname))
         database.commit()
         database.close()
 
@@ -118,163 +121,46 @@ class PersonCRUD:
 
         database = Database("analyse.db")
         from src.cdms.userinterfaceClass import userinterface
-        # _checkPW = Helper().usernameChecker(_password)
-        # TODO: niels even kijken
-        #    if _checkPW == 0:
-        if kind == "advisor":
-            username = Helper().checkLoggedIn()
-            print(username)
-            username = Helper().Decrypt(username)
-            print(username)
-            username = Helper().Encrypt(username)
+        choice = userinterface().choices(
+            ["Reset own password.", "Reset an advisors password.", "Reset an systemadmin password"])
+        kind_target = ""
+        if choice == 2:
+            kind_target = 'advisor'
+        elif choice == 3:
+            kind_target = 'systemadmin'
+        username_target = None
+        Hastarget = choice in [2, 3]
+        if Hastarget:
+            data = database.getAllofKind(kind=f"{'advisor' if choice == 2 else 'systemadmin'}")
+            if data is not None:
+                for enity in data:
+                    print(enity)
+                    print("id                | ", enity[0])
+                    print("firstname         | ", Helper.Decrypt(enity[1]))
+                    print("lastname          | ", Helper.Decrypt(enity[2]))
+                    print("username          | ", Helper.Decrypt(enity[3]))
+                    print("password          | ", Helper.Decrypt(enity[4]))
 
-            _password = input("What will be ur password? Min length of 5, max length of 20, MUST start with a letter: ")
-            password = Helper().passwordchecker  # TODO check this function
-            _password = Helper().Encrypt(_password)
-            database.query(f"UPDATE {kind} SET password = '{_password}' WHERE username = '{username}';")
-            database.commit()
-            database.close()
+                username_target = input(f"What is the username of the {'advisor' if choice == 2 else 'system admin'}: ")
+                username_target = Helper().Encrypt(username_target)
+        username_user = Helper().checkLoggedIn()
+        print(username_user)
 
-        if kind == "superadmin":
-            choice = userinterface().choices(
-                ["Reset own password.", "Reset an advisors password.", "Reset an systemadmin password"])
-            if choice == 1:
-                username = Helper().checkLoggedIn()
-                username = Helper().Decrypt(username)
-                username = Helper().Encrypt(username)
-                _password = input(
-                    "What will be ur password? Min length of 8, no longer than 30 characters, MUST have at least one "
-                    "lowercase letter, one uppercase letter, one digit and one special character : ")
-                password = Helper().passwordchecker(password)  # TODO check this function
-                _password = Helper().Encrypt(_password)
-                database.query(f"UPDATE {kind} SET password = '{_password}' WHERE username = '{username}';")
-                database.commit()
-                database.close()
-            elif choice == 2:
-                loop = True
-                count = 0
-                user = Helper().checkLoggedIn()
-                database = Database("analyse.db")
-                while loop:
-                    data = database.get(columns='*', table=f'{"advisor"}')
+        username_user = Helper().Decrypt(username_user)
 
-                    database.commit()
-                    try:
-                        for row in data:
-                            print("ID          |", row[0])
-                            print("Firstname   |", Helper().Decrypt(row[1]))
-                            print("Lastname    |", Helper().Decrypt(row[2]))
-                            print("Username    |", Helper().Decrypt(row[3])), "\n"
-                            loop = False
+        _password = input(
+            "What will be ur password? Min length of 8, no longer than 30 characters, MUST have at least one "
+            "lowercase letter, one uppercase letter, one digit and one special character : ")
+        password = Helper().passwordchecker(password=_password)  # TODO check this function
+        password = Helper().Encrypt(password)
+        username_to_change = username_user if choice == 1 else username_target
+        print(username_to_change)
+        print(password)
 
-                    except:
-                        print("Person not found, try again. excpet")
-                try:
+        database.updatePassword(kind=kind_target, username=username_to_change, password=password)
 
-                    username = input("What is the username of the advisor: ")
-
-                    username = Helper().Encrypt(username)
-                    _password = input(
-                        "What will be ur password? Min length of 8, no longer than 30 characters, MUST have at least "
-                        "one lowercase letter, one uppercase letter, one digit and one special character :")
-                    password = Helper().passwordchecker  # TODO check this function
-                    kind = "advisor"
-                    _password = Helper().Encrypt(_password)
-                    database.query(f"UPDATE {kind} SET password = '{_password}' WHERE username = '{username}';")
-                    database.commit()
-                    database.close()
-                except:
-                    print("Person not found. Try again.")
-
-            elif choice == 3:
-                loop = True
-                count = 0
-                user = Helper().checkLoggedIn()
-                database = Database("analyse.db")
-                while loop:
-                    data = database.get(columns='*', table=f'{"systemadmin"}')
-
-                    database.commit()
-                    try:
-                        for row in data:
-                            print("ID          |", row[0])
-                            print("Firstname   |", Helper().Decrypt(row[1]))
-                            print("Lastname    |", Helper().Decrypt(row[2]))
-                            print("Username    |", Helper().Decrypt(row[3])), "\n"
-                            loop = False
-
-                    except:
-                        print("Person not found, try again. excpet")
-                try:
-
-                    username = input("What is the username of the advisor: ")
-
-                    username = Helper().Encrypt(username)
-                    _password = input(
-                        "What will be ur password? Min length of 8, no longer than 30 characters, MUST have at least "
-                        "one lowercase letter, one uppercase letter, one digit and one special character :")
-                    password = Helper().passwordchecker  # TODO check this function
-                    kind1 = "systemadmin"
-                    _password = Helper().Encrypt(_password)
-                    database.query(f"UPDATE {kind1} SET password = '{_password}' WHERE username = '{username}';")
-                    database.commit()
-                    database.close()
-                except:
-                    print("Person not found. Try again.")
-
-        if kind == "systemadmin":
-            choice = userinterface().choices(
-                ["Reset own password.", "Reset an advisors password."])
-            if choice == 1:
-                username = Helper().checkLoggedIn()
-                username = Helper().Decrypt(username)
-                username = Helper().Encrypt(username)
-                _password = input(
-                    "What will be ur password? Min length of 8, no longer than 30 characters, MUST have at least one lowercase letter, one uppercase letter, one digit and one special character : ")
-                password = Helper().passwordchecker  # TODO check this function
-                _password = Helper().Encrypt(_password)
-                database.query(f"UPDATE {kind} SET password = '{_password}' WHERE username = '{username}';")
-                database.commit()
-                database.close()
-            elif choice == 2:
-
-                # TODO waarom loopen?
-                loop = True
-                count = 0
-                user = Helper().checkLoggedIn()
-                database = Database("analyse.db")
-                while loop:
-                    data = database.get(columns='*', table="advisor")
-
-                    database.commit()
-                    try:
-                        for row in data:
-                            print("ID          |", row[0])
-                            print("Firstname   |", Helper().Decrypt(row[1]))
-                            print("Lastname    |", Helper().Decrypt(row[2]))
-                            print("Username    |", Helper().Decrypt(row[3])), "\n"
-                            loop = False
-
-                    except:
-                        print("Person not found, try again. excpet")
-                try:
-
-                    username = input("What is the username of the advisor: ")
-
-                    username = Helper().Encrypt(username)
-                    _password = input(
-                        "What will be ur password? Min length of 8, no longer than 30 characters, MUST have at least "
-                        "one lowercase letter, one uppercase letter, one digit and one special character :")
-                    password = Helper().passwordchecker  # TODO check this function
-                    kind = "advisor"
-                    _password = Helper().Encrypt(_password)
-                    database.query(f"UPDATE {kind} SET password = '{_password}' WHERE username = '{username}';")
-                    database.commit()
-                    database.close()
-                except:
-                    print("Person not found. Try again.")
-            else:
-                print("Wrong input. try again")
+        database.commit()
+        database.close()
 
     @staticmethod
     def checkUsers():
