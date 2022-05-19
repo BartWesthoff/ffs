@@ -3,7 +3,7 @@ import json
 import re
 import sqlite3
 import string
-from src.cdms.databaseclass import Database
+
 
 
 class Helper:
@@ -116,7 +116,9 @@ class Helper:
         return _dict["username"]
 
     @staticmethod
+
     def seelogs():
+        from src.cdms.databaseclass import Database
         print("went in function")
         database = Database("analyse.db")
         kind = "Logging"

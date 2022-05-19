@@ -1,5 +1,7 @@
 import sqlite3
 
+from src.cdms.clientClass import Client
+
 
 class Database:
     def __init__(self, name=None):
@@ -32,6 +34,12 @@ class Database:
     def __exit__(self, exc_type, exc_value, traceback):
         self.close()
 
+
+    def login(self, kind, username, password):
+        query = f"SELECT * FROM {kind} WHERE username = ? AND password = ?;"
+        self.cursor.execute(query, (username, password))
+        return self.cursor.fetchone()
+
     def get(self, table, columns, limit=None, where=1):
 
         # TODO
@@ -61,10 +69,18 @@ class Database:
 
         return self.get(table, columns, limit=1)[0]
 
+    def createEmployee(self, kind, firstname, lastname, username, password):
+        self.cursor.execute(f"INSERT INTO {kind} VALUES (:id, :first,:last,:user,:pass)",
+                            {"id": None, "first": firstname, "last": lastname, "user": username,
+                             "pass": password})
+        self.commit()
 
-    def createAdvisor(self, firstname, lastname,username,password):
-        kind = "Advisors"
-        self.cursor.execute("INSERT INTO Advisors VALUES (:id, :first,:last,:user,:pass)", {"id": None,"first": firstname, "last": lastname, "user": username, "pass": password})
+
+    def createClient(self, client: Client):
+        self.cursor.execute(f"INSERT INTO Clients (firstname,lastname,streetname,housenumber,zipcode,city,emailaddress,mobilephone)VALUES (:first, :last,:street,:house,:zip,:city,:email,:mobile)",
+                            {"first": client.firstname, "last": client.lastname, "street": client.street, "house": client.housenumber, "zip": client.zipcode, "city": client.city, "email": client.mail, "mobile": client.mobile_number})
+
+
         self.commit()
 
     def write(self, table, columns="", data=""):
@@ -131,22 +147,22 @@ class Database:
 
         try:
             self.query(
-                "CREATE TABLE 'SystemAdmins' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT NULL, 'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) NOT NULL)")
+                "CREATE TABLE 'systemadmin' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT NULL, 'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) NOT NULL)")
         except:
             pass
         try:
             self.query(
-                "CREATE TABLE 'Advisors' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT NULL, 'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) NOT NULL)")
+                "CREATE TABLE 'advisor' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT NULL, 'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) NOT NULL)")
         except:
             pass
         try:
             self.query(
-                "CREATE TABLE 'Clients' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT NULL, 'lastname' VARCHAR(128) NOT NULL, 'streetname' VARCHAR(128) NOT NULL, 'housenumber' INTEGER NOT NULL, 'zipcode' VARCHAR(128) NOT NULL, 'city' VARCHAR(128) NOT NULL, 'emailaddress' VARCHAR(128) NOT NULL, 'mobilephone' VARCHAR(128) NOT NULL)")
+                "CREATE TABLE 'client' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT NULL, 'lastname' VARCHAR(128) NOT NULL, 'streetname' VARCHAR(128) NOT NULL, 'housenumber' INTEGER NOT NULL, 'zipcode' VARCHAR(128) NOT NULL, 'city' VARCHAR(128) NOT NULL, 'emailaddress' VARCHAR(128) NOT NULL, 'mobilephone' VARCHAR(128) NOT NULL)")
         except:
             pass
         try:
             self.query(
-                "CREATE TABLE 'SuperAdmin' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT NULL, 'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) NOT NULL)")
+                "CREATE TABLE 'superadmin' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT NULL, 'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) NOT NULL)")
         except:
             pass
         try:

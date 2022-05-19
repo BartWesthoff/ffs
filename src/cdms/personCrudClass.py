@@ -8,9 +8,10 @@ from src.cdms.helperClass import Helper
 
 class PersonCRUD:
 
-    def addPerson(self, kind):
+    @staticmethod
+    def addPerson(kind):
         database = Database("analyse.db")
-        if kind.lower() in ["advisors", "systemadmins"]:
+        if kind.lower() in ["advisor", "systemadmin"]:
             firstname = input("firstname?: ")
             firstname = Helper().Encrypt(firstname)
             lastname = input("lastname?: ")
@@ -21,25 +22,18 @@ class PersonCRUD:
             password = input("password?: ")
             password = Helper().passwordchecker(password)
             password = Helper().Encrypt(password)
-            # firstname = "BartAdvisor"
-            # lastname = "WesthoffAdvisor"
-            # username = "BartWAdvisor"
-            # password = "Analyse2022!"
-            database.createAdvisor(firstname=firstname, lastname=lastname, username=username, password=password)
 
+            database.createEmployee(kind, firstname, lastname, username, password)
 
-
-        elif kind.lower() == "clients":
-            client = Client().newClient()
-            database.write(f'Clients',
-                           '`firstname`, `lastname`, `streetname`, `housenumber`, `zipcode`, `city`, `emailaddress`, '
-                           '`mobilephone`',
-                           f"'{client.firstname}', '{client.lastname}', '{client.street}', '{client.housenumber}', '{client.zipcode}', '{client.city}', '{client.mail}', '{client.mobile_number}'")
-
+        elif kind.lower() == "client":
+            client = Client().dummyClient()  # todo change to real client
+            # client = Client().createClient()
+            database.createClient(client)
         database.commit()
         database.close()
 
-    def searchPerson(self, kind):
+    @staticmethod
+    def searchPerson(kind):
         loop = True
         count = 0
         user = Helper().checkLoggedIn()
@@ -48,10 +42,10 @@ class PersonCRUD:
         while loop:
 
             firstname = input("firstname?: ")
-            firstname = Helper().Encrypt(firstname)
+            # firstname = Helper().Encrypt(firstname)
 
             lastname = input("lastname?: ")
-            lastname = Helper().Encrypt(lastname)
+            # lastname = Helper().Encrypt(lastname)
             data = database.get(columns='*', table=f'{kind}',
                                 where=f"`firstname`='{firstname}' AND `lastname`='{lastname}'")
             database.commit()
@@ -73,7 +67,8 @@ class PersonCRUD:
 
         database.close()
 
-    def deletePerson(self, kind):
+    @staticmethod
+    def deletePerson(kind):
         database = Database("analyse.db")
         firstname = input("firstname?: ")
 
@@ -95,6 +90,7 @@ class PersonCRUD:
         except:
             print("not deleted")
 
+
     def modifyPerson(self, kind):
         from src.cdms.userinterfaceClass import userinterface
         database = Database("analyse.db")
@@ -105,9 +101,10 @@ class PersonCRUD:
         data = database.get(columns='*', table=f'{kind}',
                             where=f"`firstname`='{_firstname}' AND `lastname`='{_lastname}'")
         for row in data:
+            # TODO misschien overbodig
             if row[1] != _firstname and row[2] != _lastname:
                 print("Client not found, try again.")
-                PersonCRUD.modifyPerson(self, kind)
+                self.modifyPerson(kind)
         attr = ["firstname", "lastname", "username"]
         choices = []
         for att in attr:
@@ -121,14 +118,15 @@ class PersonCRUD:
         database.commit()
         database.close()
 
-    def changePassword(self, kind):
+    @staticmethod
+    def changePassword(kind):
 
         database = Database("analyse.db")
         from src.cdms.userinterfaceClass import userinterface
         # _checkPW = Helper().usernameChecker(_password)
         # TODO: niels even kijken
         #    if _checkPW == 0:
-        if kind == "Advisors":
+        if kind == "advisor":
             username = Helper().checkLoggedIn()
             print(username)
             username = Helper().Decrypt(username)
@@ -142,7 +140,7 @@ class PersonCRUD:
             database.commit()
             database.close()
 
-        if kind == "SuperAdmin":
+        if kind == "superadmin":
             choice = userinterface().choices(
                 ["Reset own password.", "Reset an advisors password.", "Reset an systemadmin password"],
                 "Wich option do you want to choose?: ")
@@ -198,7 +196,7 @@ class PersonCRUD:
                 user = Helper().checkLoggedIn()
                 database = Database("analyse.db")
                 while loop:
-                    data = database.get(columns='*', table=f'{"SystemAdmins"}')
+                    data = database.get(columns='*', table=f'{"systemadmin"}')
 
                     database.commit()
                     try:
@@ -219,7 +217,7 @@ class PersonCRUD:
                     _password = input(
                         "What will be ur password? Min length of 8, no longer than 30 characters, MUST have at least one lowercase letter, one uppercase letter, one digit and one special character :")
                     password = Helper().passwordchecker  # TODO check this function
-                    kind1 = "SystemAdmins"
+                    kind1 = "systemadmin"
                     _password = Helper().Encrypt(_password)
                     database.query(f"UPDATE {kind1} SET password = '{_password}' WHERE username = '{username}';")
                     database.commit()
@@ -227,7 +225,7 @@ class PersonCRUD:
                 except:
                     print("Person not found. Try again.")
 
-        if kind == "SystemAdmins":
+        if kind == "systemadmin":
             choice = userinterface().choices(
                 ["Reset own password.", "Reset an advisors password."],
                 "Wich option do you want to choose?: ")
@@ -331,7 +329,8 @@ class PersonCRUD:
     #
     #     database.close()
 
-    def checkUsers(self, kind):
+    @staticmethod
+    def checkUsers():
         # kind kunnen we hier gebruiken?
         from src.cdms.userinterfaceClass import userinterface
         loop = True

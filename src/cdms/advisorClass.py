@@ -14,10 +14,10 @@ class Advisor:
     # To add a new client to the system
 
     def modifyClient(self):
-        PersonCRUD().modifyPerson("Clients")
+        PersonCRUD().modifyPerson("client")
 
     # To modify or update the information of a client in the system
 
     def searchClient(self):
-        PersonCRUD().searchPerson("Clients")
+        PersonCRUD().searchPerson("client")
     # To search and retrieve the information of a client

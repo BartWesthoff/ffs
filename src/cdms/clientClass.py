@@ -20,7 +20,7 @@ class Client:
         self.id = id
 
     @staticmethod
-    def newClient():
+    def createClient():
         print("went in new client")
         firstname = input("What is your Firstname?: ")
         lastname = input("What is your Lastname?: ")
@@ -90,3 +90,19 @@ class Client:
 
         return Client(firstname=firstname, lastname=lastname, mail=mail, street=street, housenumber=housenumber,
                       zipcode=zipcode, city=city, registration_date=datetime.now(), mobile_number=mobile_number, id=id)
+
+
+    def dummyClient(self):
+        firstname = "test"
+        lastname = "test"
+        mail = "mail"
+        street = "street"
+        housenumber = "housenumber"
+        zipcode = "zipcode"
+        city = "city"
+        mobile_number = "mobile_number"
+        registration_date = datetime.now().strftime("%d-%m-%Y")
+        id = "id"
+
+        return Client(firstname=firstname, lastname=lastname, mail=mail, street=street, housenumber=housenumber,
+                        zipcode=zipcode, city=city, registration_date=registration_date, mobile_number=mobile_number, id=id)
