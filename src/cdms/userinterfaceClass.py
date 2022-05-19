@@ -12,7 +12,7 @@ class userinterface:
         database.checkMigrations()
         database.close()
 
-        choice = self.choices(["Login", "Exit application"], "Which option do you want to choose?: ")
+        choice = self.choices(["Login", "Exit application"])
         if choice == 1:
             self.loginscreen()
         elif choice == 2:
@@ -24,17 +24,16 @@ class userinterface:
     def loginscreen(self):
 
         global loginusername, loginpassword
-        choice = self.choices(["advisor", "System administrators", "Super administrator"],
-                              "What type of user is logging in?: ")
+        choice = self.choices(["advisor", "System administrators", "Super administrator"])
 
         print(choice)
         _type = None
         if choice == 1:
-            _type = 'Advisors'
+            _type = "advisor"
         elif choice == 2:
-            _type = 'Systemadmins'
+            _type = "systemadmin"
         elif choice == 3:
-            _type = 'Superadmin'
+            _type = "superadmin"
         else:
             print("Incorrect input, try again.")
             self.loginscreen()
@@ -65,14 +64,14 @@ class userinterface:
             print(data)
            
         Helper().logUsername(loginusername)
-        if _type == "advisors":
+        if _type == "advisor":
             self.advisormenu()
         if _type == "systemadmin":
             self.systemadministatormenu()
         if _type == "superadmin":
             self.superadminmenu()
 
-    def choices(self, choices, question):
+    def choices(self, choices, question="Which option do you want to choose?: "):
         index = 0
         while index < len(choices):
             print(f"{index + 1}. {choices[index]}")
@@ -101,7 +100,7 @@ class userinterface:
             "Logout": userinterface().mainscreen
         }
         options = list(callToAction.keys())
-        choice = self.choices(options, "Wich option do you want to choose?: ")
+        choice = self.choices(options)
         if choice == 1:
             callToAction[options[choice - 1]]()
             self.superadminmenu()
@@ -121,13 +120,13 @@ class userinterface:
             self.superadminmenu()
         elif choice == 6:
             print("went into adding a advisor")
-            callToAction[options[choice - 1]]("Advisors")
+            callToAction[options[choice - 1]]("advisor")
             self.superadminmenu()
         elif choice == 7:
-            callToAction[options[choice - 1]]("Advisors")
+            callToAction[options[choice - 1]]("advisor")
             self.superadminmenu()
         elif choice == 8:
-            callToAction[options[choice - 1]]("Advisors")
+            callToAction[options[choice - 1]]("advisor")
             self.superadminmenu()
 
         elif choice == 9:
@@ -165,7 +164,7 @@ class userinterface:
         }
 
         options = list(callToAction.keys())
-        choice = self.choices(options, "Wich option do you want to choose?: ")
+        choice = self.choices(options)
         if choice == 1:
             pass
         elif choice == 2:
@@ -183,13 +182,13 @@ class userinterface:
             PersonCRUD().deletePerson("client")
             self.superadminmenu()
         elif choice == 6:
-            PersonCRUD().addPerson("advisors")
+            PersonCRUD().addPerson("advisor")
             self.superadminmenu()
         elif choice == 7:
-            PersonCRUD().modifyPerson("advisors")
+            PersonCRUD().modifyPerson("advisor")
             self.superadminmenu()
         elif choice == 8:
-            PersonCRUD().deletePerson("advisors")
+            PersonCRUD().deletePerson("advisor")
             self.superadminmenu()
 
         elif choice == 9:
@@ -215,7 +214,7 @@ class userinterface:
             "Logout": userinterface().mainscreen
         }
         options = list(callToAction.keys())
-        choice = self.choices(options, "Wich option do you want to choose?: ")
+        choice = self.choices(options)
 
         kind = options[choice - 1].split()[-1]
         if choice in [1, 2, 3, 4]:
