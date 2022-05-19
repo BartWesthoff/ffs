@@ -1,9 +1,9 @@
 from src.cdms.clientClass import Client
 from src.cdms.databaseclass import Database
 from src.cdms.helperClass import Helper
-
-
 # database.write(f"Logging", '`username`, `datetime`, `description`, `suspicious`', f"'{firstname}', '{lastname}', '{username}', '{password}'")
+from src.cdms.userinterfaceClass import userinterface
+
 
 class PersonCRUD():
 
@@ -18,7 +18,7 @@ class PersonCRUD():
             username = Helper().usernameChecker(username)
             username = Helper().Encrypt(username)
             password = input("password?: ")
-            password = Helper().passwordChecker(password)
+            password = Helper().passwordchecker(password)
             password = Helper().Encrypt(password)
             database.write(f'{kind}', '`firstname`, `lastname`, `username`, `password`',
                            f"'{firstname}', '{lastname}', '{username}', '{password}'")
@@ -26,7 +26,8 @@ class PersonCRUD():
         elif kind == "Clients":
             client = Client().newClient()
             database.write(f'Clients',
-                           '`firstname`, `lastname`, `streetname`, `housenumber`, `zipcode`, `city`, `emailaddress`, `mobilephone`',
+                           '`firstname`, `lastname`, `streetname`, `housenumber`, `zipcode`, `city`, `emailaddress`, '
+                           '`mobilephone`',
                            f"'{client.firstname}', '{client.lastname}', '{client.street}', '{client.housenumber}', '{client.zipcode}', '{client.city}', '{client.mail}', '{client.mobile_number}'")
 
         database.commit()
@@ -90,7 +91,6 @@ class PersonCRUD():
 
     def modifyPerson(self, kind):
 
-        from src.cdms.userinterfaceClass import userinterface
         database = Database("analyse.db")
         _firstname = input(f"What is the firstname of the {kind[:-1]}?: ")
         _lastname = input(f"What is the lastname of the {kind[:-1]}?: ")
@@ -130,14 +130,14 @@ class PersonCRUD():
             username = Helper().Encrypt(username)
 
             _password = input("What will be ur password? Min length of 5, max length of 20, MUST start with a letter: ")
-            password = Helper().passwordchecker #TODO check this function
+            password = Helper().passwordchecker  # TODO check this function
             _password = Helper().Encrypt(_password)
             database.query(f"UPDATE {kind} SET password = '{_password}' WHERE username = '{username}';")
             database.commit()
             database.close()
 
         if kind == "SuperAdmin":
-            choice = self.choices(
+            choice = userinterface().choices(
                 ["Reset own password.", "Reset an advisors password.", "Reset an systemadmin password"],
                 "Wich option do you want to choose?: ")
             if choice == 1:
@@ -146,7 +146,7 @@ class PersonCRUD():
                 username = Helper().Encrypt(username)
                 _password = input(
                     "What will be ur password? Min length of 8, no longer than 30 characters, MUST have at least one lowercase letter, one uppercase letter, one digit and one special character : ")
-                password = Helper().passwordchecker #TODO check this function
+                password = Helper().passwordchecker  # TODO check this function
                 _password = Helper().Encrypt(_password)
                 database.query(f"UPDATE {kind} SET password = '{_password}' WHERE username = '{username}';")
                 database.commit()
@@ -177,7 +177,7 @@ class PersonCRUD():
                     username = Helper().Encrypt(username)
                     _password = input(
                         "What will be ur password? Min length of 8, no longer than 30 characters, MUST have at least one lowercase letter, one uppercase letter, one digit and one special character :")
-                    password = Helper().passwordchecker #TODO check this function
+                    password = Helper().passwordchecker  # TODO check this function
                     kind = "Advisors"
                     _password = Helper().Encrypt(_password)
                     database.query(f"UPDATE {kind} SET password = '{_password}' WHERE username = '{username}';")
@@ -212,7 +212,7 @@ class PersonCRUD():
                     username = Helper().Encrypt(username)
                     _password = input(
                         "What will be ur password? Min length of 8, no longer than 30 characters, MUST have at least one lowercase letter, one uppercase letter, one digit and one special character :")
-                    password = Helper().passwordchecker #TODO check this function
+                    password = Helper().passwordchecker  # TODO check this function
                     kind1 = "SystemAdmins"
                     _password = Helper().Encrypt(_password)
                     database.query(f"UPDATE {kind1} SET password = '{_password}' WHERE username = '{username}';")
@@ -222,7 +222,7 @@ class PersonCRUD():
                     print("Person not found. Try again.")
 
         if kind == "SystemAdmins":
-            choice = self.choices(
+            choice = userinterface().choices(
                 ["Reset own password.", "Reset an advisors password."],
                 "Wich option do you want to choose?: ")
             if choice == 1:
@@ -231,7 +231,7 @@ class PersonCRUD():
                 username = Helper().Encrypt(username)
                 _password = input(
                     "What will be ur password? Min length of 8, no longer than 30 characters, MUST have at least one lowercase letter, one uppercase letter, one digit and one special character : ")
-                password = Helper().passwordchecker #TODO check this function
+                password = Helper().passwordchecker  # TODO check this function
                 _password = Helper().Encrypt(_password)
                 database.query(f"UPDATE {kind} SET password = '{_password}' WHERE username = '{username}';")
                 database.commit()
@@ -264,7 +264,7 @@ class PersonCRUD():
                     username = Helper().Encrypt(username)
                     _password = input(
                         "What will be ur password? Min length of 8, no longer than 30 characters, MUST have at least one lowercase letter, one uppercase letter, one digit and one special character :")
-                    password = Helper().passwordchecker #TODO check this function
+                    password = Helper().passwordchecker  # TODO check this function
                     kind = "Advisors"
                     _password = Helper().Encrypt(_password)
                     database.query(f"UPDATE {kind} SET password = '{_password}' WHERE username = '{username}';")
@@ -275,13 +275,11 @@ class PersonCRUD():
             else:
                 print("Wrong input. try again")
 
-
-
     # def checkUsers(self, kind):
     #     loop = True
     #     database = Database("analyse.db")
     #     while loop:
-    #         choice = self.choices(["Check Advisors", "Check System Administrators", "Check Super Administrator"],
+    #         choice = userinterface.choices(["Check Advisors", "Check System Administrators", "Check Super Administrator"],
     #                             "Who do you want to view?: ")
     #         _type = None
     #         if choice == 1:
@@ -332,8 +330,9 @@ class PersonCRUD():
         loop = True
         database = Database("analyse.db")
         while loop:
-            choice = self.choices(["Check Advisors", "Check System Administrators", "Check Super Administrator"],
-                                  "Who do you want to view?: ") # TODO check regular memebers
+            choice = userinterface().choices(
+                choices=["Check Advisors", "Check System Administrators", "Check Super Administrator"],
+                question="Who do you want to view?: ")  # TODO check regular memebers
             _type = None
             if choice == 1:
                 _type = 'Advisors'

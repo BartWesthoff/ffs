@@ -14,7 +14,7 @@ class userinterface:
 
         choice = self.choices(["Login", "Exit application"], "Which option do you want to choose?: ")
         if choice == 1:
-            userinterface.loginscreen(self)
+            self.loginscreen()
         elif choice == 2:
             Helper().stopApp()
         else:
@@ -26,6 +26,8 @@ class userinterface:
         global loginusername, loginpassword
         choice = self.choices(["advisor", "System administrators", "Super administrator"],
                               "What type of user is logging in?: ")
+
+        print(choice)
         _type = None
         if choice == 1:
             _type = 'advisors'
@@ -45,7 +47,7 @@ class userinterface:
 
             loginusername = input("What is your username?: ")
             loginpassword = input("What is your password?: ")
-            if loginpassword == "admin!23" and loginusername == "superadmin":
+            if loginpassword == "Admin432!" and loginusername == "superadmin":
                 break
             loginusername = Helper().Encrypt(loginusername)
             loginpassword = Helper().Encrypt(loginpassword)
@@ -77,8 +79,8 @@ class userinterface:
             print(f"{index + 1}. {choices[index]}")
             index += 1
         c = input(question)
-        # if c.isnumeric() and int(c) < len(choices) and int(c) > 0:
-        if c.isnumeric() and len(choices) > int(c) > 0:
+        if c.isnumeric() and len(choices) >= int(c) > 0:
+
             return int(c)
         else:
             self.choices(choices, question)
