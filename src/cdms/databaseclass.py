@@ -77,7 +77,7 @@ class Database:
 
 
     def createClient(self, client: Client):
-        self.cursor.execute(f"INSERT INTO Clients (firstname,lastname,streetname,housenumber,zipcode,city,emailaddress,mobilephone)VALUES (:first, :last,:street,:house,:zip,:city,:email,:mobile)",
+        self.cursor.execute(f"INSERT INTO client (firstname,lastname,streetname,housenumber,zipcode,city,emailaddress,mobilephone)VALUES (:first, :last,:street,:house,:zip,:city,:email,:mobile)",
                             {"first": client.firstname, "last": client.lastname, "street": client.street, "house": client.housenumber, "zip": client.zipcode, "city": client.city, "email": client.mail, "mobile": client.mobile_number})
 
 

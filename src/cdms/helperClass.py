@@ -2,8 +2,6 @@ import io
 import json
 import re
 import sqlite3
-import string
-
 
 
 class Helper:
@@ -65,23 +63,6 @@ class Helper:
             print('\n Password is accepted.')
             return password
 
-    # def nameChecker(self, name):
-    #     # TODO: Niels even naar kijken
-    #     flag = 0
-    #     while True:
-    #         if (len(name) < 20):
-    #             flag = -1
-    #             break
-    #         else:
-    #             flag = 0
-    #             break
-    #
-    #         if flag == 0:
-    #             return True
-    #         if flag == -1:
-    #             print("Not a Valid Password")
-    #             return False
-
     @staticmethod
     def usernameChecker(username):
         while len(username) < 5 or len(username) > 20:
@@ -98,8 +79,8 @@ class Helper:
             for line in conn.iterdump():
                 p.write('%s\n' % line)
 
-        print(' Backup performed successfully!')
-        print(' Data Saved as backupdatabase_dump.sql')
+        print('Backup performed successfully!')
+        print('Data Saved as backupdatabase_dump.sql')
 
         conn.close()
 
@@ -116,7 +97,6 @@ class Helper:
         return _dict["username"]
 
     @staticmethod
-
     def seelogs():
         from src.cdms.databaseclass import Database
         print("went in function")
