@@ -1,15 +1,16 @@
 from src.cdms.clientClass import Client
 from src.cdms.databaseclass import Database
 from src.cdms.helperClass import Helper
+
+
 # database.write(f"Logging", '`username`, `datetime`, `description`, `suspicious`', f"'{firstname}', '{lastname}', '{username}', '{password}'")
-from src.cdms.userinterfaceClass import userinterface
 
 
-class PersonCRUD():
+class PersonCRUD:
 
     def addPerson(self, kind):
         database = Database("analyse.db")
-        if kind == "Advisors" or kind == "SystemAdmins":
+        if kind.lower() in ["advisors", "systemadmins"]:
             firstname = input("firstname?: ")
             firstname = Helper().Encrypt(firstname)
             lastname = input("lastname?: ")
@@ -20,10 +21,15 @@ class PersonCRUD():
             password = input("password?: ")
             password = Helper().passwordchecker(password)
             password = Helper().Encrypt(password)
-            database.write(f'{kind}', '`firstname`, `lastname`, `username`, `password`',
-                           f"'{firstname}', '{lastname}', '{username}', '{password}'")
+            # firstname = "BartAdvisor"
+            # lastname = "WesthoffAdvisor"
+            # username = "BartWAdvisor"
+            # password = "Analyse2022!"
+            database.createAdvisor(firstname=firstname, lastname=lastname, username=username, password=password)
 
-        elif kind == "Clients":
+
+
+        elif kind.lower() == "clients":
             client = Client().newClient()
             database.write(f'Clients',
                            '`firstname`, `lastname`, `streetname`, `housenumber`, `zipcode`, `city`, `emailaddress`, '
@@ -90,7 +96,7 @@ class PersonCRUD():
             print("not deleted")
 
     def modifyPerson(self, kind):
-
+        from src.cdms.userinterfaceClass import userinterface
         database = Database("analyse.db")
         _firstname = input(f"What is the firstname of the {kind[:-1]}?: ")
         _lastname = input(f"What is the lastname of the {kind[:-1]}?: ")
@@ -118,7 +124,7 @@ class PersonCRUD():
     def changePassword(self, kind):
 
         database = Database("analyse.db")
-
+        from src.cdms.userinterfaceClass import userinterface
         # _checkPW = Helper().usernameChecker(_password)
         # TODO: niels even kijken
         #    if _checkPW == 0:
@@ -327,6 +333,7 @@ class PersonCRUD():
 
     def checkUsers(self, kind):
         # kind kunnen we hier gebruiken?
+        from src.cdms.userinterfaceClass import userinterface
         loop = True
         database = Database("analyse.db")
         while loop:
@@ -344,7 +351,7 @@ class PersonCRUD():
                 print("Incorrect input, try again.")
 
             print(f'\n{_type}: \n')
-            data = database.get(columns='*', table=f'{_type}')
+            data = database.get(columns='*', table=_type)
             for row in data:
                 print(row)
                 print("ID          |", row[0])

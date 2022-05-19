@@ -47,7 +47,8 @@ class userinterface:
 
             loginusername = input("What is your username?: ")
             loginpassword = input("What is your password?: ")
-            if loginpassword == "Admin432!" and loginusername == "superadmin":
+            # if loginpassword == "Admin321!" and loginusername == "superadmin":
+            if loginpassword == "" and loginpassword == "":
                 break
             loginusername = Helper().Encrypt(loginusername)
             loginpassword = Helper().Encrypt(loginpassword)
@@ -85,58 +86,6 @@ class userinterface:
         else:
             self.choices(choices, question)
 
-    # def superadminmenu(self):
-    #     choice = self.choices(
-    #         ["List of users", "Check client", "add client", "Modify client",
-    #          "Delete client",
-    #          "add a new advisor", "Modify advisor", "Delete advisor", "add new systemadmin",
-    #          "change passwords", "make a backup", "see log(s)", "Logout"],
-    #         "Wich option do you want to choose?: ")
-    #     if choice == 1:
-    #         PersonCRUD().checkUsers("Clients")
-    #         self.superadminmenu()
-    #     elif choice == 2:
-    #         PersonCRUD().searchPerson("Clients")
-    #         self.superadminmenu()
-    #
-    #     elif choice == 3:
-    #         PersonCRUD().addPerson("Clients")
-    #         self.superadminmenu()
-    #
-    #     elif choice == 4:
-    #         PersonCRUD().modifyPerson("Clients")
-    #         self.superadminmenu()
-    #     elif choice == 5:
-    #         PersonCRUD().deletePerson("Clients")
-    #         self.superadminmenu()
-    #     elif choice == 6:
-    #         PersonCRUD().addPerson("advisors")
-    #         self.superadminmenu()
-    #     elif choice == 7:
-    #         PersonCRUD().modifyPerson("advisors")
-    #         self.superadminmenu()
-    #     elif choice == 8:
-    #         PersonCRUD().deletePerson("advisors")
-    #         self.superadminmenu()
-    #
-    #     elif choice == 9:
-    #         PersonCRUD().addPerson("Systemadmins")
-    #         self.superadminmenu()
-    #     elif choice == 10:
-    #         PersonCRUD().changePassword("Superadmin")
-    #         self.superadminmenu()
-    #     elif choice == 11:
-    #         Helper().makeBackup()
-    #     elif choice == 12:
-    #         print("see logs init")
-    #         Helper().seelogs()
-    #         self.superadminmenu()
-    #     elif choice == 13:
-    #         userinterface().mainscreen()
-    #     else:
-    #         print("Wrong input, try again.")
-    #         self.superadminmenu()
-
     def superadminmenu(self):
         choice = self.choices(
             ["List of users", "Check client", "add client", "Modify client",
@@ -144,52 +93,108 @@ class userinterface:
              "add a new advisor", "Modify advisor", "Delete advisor", "add new systemadmin",
              "change passwords", "make a backup", "see log(s)", "Logout"],
             "Wich option do you want to choose?: ")
-
+        print(choice)
+        print(type(choice))
         if choice == 1:
             PersonCRUD().checkUsers("Clients")
-
+            self.superadminmenu()
         elif choice == 2:
             PersonCRUD().searchPerson("Clients")
+            self.superadminmenu()
 
         elif choice == 3:
             PersonCRUD().addPerson("Clients")
+            self.superadminmenu()
 
         elif choice == 4:
             PersonCRUD().modifyPerson("Clients")
-
+            self.superadminmenu()
         elif choice == 5:
             PersonCRUD().deletePerson("Clients")
-
+            self.superadminmenu()
         elif choice == 6:
-            PersonCRUD().addPerson("advisors")
-
+            print("went into adding a advisor")
+            PersonCRUD().addPerson("Advisors")
+            self.superadminmenu()
         elif choice == 7:
-            PersonCRUD().modifyPerson("advisors")
-
+            PersonCRUD().modifyPerson("Advisors")
+            self.superadminmenu()
         elif choice == 8:
-            PersonCRUD().deletePerson("advisors")
+            PersonCRUD().deletePerson("Advisors")
+            self.superadminmenu()
 
         elif choice == 9:
             PersonCRUD().addPerson("Systemadmins")
-
+            self.superadminmenu()
         elif choice == 10:
             PersonCRUD().changePassword("Superadmin")
-
+            self.superadminmenu()
         elif choice == 11:
             Helper().makeBackup()
         elif choice == 12:
             print("see logs init")
             Helper().seelogs()
-
+            self.superadminmenu()
         elif choice == 13:
             userinterface().mainscreen()
-
         else:
             print("Wrong input, try again.")
             self.superadminmenu()
-
-        if choice in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12]:
-            self.superadminmenu()
+    #
+    # def superadminmenu(self):
+    #     choice = self.choices(
+    #         ["List of users", "Check client", "add client", "Modify client",
+    #          "Delete client",
+    #          "add a new advisor", "Modify advisor", "Delete advisor", "add new systemadmin",
+    #          "change passwords", "make a backup", "see log(s)", "Logout"],
+    #         "Wich option do you want to choose?: ")
+    #
+    #     if choice == 1:
+    #         PersonCRUD().checkUsers("Clients")
+    #
+    #     elif choice == 2:
+    #         PersonCRUD().searchPerson("Clients")
+    #
+    #     elif choice == 3:
+    #         PersonCRUD().addPerson("Clients")
+    #
+    #     elif choice == 4:
+    #         PersonCRUD().modifyPerson("Clients")
+    #
+    #     elif choice == 5:
+    #         PersonCRUD().deletePerson("Clients")
+    #
+    #     elif choice == 6:
+    #         print(choice)
+    #         PersonCRUD().addPerson("advisors")
+    #
+    #     elif choice == 7:
+    #         PersonCRUD().modifyPerson("advisors")
+    #
+    #     elif choice == 8:
+    #         PersonCRUD().deletePerson("advisors")
+    #
+    #     elif choice == 9:
+    #         PersonCRUD().addPerson("Systemadmins")
+    #
+    #     elif choice == 10:
+    #         PersonCRUD().changePassword("Superadmin")
+    #
+    #     elif choice == 11:
+    #         Helper().makeBackup()
+    #     elif choice == 12:
+    #         print("see logs init")
+    #         Helper().seelogs()
+    #
+    #     elif choice == 13:
+    #         userinterface().mainscreen()
+    #
+    #     else:
+    #         print("Wrong input, try again.")
+    #         self.superadminmenu()
+    #
+    #     if choice in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12]:
+    #         self.superadminmenu()
 
     # def systemadministatormenu(self):
     #     choice = self.choices(

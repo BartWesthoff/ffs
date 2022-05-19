@@ -2,7 +2,7 @@ import io
 import json
 import re
 import sqlite3
-
+import string
 from src.cdms.databaseclass import Database
 
 
@@ -13,44 +13,49 @@ class Helper:
         quit()
 
     @staticmethod
-    def Encrypt(name):
-        message = name.upper()
-        alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        result = ""
+    def Encrypt(text):
         key = 4
-        for letter in message:
-            if letter in alpha:  # if the letter is actually a letter
-                # find the corresponding ciphertext letter in the alphabet
-                letter_index = (alpha.find(letter) + key) % len(alpha)
-
-                result = result + alpha[letter_index]
-            if letter.isnumeric():
-                result = result + alpha[letter]
+        decrypted_message = ""
+        alphabet = "abcdefghijklmnopqrstuvwxyz"
+        alphabet_upper = "abcdefghijklmnopqrstuvwxyz".upper()
+        for c in text:
+            if c in alphabet:
+                position = alphabet.find(c)
+                new_position = (position + key) % 26
+                new_character = alphabet[new_position]
+                decrypted_message += new_character
+            elif c in alphabet_upper:
+                position = alphabet_upper.find(c)
+                new_position = (position + key) % 26
+                new_character = alphabet_upper[new_position]
+                decrypted_message += new_character
             else:
-                result = result + letter
-
-        return result
+                decrypted_message += c
+        return decrypted_message
 
     @staticmethod
-    def Decrypt(name):
-
-        message = name.upper()
-        alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        result = ""
+    def Decrypt(text):
         key = 4
-        for letter in message:
-            if letter in alpha:  # if the letter is actually a letter
-                # find the corresponding ciphertext letter in the alphabet
-                letter_index = (alpha.find(letter) - key) % len(alpha)
-
-                result = result + alpha[letter_index]
+        decrypted_message = ""
+        alphabet = "abcdefghijklmnopqrstuvwxyz"
+        alphabet_upper = "abcdefghijklmnopqrstuvwxyz".upper()
+        for c in text:
+            if c in alphabet:
+                position = alphabet.find(c)
+                new_position = (position - key) % 26
+                new_character = alphabet[new_position]
+                decrypted_message += new_character
+            elif c in alphabet_upper:
+                position = alphabet_upper.find(c)
+                new_position = (position - key) % 26
+                new_character = alphabet_upper[new_position]
+                decrypted_message += new_character
             else:
-                result = result + letter
-
-        return result
+                decrypted_message += c
+        return decrypted_message
 
     def passwordchecker(self, password):
-        x = re.search("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,10}$", password)
+        x = re.search("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,30}$", password)
         error = '''\n Please enter correct password. Min length of 8, no longer than 30 characters, 
         MUST have at least one lowercase letter, one uppercase letter, one digit and one special character :'''
         if not x:

@@ -34,9 +34,15 @@ class Database:
 
     def get(self, table, columns, limit=None, where=1):
 
-        query = "SELECT ? from ? WHERE ?;", (columns, table, where)
+        # TODO
+        # table werkt niet met ? maar is niet erg omdat dit altijd vast staat
+        # * werkt ook niet met *
+        query = "SELECT ? from ? WHERE ?"
+        query2 = f"SELECT * from {table} WHERE ?"
+        # database.get(columns='*', table=_type)
+        args = (columns, table, where)
         # print(query)
-        self.cursor.execute(query)
+        self.cursor.execute(query2, (where,))
         """
         import datetime
         from cdms.helperClass import Helper
@@ -55,8 +61,18 @@ class Database:
 
         return self.get(table, columns, limit=1)[0]
 
-    def write(self, table, columns, data):
-        query = "INSERT INTO ? (?) VALUES (?);", (table, columns, data)
+
+    def createAdvisor(self, firstname, lastname,username,password):
+        kind = "Advisors"
+        self.cursor.execute("INSERT INTO Advisors VALUES (:id, :first,:last,:user,:pass)", {"id": None,"first": firstname, "last": lastname, "user": username, "pass": password})
+        self.commit()
+
+    def write(self, table, columns="", data=""):
+        columns = ("firstname",)
+        data = ("WesthoffTest",)
+
+        self.cursor.execute(f'INSERT INTO {table} (?) VALUES (?)', ("firstname", "WesthoffTest"))
+        # args = (columns, data)
         """
         import datetime
         from cdms.helperClass import Helper
@@ -67,7 +83,7 @@ class Database:
         self.cursor.execute(f"Logging", '`username`, `datetime`, `description`, `suspicious`',
                             f"'{username}', '{datetime}', '{description}', '{suspicous}'")
         """
-        self.cursor.execute(query)
+        # self.cursor.execute(query, [columns[0], data[0]])
         self.commit()
 
     def delete(self, table, colums, data):

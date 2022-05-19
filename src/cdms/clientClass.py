@@ -34,7 +34,7 @@ class Client:
         loop = True
         while loop:
             mail = input("What is the email?: ")
-            _validEmail = re.search("^[a-zA-Z\d_.+-]+@[a-zA-Z\d-]+\.[a-zA-Z\d-.]+$", mail)
+            _validEmail = re.search("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", mail)
             if _validEmail:
                 mail = Helper().Encrypt(mail)
                 loop = False
