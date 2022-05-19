@@ -242,6 +242,7 @@ class userinterface:
         choice = self.choices(options)
 
         kind = options[choice - 1].split()[-1]
+        print(kind)
         if choice in [1, 2, 3, 4]:
             callToAction[options[choice - 1]](kind)
             self.advisormenu()

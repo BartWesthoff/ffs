@@ -40,30 +40,28 @@ class PersonCRUD:
         print(user)
         database = Database("analyse.db")
         while loop:
-
             firstname = input("firstname?: ")
             # firstname = Helper().Encrypt(firstname)
 
             lastname = input("lastname?: ")
             # lastname = Helper().Encrypt(lastname)
-            data = database.get(columns='*', table=f'{kind}',
-                                where=f"`firstname`='{firstname}' AND `lastname`='{lastname}'")
+            # data = database.get(columns='*', table=f'{kind}',
+            #                     where=f"`firstname`='{firstname}' AND `lastname`='{lastname}'")
+            data = database.searchPerson(kind=kind, firstname=firstname, lastname=lastname)
             database.commit()
-            try:
-                for row in data:
-                    print("ID          |", row[0])
-                    print("Firstname   |", Helper().Decrypt(row[1]))
-                    print("Lastname    |", Helper().Decrypt(row[2]))
-                    print("Streetname  |", Helper().Decrypt(row[3]))
-                    print("Housenumber |", row[4])
-                    print("Zipcode     |", str(Helper().Decrypt(row[5])))
-                    print("City        |", Helper().Decrypt(row[6]))
-                    print("Email       |", Helper().Decrypt(row[7]))
-                    print("Mobilephone |", row[8]), "\n"
-                    loop = False
+            client = Client().toClient(data)
+            print("ID            |", client.id)
+            print("Firstname     |", client.firstname)
+            print("Lastname      |", client.lastname)
+            print("Street        |", client.street)
+            print("Housenumber   |", client.housenumber)
+            print("Zipcode       |", client.zipcode)
+            print("City          |", client.city)
+            print("mail          |", client.mail)
+            print("Phone         |", client.mobile_number)
+            print("creation date |", client.registration_date)
 
-            except:
-                print("Person not found, try again. excpet")
+            loop = False
 
         database.close()
 
@@ -77,9 +75,10 @@ class PersonCRUD:
         lastname = Helper().Encrypt(lastname)
         print(firstname)
         print(lastname)
-        try:
-            data = database.get(columns='*', table=f'{kind}',
-                                where=f"`firstname`='{firstname}' AND `lastname`='{lastname}'")
+
+        data = database.get(columns='*', table=f'{kind}',
+                            where=f"`firstname`='{firstname}' AND `lastname`='{lastname}'")
+        if data is not None:
             print(data)
             # database.query(f"DELETE FROM "systemadmin" WHERE 'firstname'='{firstname}' AND 'lastname'='{lastname}'")
             database.query(f"DELETE FROM '{kind}' WHERE firstname='{firstname}' AND lastname='{lastname}'")
@@ -87,14 +86,11 @@ class PersonCRUD:
 
             print("Deleted")
 
-        except:
-            print("not deleted")
-
     def modifyPerson(self, kind):
         from src.cdms.userinterfaceClass import userinterface
         database = Database("analyse.db")
-        _firstname = input(f"What is the firstname of the {kind[:-1]}?: ")
-        _lastname = input(f"What is the lastname of the {kind[:-1]}?: ")
+        _firstname = input(f"What is the firstname of the {kind}?: ")
+        _lastname = input(f"What is the lastname of the {kind}?: ")
         _firstname = Helper().Encrypt(_firstname)
         _lastname = Helper().Encrypt(_lastname)
         data = database.get(columns='*', table=f'{kind}',
@@ -149,7 +145,7 @@ class PersonCRUD:
                 _password = input(
                     "What will be ur password? Min length of 8, no longer than 30 characters, MUST have at least one "
                     "lowercase letter, one uppercase letter, one digit and one special character : ")
-                password = Helper().passwordchecker  # TODO check this function
+                password = Helper().passwordchecker(password)  # TODO check this function
                 _password = Helper().Encrypt(_password)
                 database.query(f"UPDATE {kind} SET password = '{_password}' WHERE username = '{username}';")
                 database.commit()

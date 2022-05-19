@@ -106,3 +106,6 @@ class Client:
 
         return Client(firstname=firstname, lastname=lastname, mail=mail, street=street, housenumber=housenumber,
                         zipcode=zipcode, city=city, registration_date=registration_date, mobile_number=mobile_number, id=id)
+
+    def toClient(self, data):
+        return Client(id=data[0], firstname=data[1], lastname=data[2], street=data[3], housenumber=data[4], zipcode=data[5], city=data[6], mail=data[7], mobile_number=data[8], registration_date=data[9])

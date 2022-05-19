@@ -40,6 +40,12 @@ class Database:
         self.cursor.execute(query, (username, password))
         return self.cursor.fetchone()
 
+    def searchPerson(self, kind, firstname, lastname):
+        print(kind, firstname, lastname)
+        query = f"SELECT * FROM {kind} WHERE firstname = ? AND lastname = ?;"
+        self.cursor.execute(query, (firstname, lastname))
+        return self.cursor.fetchone()
+
     def get(self, table, columns, limit=None, where=1):
 
         # TODO
@@ -77,8 +83,8 @@ class Database:
 
 
     def createClient(self, client: Client):
-        self.cursor.execute(f"INSERT INTO client (firstname,lastname,streetname,housenumber,zipcode,city,emailaddress,mobilephone)VALUES (:first, :last,:street,:house,:zip,:city,:email,:mobile)",
-                            {"first": client.firstname, "last": client.lastname, "street": client.street, "house": client.housenumber, "zip": client.zipcode, "city": client.city, "email": client.mail, "mobile": client.mobile_number})
+        self.cursor.execute(f"INSERT INTO client (firstname,lastname,streetname,housenumber,zipcode,city,emailaddress,mobilephone, date)VALUES (:first, :last,:street,:house,:zip,:city,:email,:mobile,:date)",
+                            {"first": client.firstname, "last": client.lastname, "street": client.street, "house": client.housenumber, "zip": client.zipcode, "city": client.city, "email": client.mail, "mobile": client.mobile_number, "date": client.registration_date})
 
 
         self.commit()
@@ -147,27 +153,38 @@ class Database:
 
         try:
             self.query(
-                "CREATE TABLE 'systemadmin' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT NULL, 'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) NOT NULL)")
+                "CREATE TABLE 'systemadmin' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT "
+                "NULL, 'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) "
+                "NOT NULL)")
         except:
             pass
         try:
             self.query(
-                "CREATE TABLE 'advisor' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT NULL, 'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) NOT NULL)")
+                "CREATE TABLE 'advisor' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT NULL, "
+                "'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) NOT "
+                "NULL)")
         except:
             pass
         try:
             self.query(
-                "CREATE TABLE 'client' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT NULL, 'lastname' VARCHAR(128) NOT NULL, 'streetname' VARCHAR(128) NOT NULL, 'housenumber' INTEGER NOT NULL, 'zipcode' VARCHAR(128) NOT NULL, 'city' VARCHAR(128) NOT NULL, 'emailaddress' VARCHAR(128) NOT NULL, 'mobilephone' VARCHAR(128) NOT NULL)")
+                "CREATE TABLE 'client' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT NULL, "
+                "'lastname' VARCHAR(128) NOT NULL, 'streetname' VARCHAR(128) NOT NULL, 'housenumber' INTEGER NOT "
+                "NULL, 'zipcode' VARCHAR(128) NOT NULL, 'city' VARCHAR(128) NOT NULL, 'emailaddress' VARCHAR(128) NOT "
+                "NULL, 'mobilephone' VARCHAR(128) NOT NULL, 'date' VARCHAR(128) NOT NULL)")
         except:
             pass
         try:
             self.query(
-                "CREATE TABLE 'superadmin' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT NULL, 'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) NOT NULL)")
+                "CREATE TABLE 'superadmin' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT "
+                "NULL, 'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) "
+                "NOT NULL)")
         except:
             pass
         try:
             self.query(
-                "CREATE TABLE 'Logging' ('number' INTEGER PRIMARY KEY AUTOINCREMENT, 'username' VARCHAR(128) NOT NULL, 'datetime' VARCHAR(128) NOT NULL, 'description' VARCHAR(128) NOT NULL, 'suspicious' VARCHAR(128) NOT NULL)")
+                "CREATE TABLE 'Logging' ('number' INTEGER PRIMARY KEY AUTOINCREMENT, 'username' VARCHAR(128) NOT "
+                "NULL, 'datetime' VARCHAR(128) NOT NULL, 'description' VARCHAR(128) NOT NULL, 'suspicious' VARCHAR("
+                "128) NOT NULL)")
         except:
             pass
         self.open("analyse.db")
