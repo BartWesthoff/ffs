@@ -57,11 +57,11 @@ class PersonCRUD:
                 print("Firstname     |", Helper.Decrypt(client.firstname))
                 print("Lastname      |", Helper.Decrypt(client.lastname))
                 print("Street        |", Helper.Decrypt(client.street))
-                print("Housenumber   |", client.housenumber)
+                print("Housenumber   |", Helper.Decrypt(client.housenumber))
                 print("Zipcode       |", Helper.Decrypt(client.zipcode))
                 print("City          |", Helper.Decrypt(client.city))
                 print("mail          |", Helper.Decrypt(client.mail))
-                print("Phone         |", client.mobile_number)
+                print("Phone         |", Helper.Decrypt(client.mobile_number))
                 print("creation date |", client.registration_date)
 
                 loop = False

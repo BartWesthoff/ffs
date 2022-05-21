@@ -95,6 +95,9 @@ class userinterface:
         options = list(callToAction.keys())
         choice = self.choices(options)
 
+        if choice == 1:
+            callToAction[options[choice - 1]]()
+            self.superadminmenu()
         if choice in [1, 2, 3, 4, 5]:
             callToAction[options[choice - 1]]("client")
             self.superadminmenu()

@@ -12,10 +12,13 @@ class Helper:
 
     @staticmethod
     def Encrypt(text):
+        text = str(text)
         key = 4
         decrypted_message = ""
         alphabet = "abcdefghijklmnopqrstuvwxyz"
         alphabet_upper = "abcdefghijklmnopqrstuvwxyz".upper()
+        numbers = "0123456789"
+
         for c in text:
             if c in alphabet:
                 position = alphabet.find(c)
@@ -26,6 +29,11 @@ class Helper:
                 position = alphabet_upper.find(c)
                 new_position = (position + key) % 26
                 new_character = alphabet_upper[new_position]
+                decrypted_message += new_character
+            elif c in numbers:
+                position = numbers.find(c)
+                new_position = (position + key) % 10
+                new_character = numbers[new_position]
                 decrypted_message += new_character
             else:
                 decrypted_message += c
@@ -33,10 +41,13 @@ class Helper:
 
     @staticmethod
     def Decrypt(text):
+        text = str(text)
+
         key = 4
         decrypted_message = ""
         alphabet = "abcdefghijklmnopqrstuvwxyz"
         alphabet_upper = "abcdefghijklmnopqrstuvwxyz".upper()
+        numbers = "0123456789"
         for c in text:
             if c in alphabet:
                 position = alphabet.find(c)
@@ -47,6 +58,12 @@ class Helper:
                 position = alphabet_upper.find(c)
                 new_position = (position - key) % 26
                 new_character = alphabet_upper[new_position]
+                decrypted_message += new_character
+
+            elif c in numbers:
+                position = numbers.find(c)
+                new_position = (position - key) % 10
+                new_character = numbers[new_position]
                 decrypted_message += new_character
             else:
                 decrypted_message += c
