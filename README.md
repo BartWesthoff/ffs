@@ -18,3 +18,9 @@ File "D:\Github\ffs\src\cdms\helperClass.py", line 19, in Encrypt
     for c in text:
 
 logs zijn leeg.
+
+voor input validation moet we white listing gebruiken. als we echt goed willen doen dit such as checking for NULL-Byte, range and length, Validation Functions, etc.
+
+invalid input goed handelen ook belangrijk.
+
+wnr je iets niet goed input, een berichtje zetten van invalid input try again, niet gwn de functie opnieuw aanroepen.s
