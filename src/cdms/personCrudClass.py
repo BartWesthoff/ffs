@@ -1,3 +1,4 @@
+from pdb import lasti2lineno
 from src.cdms.memberClass import Member
 from src.cdms.databaseclass import Database
 from src.cdms.helperClass import Helper
@@ -63,8 +64,7 @@ class PersonCRUD:
             lastname = Helper().Encrypt(lastname)
             
 
-            # data = database.get(columns='*', table=f'{kind}',
-            #                     where=f"`firstname`='{firstname}' AND `lastname`='{lastname}'")
+          
             data = database.searchPerson(kind=kind, firstname=firstname, lastname=lastname)
             database.commit()
             if data is not None:
@@ -100,7 +100,11 @@ class PersonCRUD:
             print(f"Role        | {kind}\n")
         
         firstname = input("firstname?: ")
+        firstname = Validator().isValidName(firstname)
+
         lastname = input("lastname?: ")
+        lastname = Validator().isValidName(lastname)
+
         firstname = Helper().Encrypt(firstname)
         lastname = Helper().Encrypt(lastname)
 
@@ -126,20 +130,43 @@ class PersonCRUD:
             print(f"Role        | {kind}\n")
 
         _firstname = input(f"What is the firstname of the {kind}?: ")
+        _firstname = Validator().isValidName(_firstname)
+
         _lastname = input(f"What is the lastname of the {kind}?: ")
+        _lastname = Validator().isValidName(_lastname)
+
         _firstname = Helper().Encrypt(_firstname)
         _lastname = Helper().Encrypt(_lastname)
         data = database.searchPerson(kind=kind, firstname=_firstname, lastname=_lastname)
         if data is None:
             print("Member not found, try again.")
             self.modifyPerson(kind)
-        attr = ["firstname", "lastname", "streetname", "housenumber", "zipcode", "city", "emailaddress"]
+        attr = ["firstname", "lastname", "streetname", "housenumber", "zipcode", "city", "emailaddress", "mobilephone"]
         choices = []
         for att in attr:
             choices.append(f"Modify {att}")
         choice = userinterface().choices(choices)
 
         new_data = input(f"What will be the new {attr[choice - 1]}: ")
+        for x in attr:
+            if(choice == 1 or choice == 2):
+                new_data = Validator().isValidName(new_data)
+            elif(choice == 3):
+                new_data = Validator().isValidStreetname(new_data)
+            elif(choice == 4):
+                new_data = Validator().isValidNumber(new_data)
+            elif(choice == 5):
+                new_data = Validator().isValidZipcode(new_data)
+            elif(choice == 6):
+                new_data = Validator().isValidZipcode(new_data)
+            elif(choice == 7):
+                new_data = Validator().isValidEmail(new_data)
+            elif(choice == 8):
+                new_data = Validator().isValidEmail(new_data)
+            
+
+
+
 
         new_data = Helper().Encrypt(new_data)
         database.query(
@@ -212,7 +239,7 @@ class PersonCRUD:
             elif choice == 3:
                 _type = "superadmin"
             else:
-                print("Incorrect input, try again. personcrud")
+                print("Incorrect input, try again.")
 
             print(f'\n{_type}: \n')
             data = database.get(columns='*', table=_type)
