@@ -1,8 +1,9 @@
 from pdb import lasti2lineno
-from src.cdms.memberClass import Member
+
+from src.cdms.InputValidationClass import Validator
 from src.cdms.databaseclass import Database
 from src.cdms.helperClass import Helper
-from src.cdms.InputValidationClass import Validator
+from src.cdms.memberClass import Member
 
 
 # database.write(f"Logging", '`username`, `datetime`, `description`, `suspicious`', f"'{firstname}', '{lastname}', '{username}', '{password}'")
@@ -48,8 +49,7 @@ class PersonCRUD:
             print("ID          |", row[0])
             print("Firstname   |", Helper().Decrypt(row[1]))
             print("Lastname    |", Helper().Decrypt(row[2]) + "\n")
-            
-        
+
         while loop:
             firstname = input("firstname?: ")
             print(firstname)
@@ -62,16 +62,14 @@ class PersonCRUD:
             print(lastname)
 
             lastname = Helper().Encrypt(lastname)
-            
 
-          
             data = database.searchPerson(kind=kind, firstname=firstname, lastname=lastname)
             database.commit()
             if data is not None:
 
                 member = Member().toMember(data)
 
-                print("ID            |", member.id)
+                print("UUID          |", member.uuid)
                 print("Firstname     |", Helper.Decrypt(member.firstname))
                 print("Lastname      |", Helper.Decrypt(member.lastname))
                 print("Street        |", Helper.Decrypt(member.street))
@@ -98,7 +96,7 @@ class PersonCRUD:
             print("Firstname   |", Helper().Decrypt(row[1]))
             print("Lastname    |", Helper().Decrypt(row[2]))
             print(f"Role        | {kind}\n")
-        
+
         firstname = input("firstname?: ")
         firstname = Validator().isValidName(firstname)
 
@@ -108,7 +106,7 @@ class PersonCRUD:
         firstname = Helper().Encrypt(firstname)
         lastname = Helper().Encrypt(lastname)
 
-        data = database.searchPerson(kind=kind,firstname=firstname, lastname=lastname)
+        data = database.searchPerson(kind=kind, firstname=firstname, lastname=lastname)
         if data is not None:
             # database.query(f"DELETE FROM "systemadmin" WHERE 'firstname'='{firstname}' AND 'lastname'='{lastname}'")
             database.deletePerson(table=kind, firstname=firstname, lastname=lastname)
@@ -149,24 +147,20 @@ class PersonCRUD:
 
         new_data = input(f"What will be the new {attr[choice - 1]}: ")
         for x in attr:
-            if(choice == 1 or choice == 2):
+            if (choice == 1 or choice == 2):
                 new_data = Validator().isValidName(new_data)
-            elif(choice == 3):
+            elif (choice == 3):
                 new_data = Validator().isValidStreetname(new_data)
-            elif(choice == 4):
+            elif (choice == 4):
                 new_data = Validator().isValidNumber(new_data)
-            elif(choice == 5):
+            elif (choice == 5):
                 new_data = Validator().isValidZipcode(new_data)
-            elif(choice == 6):
+            elif (choice == 6):
                 new_data = Validator().isValidZipcode(new_data)
-            elif(choice == 7):
+            elif (choice == 7):
                 new_data = Validator().isValidEmail(new_data)
-            elif(choice == 8):
+            elif (choice == 8):
                 new_data = Validator().isValidEmail(new_data)
-            
-
-
-
 
         new_data = Helper().Encrypt(new_data)
         database.query(
@@ -177,13 +171,23 @@ class PersonCRUD:
 
     @staticmethod
     def changePassword(kind):
-
+        # kinds = ["systemadmin", "member", "admin"]
         database = Database("analyse.db")
+
         from src.cdms.userinterfaceClass import userinterface
         choice = userinterface().choices(
             ["Reset own password.", "Reset an advisors password.", "Reset an systemadmin password"])
         kind_target = ""
-        if choice == 2:
+        if choice == 1 and kind == "superadmin":
+            print("You can not reset superadmin password.")
+            return
+        elif choice == 2 and kind == "advisor":
+            print("You can not reset password from another advisor.")
+            return
+        elif choice == 3 and kind == "systemadmin":
+            print("You can not reset password from another systemadmin.")
+            return
+        elif choice == 2:
             kind_target = 'advisor'
         elif choice == 3:
             kind_target = 'systemadmin'
@@ -208,7 +212,7 @@ class PersonCRUD:
         username_user = Helper().Decrypt(username_user)
 
         _password = input(
-            "What will be ur password? Min length of 8, no longer than 30 characters, MUST have at least one "
+            "What will be the password? Min length of 8, no longer than 30 characters, MUST have at least one "
             "lowercase letter, one uppercase letter, one digit and one special character : ")
         password = Helper().passwordchecker(password=_password)  # TODO check this function
         password = Helper().Encrypt(password)
@@ -217,6 +221,9 @@ class PersonCRUD:
         print(password)
 
         database.updatePassword(kind=kind_target, username=username_to_change, password=password)
+        database.addLog(
+            description=f"{username_user} changed password for {username_to_change} to {Helper().Decrypt(password)}",
+            suspicious="yes")
 
         database.commit()
         database.close()

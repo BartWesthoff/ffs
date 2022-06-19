@@ -1,8 +1,9 @@
-from ast import arg
+import datetime
 import sqlite3
+from ast import arg
 
-from src.cdms.memberClass import Member
 from src.cdms.helperClass import Helper
+from src.cdms.memberClass import Member
 
 
 class Database:
@@ -40,8 +41,8 @@ class Database:
         # prepared statements for security.
         query = f"SELECT * FROM {kind} WHERE username = ? AND password = ?;"
         self.cursor.execute(query, (username, password))
-       
-        result =  self.cursor.fetchone()
+
+        result = self.cursor.fetchone()
         if result is None:
             return False
         return result
@@ -57,28 +58,30 @@ class Database:
         self.cursor.execute(query)
         return self.cursor.fetchall()
 
+    def addLog(self, description, suspicious):
+
+        username = Helper().checkLoggedIn()
+        username = Helper().Encrypt(username)
+        description = Helper().Encrypt(description)
+        suspicious = Helper().Encrypt(suspicious)
+        now = datetime.datetime.now().strftime("%a %w %b %Y")
+
+        print(username, now, description, suspicious)
+
+        self.cursor.execute(
+            f"INSERT INTO logging (username,datetime,description,suspicious)VALUES (:user, :date,:desc,:sus)",
+            {"user": username, "date": now, "desc": description, "sus": suspicious})
+        self.commit()
+
     def get(self, table, columns, limit=None, where=1):
 
-        # TODO
-        # table werkt niet met ? maar is niet erg omdat dit altijd vast staat
-        # * werkt ook niet met *
         query = "SELECT ? from ? WHERE ?"
         query2 = f"SELECT * from {table} WHERE ?"
         # database.get(columns='*', table=_type)
         args = (columns, table, where)
         # print(query)
         self.cursor.execute(query2, (where,))
-        
-        # import datetime
-        
-        # username = Helper().checkLoggedIn()
-        # datetime = datetime.datetime.now().strftime("%a %w %b %Y")
-        # description = "data has been requested"
-        # suspicous = "no"
-        # self.cursor.execute(f"Logging", '`username`, `datetime`, `description`, `suspicious`',
-        #                     f"'{username}', '{datetime}', '{description}', '{suspicous}'")
-        # # fetch data
-        
+
         rows = self.cursor.fetchall()
         return rows[len(rows) - limit if limit else 0:]
 
@@ -94,61 +97,64 @@ class Database:
 
     def createMember(self, member: Member):
         self.cursor.execute(
-            f"INSERT INTO member (firstname,lastname,streetname,housenumber,zipcode,city,emailaddress,mobilephone, date)VALUES (:first, :last,:street,:house,:zip,:city,:email,:mobile,:date)",
+            f"INSERT INTO member (firstname,lastname,streetname,housenumber,zipcode,city,emailaddress,mobilephone, "
+            f"date,uuid)VALUES (:first, :last,:street,:house,:zip,:city,:email,:mobile,:date,:uuid)",
             {"first": member.firstname, "last": member.lastname, "street": member.street, "house": member.housenumber,
              "zip": member.zipcode, "city": member.city, "email": member.mail, "mobile": member.mobile_number,
-             "date": member.registration_date})
+             "date": member.registration_date, "uuid": member.uuid})
 
         self.commit()
 
-    def write(self, table, columns="", data=""):
-        columns = ("firstname",)
-        data = ("WesthoffTest",)
+    # def write(self, table, columns="", data=""):
+    #     columns = ("firstname",)
+    #     data = ("WesthoffTest",)
+    #
+    #     self.cursor.execute(f'INSERT INTO {table} (?) VALUES (?)', ("firstname", "WesthoffTest"))
+    #     # args = (columns, data)
+    #
+    #     # import datetime
+    #
+    #     # username = Helper().checkLoggedIn()
+    #     # datetime = datetime.datetime.now().strftime("%a %w %b %Y")
+    #     # description = "data has been added"
+    #     # suspicous = "yes"
+    #     # self.cursor.execute(f"Logging", '`username`, `datetime`, `description`, `suspicious`',
+    #     #                     f"'{username}', '{datetime}', '{description}', '{suspicous}'")
+    #
+    #     # # self.cursor.execute(query, [columns[0], data[0]])
+    #     self.commit()
 
-        self.cursor.execute(f'INSERT INTO {table} (?) VALUES (?)', ("firstname", "WesthoffTest"))
-        # args = (columns, data)
-        
-        # import datetime
-    
-        # username = Helper().checkLoggedIn()
-        # datetime = datetime.datetime.now().strftime("%a %w %b %Y")
-        # description = "data has been added"
-        # suspicous = "yes"
-        # self.cursor.execute(f"Logging", '`username`, `datetime`, `description`, `suspicious`',
-        #                     f"'{username}', '{datetime}', '{description}', '{suspicous}'")
-        
-        # # self.cursor.execute(query, [columns[0], data[0]])
-        self.commit()
+    # def delete(self, table, data):
+    #
+    #     query = "DELETE FROM ? WHERE id = ? ;", (table, data)
+    #
+    #     import datetime
+    #
+    #     username = Helper().checkLoggedIn()
+    #     datetime = datetime.datetime.now().strftime("%a %w %b %Y")
+    #     description = "data has been deleted"
+    #     suspicous = "yes"
+    #     self.cursor.execute(f"Logging", '`username`, `datetime`, `description`, `suspicious`',
+    #                         f"'{username}', '{datetime}', '{description}', '{suspicous}'")
+    #
+    #     self.cursor.execute(query)
 
-    def delete(self, table, data):
-
-        query = "DELETE FROM ? WHERE id = ? ;", (table, data)
-        
-        import datetime
-   
-        username = Helper().checkLoggedIn()
-        datetime = datetime.datetime.now().strftime("%a %w %b %Y")
-        description = "data has been deleted"
-        suspicous = "yes"
-        self.cursor.execute(f"Logging", '`username`, `datetime`, `description`, `suspicious`',
-                            f"'{username}', '{datetime}', '{description}', '{suspicous}'")
-        
-        self.cursor.execute(query)
     def deletePerson(self, table, firstname, lastname):
 
         query = f"DELETE FROM {table} WHERE firstname = ? AND lastname = ? ;"
-        
+
         # import datetime
-  
+
         # username = Helper().checkLoggedIn()
         # datetime = datetime.datetime.now().strftime("%a %w %b %Y")
         # description = "data has been deleted"
         # suspicous = "yes"
         # self.cursor.execute(f"Logging", '`username`, `datetime`, `description`, `suspicious`',
         #                     f"'{username}', '{datetime}', '{description}', '{suspicous}'")
-        
+
         args = (firstname, lastname)
         self.cursor.execute(query, args)
+
     def updatePassword(self, kind, password, username):
 
         # try:
@@ -156,7 +162,7 @@ class Database:
         query = f"UPDATE {kind} SET password = ? WHERE username = ?;"
         args = (password, username)
         self.cursor.execute(query, args)
-        
+
         # import datetime
 
         # username = Helper().checkLoggedIn()
@@ -165,7 +171,7 @@ class Database:
         # suspicous = "yes"
         # self.cursor.execute(f"Logging", '`username`, `datetime`, `description`, `suspicious`',
         #                     f"'{username}', '{datetime}', '{description}', '{suspicous}'")
-        
+
         # except:
         #     print("something went wrong")
 
@@ -198,7 +204,7 @@ class Database:
                 "CREATE TABLE 'member' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT NULL, "
                 "'lastname' VARCHAR(128) NOT NULL, 'streetname' VARCHAR(128) NOT NULL, 'housenumber' INTEGER NOT "
                 "NULL, 'zipcode' VARCHAR(128) NOT NULL, 'city' VARCHAR(128) NOT NULL, 'emailaddress' VARCHAR(128) NOT "
-                "NULL, 'mobilephone' VARCHAR(128) NOT NULL, 'date' VARCHAR(128) NOT NULL)")
+                "NULL, 'mobilephone' VARCHAR(128) NOT NULL, 'date' VARCHAR(128) NOT NULL,'uuid' VARCHAR(128) NOT NULL)")
         except:
             pass
         try:
@@ -210,7 +216,7 @@ class Database:
             pass
         try:
             self.query(
-                "CREATE TABLE 'Logging' ('number' INTEGER PRIMARY KEY AUTOINCREMENT, 'username' VARCHAR(128) NOT "
+                "CREATE TABLE 'logging' ('number' INTEGER PRIMARY KEY AUTOINCREMENT, 'username' VARCHAR(128) NOT "
                 "NULL, 'datetime' VARCHAR(128) NOT NULL, 'description' VARCHAR(128) NOT NULL, 'suspicious' VARCHAR("
                 "128) NOT NULL)")
         except:

@@ -5,8 +5,6 @@ import sqlite3
 from tabnanny import check
 from turtle import isvisible
 
-from mysqlx import FilterableStatement
-
 
 class Validator:
 

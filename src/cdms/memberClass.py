@@ -7,7 +7,7 @@ from src.cdms.helperClass import Helper
 class Member:
     # TODO: Loggen als iets fout wordt ingevoerd.
     def __init__(self, firstname=None, lastname=None, mail=None, street=None, housenumber=None, zipcode=None, city=None,
-                 mobile_number=None, registration_date=None, id=None):
+                 mobile_number=None, registration_date=None, id=None, uuid=None):
         self.firstname = firstname
         self.lastname = lastname
         self.mail = mail
@@ -18,6 +18,7 @@ class Member:
         self.mobile_number = mobile_number
         self.registration_date = registration_date
         self.id = id
+        self.uuid = uuid
 
     @staticmethod
     def createMember():
@@ -84,12 +85,13 @@ class Member:
         mobile_number = "31-6-" + mobile_number
         mobile_number = Helper().Encrypt(mobile_number)
 
-        id = [str(randint(0 if i == 0 else 1, 9)) for i in range(9)]
-        last_digit = sum(int(i) for i in id) % 10
-        id = ''.join(id) + str(last_digit)
+        uuid = [str(randint(0 if i == 0 else 1, 9)) for i in range(9)]
+        last_digit = sum(int(i) for i in uuid) % 10
+        uuid = ''.join(id) + str(last_digit)
 
         return Member(firstname=firstname, lastname=lastname, mail=mail, street=street, housenumber=housenumber,
-                      zipcode=zipcode, city=city, registration_date=datetime.now(), mobile_number=mobile_number, id=id)
+                      zipcode=zipcode, city=city, registration_date=datetime.now(), mobile_number=mobile_number,
+                      uuid=id)
 
 
     def dummyMember(self):
@@ -103,9 +105,10 @@ class Member:
         mobile_number = "mobile_number"
         registration_date = datetime.now().strftime("%d-%m-%Y")
         id = "id"
+        uuid = "uuid"
 
         return Member(firstname=firstname, lastname=lastname, mail=mail, street=street, housenumber=housenumber,
-                        zipcode=zipcode, city=city, registration_date=registration_date, mobile_number=mobile_number, id=id)
+                        zipcode=zipcode, city=city, registration_date=registration_date, mobile_number=mobile_number, id=id, uuid=uuid)
 
     def toMember(self, data):
-        return Member(id=data[0], firstname=data[1], lastname=data[2], street=data[3], housenumber=data[4], zipcode=data[5], city=data[6], mail=data[7], mobile_number=data[8], registration_date=data[9])
+        return Member(id=data[0], firstname=data[1], lastname=data[2], street=data[3], housenumber=data[4], zipcode=data[5], city=data[6], mail=data[7], mobile_number=data[8], registration_date=data[9], uuid=data[10])

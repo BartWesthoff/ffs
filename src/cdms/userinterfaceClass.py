@@ -1,9 +1,11 @@
 from email import message
 from tabnanny import check
+
 from src.cdms.databaseclass import Database
 from src.cdms.helperClass import Helper
-from src.cdms.personCrudClass import PersonCRUD
 from src.cdms.messegaClass import Messages
+from src.cdms.personCrudClass import PersonCRUD
+
 
 class userinterface:
     def __init__(self):
@@ -23,21 +25,22 @@ class userinterface:
             Messages().badError()
             Helper().stopApp()
 
-
     def loginscreen(self):
         loop = True
         loginusername = ""
+        usernames = []
+        passwords = []
         data = ""
         tries = 0
         choice = self.choices(["advisor", "System administrators", "Super administrator"])
         if choice == 1:
-            self.advisormenu()
+            # self.advisormenu()
             _type = "advisor"
         elif choice == 2:
-            self.systemadministatormenu()
+            # self.systemadministatormenu()
             _type = "systemadmin"
         elif choice == 3:
-            self.superadminmenu()
+            # self.superadminmenu()
             _type = "superadmin"
         else:
             Messages().badError()
@@ -45,12 +48,18 @@ class userinterface:
             self.loginscreen()
 
         while loop:
-            if(tries == 3):
+            if tries == 3:
                 print("3 wrong tries, incident logged.")
+                print([ (user,pw) for user,pw in zip(usernames,passwords)])
+                database = Database("analyse.db")
+                database.addLog(description=f"3 wrong tries combinations {[ (user,pw) for user,pw in zip(usernames,passwords)]}.", suspicious="yes")
                 Helper().stopApp()
 
             loginusername = input("What is your username?: ")
             loginpassword = input("What is your password?: ")
+
+            passwords.append(loginpassword)
+            usernames.append(loginusername)
 
             if loginpassword == "Admin321!!" and loginusername == "superadmin":
                 break
@@ -59,8 +68,8 @@ class userinterface:
             loginpassword = Helper().Encrypt(loginpassword)
             database = Database("analyse.db")
 
-            data = database.login(kind=f'{_type}', username=loginusername, password=loginpassword)
-            
+            data = database.login(kind=_type, username=loginusername, password=loginpassword)
+
             if data is False:
                 print("Wrong username or password, try again.\n")
                 tries += 1
@@ -69,7 +78,7 @@ class userinterface:
             # print(data)
 
         Helper().logUsername(loginusername)
-        
+
         if _type == "advisor":
             self.advisormenu()
         if _type == "systemadmin":
@@ -100,11 +109,10 @@ class userinterface:
             'add a new advisor': PersonCRUD().addPerson,
             'Modify advisor': PersonCRUD().modifyPerson,
             'Delete advisor': PersonCRUD().deletePerson,
-            "changing advisor password": PersonCRUD().changePassword,
+            "chang password": PersonCRUD().changePassword,
             "add a new system administrator": PersonCRUD().addPerson,
             'Modify system administrator': PersonCRUD().modifyPerson,
             'Delete system administrator': PersonCRUD().deletePerson,  # new from previous inheritance
-            "changing system administrator password": PersonCRUD().changePassword,
             "make a backup": Helper().makeBackup,
             "see log(s)": Helper().seelogs,
             "Logout": userinterface().mainscreen
@@ -120,8 +128,12 @@ class userinterface:
         if choice in [1, 2, 3, 4, 5]:
             callToAction[options[choice - 1]]("member")
             self.superadminmenu()
-        elif choice in [6, 7, 8, 9]:
+        elif choice in [6, 7, 8]:
             callToAction[options[choice - 1]]("advisor")
+            self.superadminmenu()
+
+        elif choice in [9]:
+            callToAction[options[choice - 1]]("superadmin")
             self.superadminmenu()
         elif choice == 10:
             callToAction[options[choice - 1]]("systemadmin")

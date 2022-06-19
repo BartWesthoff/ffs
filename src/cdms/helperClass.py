@@ -1,3 +1,4 @@
+import datetime
 import io
 import json
 import re
@@ -80,6 +81,9 @@ class Helper:
             print('\n Password is accepted.')
             return password
 
+
+        # fetch data
+
     @staticmethod
     def usernameChecker(username):
         # x = re.search("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,30}$", username)
@@ -89,25 +93,7 @@ class Helper:
 
     @staticmethod
     def isValidNumber(input):
-        if(input.isnumeric() != True):
-            return False
-        else:
-            return True
-    
-    @staticmethod
-    def makeBackup():
-        conn = sqlite3.connect('analyse.db')
-
-        # Open() function
-        with io.open('analyse_backup.sql', 'w') as p:
-            # iterdump() function
-            for line in conn.iterdump():
-                p.write('%s\n' % line)
-
-        print('Backup performed successfully!')
-        print('Data Saved as backupdatabase_dump.sql')
-
-        conn.close()
+        return input.isnumeric()
 
     @staticmethod
     def logUsername(username):
@@ -121,12 +107,18 @@ class Helper:
             _dict = json.load(f)
         return _dict["username"]
 
+    def makeBackup(self):
+        copyfile('analyse.db', 'analyse_backup.db')
+
+    def restorebackup(self):
+        copyfile('analyse_backup.db', 'analyse.db')
+
     @staticmethod
     def seelogs():
         from src.cdms.databaseclass import Database
         # print("went in function")
         database = Database("analyse.db")
-        kind = "Logging"
+        kind = "logging"
         data = database.get(columns='*', table=f'{kind}')
         database.commit()
         print(data)
@@ -136,11 +128,10 @@ class Helper:
                 print("Username       |", Helper().Decrypt(row[1]))
                 print("Date           |", row[2])
                 print("Description    |", Helper().Decrypt(row[3]))
-                print("Additional info|", "nog implementeren")
                 print("suspicious     |", Helper().Decrypt(row[4]), "\n")
 
 
         except:
-            print("Person not found, try again")
+            print("logs not found, try again")
 
         database.close()
