@@ -116,7 +116,7 @@ class Helper:
     @staticmethod
     def seelogs():
         from src.cdms.databaseclass import Database
-        print("went in function")
+        # print("went in function")
         database = Database("analyse.db")
         kind = "Logging"
         data = database.get(columns='*', table=f'{kind}')

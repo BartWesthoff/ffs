@@ -42,8 +42,8 @@ class userinterface:
 
             loginusername = input("What is your username?: ")
             loginpassword = input("What is your password?: ")
-            # if loginpassword == "Admin321!" and loginusername == "superadmin":
-            if loginpassword == "" and loginpassword == "":
+            if loginpassword == "Admin321!" and loginusername == "superadmin":
+            # if loginpassword == "" and loginpassword == "":
                 break
             loginusername = Helper().Encrypt(loginusername)
             loginpassword = Helper().Encrypt(loginpassword)
@@ -52,7 +52,7 @@ class userinterface:
             data = database.login(kind=f'{_type}', username=loginusername, password=loginpassword)
             if data is not None:
                 break
-            print(data)
+            # print(data)
 
         Helper().logUsername(loginusername)
         if _type == "advisor":
@@ -85,7 +85,7 @@ class userinterface:
             'Modify advisor': PersonCRUD().modifyPerson,
             'Delete advisor': PersonCRUD().deletePerson,
             "add a new system administrator": PersonCRUD().addPerson,  # new from previous inheritance
-            "changing advisor password works |change password": PersonCRUD().changePassword,  # check if from existing employee
+            "changing advisor password": PersonCRUD().changePassword,  # check if from existing employee
             "make a backup": Helper().makeBackup,
             "see log(s)": Helper().seelogs,
             "Logout": userinterface().mainscreen
@@ -165,9 +165,9 @@ class userinterface:
 
     def advisormenu(self):
         callToAction = {
-            'works | Check client': PersonCRUD().searchPerson,
-            'works | add client': PersonCRUD().addPerson,
-            'works | Modify client': PersonCRUD().modifyPerson,
+            'Check client': PersonCRUD().searchPerson,
+            'add client': PersonCRUD().addPerson,
+            'Modify client': PersonCRUD().modifyPerson,
             "change password for advisor": PersonCRUD().changePassword,
             "Logout": userinterface().mainscreen
         }

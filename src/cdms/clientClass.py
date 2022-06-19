@@ -21,7 +21,7 @@ class Client:
 
     @staticmethod
     def createClient():
-        print("went in new client")
+        # print("went in new client")
         firstname = input("What is your Firstname?: ")
         lastname = input("What is your Lastname?: ")
         mail = ""
@@ -71,7 +71,7 @@ class Client:
             print(f"{index}. {listOfCities[index - 1]}")
             index += 1
         city = listOfCities[(int(input("In wich city do you live (choose from 1-10)"))) - 1]
-        print(city)
+        # print(city)
         city = Helper().Encrypt(city)
         loop = True
         while loop:
