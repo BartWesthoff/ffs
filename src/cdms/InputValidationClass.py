@@ -18,17 +18,16 @@ class Validator:
             return True
     
     def isValidName(self, Name):
-        NameChecked = ""
-        NameStrip = Name.rstrip('\x00')
+        # NameStrip = Name.rstrip('\x00')
         if(Name.isnumeric()):
             Name = input("Name cannot be a integer. Try again: ")
-           
+            self.isValidName(Name)
         elif(len(Name) > 20):
             Name = input("Name cannot be a longer than 30 characters. Try again: ")
-            
-        elif(NameStrip != Name):
-            Name = input("Name cannot contain Null Bytes. Try again: ")
-        else:
-            NameChecked = Name
-            return NameChecked
+            self.isValidName(Name)
+        # elif(NameStrip != Name):
+        #     Name = input("Name cannot contain Null Bytes. Try again: ")
+        #     self.isValidName(Name)
+    
+        return Name
 

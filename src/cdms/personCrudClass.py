@@ -57,8 +57,11 @@ class PersonCRUD:
             firstname = Helper().Encrypt(firstname)
 
             lastname = input("lastname?: ")
-            Validator().isValidName(lastname)
+            lastname = Validator().isValidName(lastname)
+            print(lastname)
+
             lastname = Helper().Encrypt(lastname)
+            
 
             # data = database.get(columns='*', table=f'{kind}',
             #                     where=f"`firstname`='{firstname}' AND `lastname`='{lastname}'")
@@ -111,9 +114,17 @@ class PersonCRUD:
             print("Person not found, Try again.\n")
 
     def modifyPerson(self, kind):
-        
         from src.cdms.userinterfaceClass import userinterface
         database = Database("analyse.db")
+        data = database.get(columns='*', table=kind)
+        print(data)
+        for row in data:
+            print(row)
+            print("ID          |", row[0])
+            print("Firstname   |", Helper().Decrypt(row[1]))
+            print("Lastname    |", Helper().Decrypt(row[2]))
+            print(f"Role        | {kind}\n")
+
         _firstname = input(f"What is the firstname of the {kind}?: ")
         _lastname = input(f"What is the lastname of the {kind}?: ")
         _firstname = Helper().Encrypt(_firstname)

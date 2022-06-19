@@ -25,8 +25,11 @@ class userinterface:
 
 
     def loginscreen(self):
+        loop = True
+        loginusername = ""
+        data = ""
+        tries = 0
         choice = self.choices(["advisor", "System administrators", "Super administrator"])
-        print(choice)
         if choice == 1:
             self.advisormenu()
             _type = "advisor"
@@ -40,16 +43,14 @@ class userinterface:
             Messages().badError()
             Helper().stopApp()
             self.loginscreen()
-        loop = True
-        loginusername = ""
-        data = ""
-        while loop:
-            #delete this later!
-            if(_type == "superadmin"):
-                break
 
-            loginusername = Helper().usernameChecker(input("What is your username?: "))
-            loginpassword = Helper().passwordchecker(input("What is your password?: "))
+        while loop:
+            if(tries == 3):
+                print("3 wrong tries, incident logged.")
+                Helper().stopApp()
+
+            loginusername = input("What is your username?: ")
+            loginpassword = input("What is your password?: ")
 
             if loginpassword == "Admin321!!" and loginusername == "superadmin":
                 break
@@ -59,7 +60,11 @@ class userinterface:
             database = Database("analyse.db")
 
             data = database.login(kind=f'{_type}', username=loginusername, password=loginpassword)
-            if data is not False:
+            
+            if data is False:
+                print("Wrong username or password, try again.\n")
+                tries += 1
+            else:
                 break
             # print(data)
 
@@ -95,10 +100,11 @@ class userinterface:
             'add a new advisor': PersonCRUD().addPerson,
             'Modify advisor': PersonCRUD().modifyPerson,
             'Delete advisor': PersonCRUD().deletePerson,
+            "changing advisor password": PersonCRUD().changePassword,
             "add a new system administrator": PersonCRUD().addPerson,
             'Modify system administrator': PersonCRUD().modifyPerson,
             'Delete system administrator': PersonCRUD().deletePerson,  # new from previous inheritance
-            "changing advisor password": PersonCRUD().changePassword,  # check if from existing employee
+            "changing system administrator password": PersonCRUD().changePassword,
             "make a backup": Helper().makeBackup,
             "see log(s)": Helper().seelogs,
             "Logout": userinterface().mainscreen
@@ -114,26 +120,28 @@ class userinterface:
         if choice in [1, 2, 3, 4, 5]:
             callToAction[options[choice - 1]]("member")
             self.superadminmenu()
-        elif choice in [6, 7, 8]:
+        elif choice in [6, 7, 8, 9]:
             callToAction[options[choice - 1]]("advisor")
             self.superadminmenu()
-
-        elif choice == 9:
+        elif choice == 10:
             callToAction[options[choice - 1]]("systemadmin")
             self.superadminmenu()
-        elif choice == 10:
-            callToAction[options[choice - 1]]("superadmin")
-            self.superadminmenu()
         elif choice == 11:
-            callToAction[options[choice - 1]]("superadmin")
+            callToAction[options[choice - 1]]("systemadmin")
+            self.superadminmenu()
+        elif choice == 12:
+            callToAction[options[choice - 1]]("systemadmin")
+            self.superadminmenu()
+        elif choice == 13:
+            callToAction[options[choice - 1]]("systemadmin")
             self.superadminmenu()
 
-        elif choice == 12:
+        elif choice == 14:
             callToAction[options[choice - 1]]()
-        elif choice == 13:
+        elif choice == 15:
             callToAction[options[choice - 1]]()
             self.superadminmenu()
-        elif choice == 14:
+        elif choice == 16:
             callToAction[options[choice - 1]]()
         else:
             Messages().badError()
