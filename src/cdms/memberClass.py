@@ -4,7 +4,7 @@ from random import *
 from src.cdms.helperClass import Helper
 
 
-class Client:
+class Member:
     # TODO: Loggen als iets fout wordt ingevoerd.
     def __init__(self, firstname=None, lastname=None, mail=None, street=None, housenumber=None, zipcode=None, city=None,
                  mobile_number=None, registration_date=None, id=None):
@@ -20,8 +20,8 @@ class Client:
         self.id = id
 
     @staticmethod
-    def createClient():
-        # print("went in new client")
+    def createMember():
+        # print("went in new member")
         firstname = input("What is your Firstname?: ")
         lastname = input("What is your Lastname?: ")
         mail = ""
@@ -88,11 +88,11 @@ class Client:
         last_digit = sum(int(i) for i in id) % 10
         id = ''.join(id) + str(last_digit)
 
-        return Client(firstname=firstname, lastname=lastname, mail=mail, street=street, housenumber=housenumber,
+        return Member(firstname=firstname, lastname=lastname, mail=mail, street=street, housenumber=housenumber,
                       zipcode=zipcode, city=city, registration_date=datetime.now(), mobile_number=mobile_number, id=id)
 
 
-    def dummyClient(self):
+    def dummyMember(self):
         firstname = "test"
         lastname = "test"
         mail = "mail"
@@ -104,8 +104,8 @@ class Client:
         registration_date = datetime.now().strftime("%d-%m-%Y")
         id = "id"
 
-        return Client(firstname=firstname, lastname=lastname, mail=mail, street=street, housenumber=housenumber,
+        return Member(firstname=firstname, lastname=lastname, mail=mail, street=street, housenumber=housenumber,
                         zipcode=zipcode, city=city, registration_date=registration_date, mobile_number=mobile_number, id=id)
 
-    def toClient(self, data):
-        return Client(id=data[0], firstname=data[1], lastname=data[2], street=data[3], housenumber=data[4], zipcode=data[5], city=data[6], mail=data[7], mobile_number=data[8], registration_date=data[9])
+    def toMember(self, data):
+        return Member(id=data[0], firstname=data[1], lastname=data[2], street=data[3], housenumber=data[4], zipcode=data[5], city=data[6], mail=data[7], mobile_number=data[8], registration_date=data[9])

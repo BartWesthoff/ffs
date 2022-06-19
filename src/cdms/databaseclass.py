@@ -1,6 +1,7 @@
+from ast import arg
 import sqlite3
 
-from src.cdms.clientClass import Client
+from src.cdms.memberClass import Member
 
 
 class Database:
@@ -34,10 +35,15 @@ class Database:
     def __exit__(self, exc_type, exc_value, traceback):
         self.close()
 
-    def login(self, kind, username, password):
+    def login(self, kind: str, username: str, password: str):
+        # prepared statements for security.
         query = f"SELECT * FROM {kind} WHERE username = ? AND password = ?;"
         self.cursor.execute(query, (username, password))
-        return self.cursor.fetchone()
+       
+        result =  self.cursor.fetchone()
+        if result is None:
+            return False
+        return result
 
     def searchPerson(self, kind, firstname, lastname):
         # print(kind, firstname, lastname)
@@ -85,12 +91,12 @@ class Database:
                              "pass": password})
         self.commit()
 
-    def createClient(self, client: Client):
+    def createMember(self, member: Member):
         self.cursor.execute(
-            f"INSERT INTO client (firstname,lastname,streetname,housenumber,zipcode,city,emailaddress,mobilephone, date)VALUES (:first, :last,:street,:house,:zip,:city,:email,:mobile,:date)",
-            {"first": client.firstname, "last": client.lastname, "street": client.street, "house": client.housenumber,
-             "zip": client.zipcode, "city": client.city, "email": client.mail, "mobile": client.mobile_number,
-             "date": client.registration_date})
+            f"INSERT INTO member (firstname,lastname,streetname,housenumber,zipcode,city,emailaddress,mobilephone, date)VALUES (:first, :last,:street,:house,:zip,:city,:email,:mobile,:date)",
+            {"first": member.firstname, "last": member.lastname, "street": member.street, "house": member.housenumber,
+             "zip": member.zipcode, "city": member.city, "email": member.mail, "mobile": member.mobile_number,
+             "date": member.registration_date})
 
         self.commit()
 
@@ -113,7 +119,7 @@ class Database:
         # self.cursor.execute(query, [columns[0], data[0]])
         self.commit()
 
-    def delete(self, table, colums, data):
+    def delete(self, table, data):
 
         query = "DELETE FROM ? WHERE id = ? ;", (table, data)
         """
@@ -127,7 +133,21 @@ class Database:
                             f"'{username}', '{datetime}', '{description}', '{suspicous}'")
         """
         self.cursor.execute(query)
+    def deletePerson(self, table, firstname, lastname):
 
+        query = f"DELETE FROM {table} WHERE firstname = ? AND lastname = ? ;"
+        """
+        import datetime
+        from cdms.helperClass import Helper
+        username = Helper().checkLoggedIn()
+        datetime = datetime.datetime.now().strftime("%a %w %b %Y")
+        description = "data has been deleted"
+        suspicous = "yes"
+        self.cursor.execute(f"Logging", '`username`, `datetime`, `description`, `suspicious`',
+                            f"'{username}', '{datetime}', '{description}', '{suspicous}'")
+        """
+        args = (firstname, lastname)
+        self.cursor.execute(query, args)
     def updatePassword(self, kind, password, username):
 
         # try:
@@ -174,7 +194,7 @@ class Database:
             pass
         try:
             self.query(
-                "CREATE TABLE 'client' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT NULL, "
+                "CREATE TABLE 'member' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT NULL, "
                 "'lastname' VARCHAR(128) NOT NULL, 'streetname' VARCHAR(128) NOT NULL, 'housenumber' INTEGER NOT "
                 "NULL, 'zipcode' VARCHAR(128) NOT NULL, 'city' VARCHAR(128) NOT NULL, 'emailaddress' VARCHAR(128) NOT "
                 "NULL, 'mobilephone' VARCHAR(128) NOT NULL, 'date' VARCHAR(128) NOT NULL)")

@@ -7,17 +7,17 @@ class Advisor:
     def __init__(self):
         super().__init__()
 
-    def addClient(self):
-        from src.cdms.clientClass import Client
-        Client().newClient()
+    def addMember(self):
+        from src.cdms.memberClass import Member
+        Member().newMember()
 
-    # To add a new client to the system
+    # To add a new member to the system
 
-    def modifyClient(self):
-        PersonCRUD().modifyPerson("client")
+    def modifyMember(self):
+        PersonCRUD().modifyPerson("member")
 
-    # To modify or update the information of a client in the system
+    # To modify or update the information of a member in the system
 
-    def searchClient(self):
-        PersonCRUD().searchPerson("client")
-    # To search and retrieve the information of a client
+    def searchMember(self):
+        PersonCRUD().searchPerson("member")
+    # To search and retrieve the information of a member

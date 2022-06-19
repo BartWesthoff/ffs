@@ -1,6 +1,7 @@
-from src.cdms.clientClass import Client
+from src.cdms.memberClass import Member
 from src.cdms.databaseclass import Database
 from src.cdms.helperClass import Helper
+from src.cdms.InputValidationClass import Validator
 
 
 # database.write(f"Logging", '`username`, `datetime`, `description`, `suspicious`', f"'{firstname}', '{lastname}', '{username}', '{password}'")
@@ -25,73 +26,92 @@ class PersonCRUD:
 
             database.createEmployee(kind, firstname, lastname, username, password)
 
-        elif kind.lower() == "client":
-            # client = Client().dummyClient()  # todo change to real client
-            client = Client().createClient()
-            database.createClient(client)
+        elif kind.lower() == "member":
+            # member = Member().dummyMember()  # todo change to real member
+            member = Member().createMember()
+            database.createMember(member)
         database.commit()
         database.close()
 
     @staticmethod
     def searchPerson(kind):
+        print(kind)
         loop = True
         count = 0
         user = Helper().checkLoggedIn()
         print(user)
         database = Database("analyse.db")
+        data = database.get(columns='*', table=kind)
+        for row in data:
+            print(row)
+            print("ID          |", row[0])
+            print("Firstname   |", Helper().Decrypt(row[1]))
+            print("Lastname    |", Helper().Decrypt(row[2]) + "\n")
+            
+        
         while loop:
             firstname = input("firstname?: ")
+            print(firstname)
+            firstname = Validator().isValidName(firstname)
+            print(firstname)
             firstname = Helper().Encrypt(firstname)
 
             lastname = input("lastname?: ")
+            Validator().isValidName(lastname)
             lastname = Helper().Encrypt(lastname)
+
             # data = database.get(columns='*', table=f'{kind}',
             #                     where=f"`firstname`='{firstname}' AND `lastname`='{lastname}'")
             data = database.searchPerson(kind=kind, firstname=firstname, lastname=lastname)
             database.commit()
             if data is not None:
 
-                client = Client().toClient(data)
+                member = Member().toMember(data)
 
-                print("ID            |", client.id)
-                print("Firstname     |", Helper.Decrypt(client.firstname))
-                print("Lastname      |", Helper.Decrypt(client.lastname))
-                print("Street        |", Helper.Decrypt(client.street))
-                print("Housenumber   |", Helper.Decrypt(client.housenumber))
-                print("Zipcode       |", Helper.Decrypt(client.zipcode))
-                print("City          |", Helper.Decrypt(client.city))
-                print("mail          |", Helper.Decrypt(client.mail))
-                print("Phone         |", Helper.Decrypt(client.mobile_number))
-                print("creation date |", client.registration_date)
+                print("ID            |", member.id)
+                print("Firstname     |", Helper.Decrypt(member.firstname))
+                print("Lastname      |", Helper.Decrypt(member.lastname))
+                print("Street        |", Helper.Decrypt(member.street))
+                print("Housenumber   |", Helper.Decrypt(member.housenumber))
+                print("Zipcode       |", Helper.Decrypt(member.zipcode))
+                print("City          |", Helper.Decrypt(member.city))
+                print("mail          |", Helper.Decrypt(member.mail))
+                print("Phone         |", Helper.Decrypt(member.mobile_number))
+                print("creation date |", member.registration_date)
 
                 loop = False
             elif data is None:
-                print("Client not found, try again.")
+                print("Member not found, try again.")
 
         database.close()
 
     @staticmethod
     def deletePerson(kind):
         database = Database("analyse.db")
+        data = database.get(columns='*', table=kind)
+        for row in data:
+            print(row)
+            print("ID          |", row[0])
+            print("Firstname   |", Helper().Decrypt(row[1]))
+            print("Lastname    |", Helper().Decrypt(row[2]))
+            print(f"Role        | {kind}\n")
+        
         firstname = input("firstname?: ")
-
         lastname = input("lastname?: ")
         firstname = Helper().Encrypt(firstname)
         lastname = Helper().Encrypt(lastname)
-        print(firstname)
-        print(lastname)
 
-        data = database.get(columns='*', table=f'{kind}',
-                            where=f"`firstname`='{firstname}' AND `lastname`='{lastname}'")
+        data = database.searchPerson(kind=kind,firstname=firstname, lastname=lastname)
         if data is not None:
-            print(data)
             # database.query(f"DELETE FROM "systemadmin" WHERE 'firstname'='{firstname}' AND 'lastname'='{lastname}'")
-            database.query(f"DELETE FROM '{kind}' WHERE firstname='{firstname}' AND lastname='{lastname}'")
+            database.deletePerson(table=kind, firstname=firstname, lastname=lastname)
             database.commit()
-
             print("Deleted")
+        else:
+            print("Person not found, Try again.\n")
 
     def modifyPerson(self, kind):
+        
         from src.cdms.userinterfaceClass import userinterface
         database = Database("analyse.db")
         _firstname = input(f"What is the firstname of the {kind}?: ")
@@ -100,15 +120,16 @@ class PersonCRUD:
         _lastname = Helper().Encrypt(_lastname)
         data = database.searchPerson(kind=kind, firstname=_firstname, lastname=_lastname)
         if data is None:
-            print("Client not found, try again.")
+            print("Member not found, try again.")
             self.modifyPerson(kind)
-        attr = ["firstname", "lastname"]
+        attr = ["firstname", "lastname", "streetname", "housenumber", "zipcode", "city", "emailaddress"]
         choices = []
         for att in attr:
             choices.append(f"Modify {att}")
         choice = userinterface().choices(choices)
 
-        new_data = input(f"What will be the new {attr[choice - 1]}")
+        new_data = input(f"What will be the new {attr[choice - 1]}: ")
+
         new_data = Helper().Encrypt(new_data)
         database.query(
             f"UPDATE {kind} SET {attr[choice - 1]} = ? WHERE firstname = ? AND lastname = ?;",
@@ -180,7 +201,7 @@ class PersonCRUD:
             elif choice == 3:
                 _type = "superadmin"
             else:
-                print("Incorrect input, try again.")
+                print("Incorrect input, try again. personcrud")
 
             print(f'\n{_type}: \n')
             data = database.get(columns='*', table=_type)
@@ -190,7 +211,7 @@ class PersonCRUD:
                 print("Firstname   |", Helper().Decrypt(row[1]))
                 print("Lastname    |", Helper().Decrypt(row[2]))
                 print("Username    |", Helper().Decrypt(row[3]))
-                print("Role        | SystemAdmin\n")
+                print(f"Role        | {_type}\n")
             loop = False
 
         database.close()

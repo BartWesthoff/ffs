@@ -1,4 +1,4 @@
-# Clients-Data-Management-System
+# Members-Data-Management-System
 HRO year 2, period 4, assignment.
 
 
@@ -23,4 +23,4 @@ voor input validation moet we white listing gebruiken. als we echt goed willen d
 
 invalid input goed handelen ook belangrijk.
 
-wnr je iets niet goed input, een berichtje zetten van invalid input try again, niet gwn de functie opnieuw aanroepen.s
+wnr je iets niet goed input, een berichtje zetten van invalid input try again, niet gwn de functie opnieuw aanroepen.

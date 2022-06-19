@@ -82,10 +82,18 @@ class Helper:
 
     @staticmethod
     def usernameChecker(username):
-        while len(username) < 5 or len(username) > 20:
-            username = input('\n Please enter correct username, name needs to be between 5 and 20 characters : ')
+        # x = re.search("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,30}$", username)
+        while len(username) < 5 or len(username) > 10:
+            username = input('Please enter correct username, name needs to be between 5 and 10 characters : ')
         return username
 
+    @staticmethod
+    def isValidNumber(input):
+        if(input.isnumeric() != True):
+            return False
+        else:
+            return True
+    
     @staticmethod
     def makeBackup():
         conn = sqlite3.connect('analyse.db')
