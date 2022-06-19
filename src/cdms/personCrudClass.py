@@ -53,7 +53,7 @@ class PersonCRUD:
 
                 client = Client().toClient(data)
 
-                print("ID            |", client.id)
+                print("ID            |", client.uuid)
                 print("Firstname     |", Helper.Decrypt(client.firstname))
                 print("Lastname      |", Helper.Decrypt(client.lastname))
                 print("Street        |", Helper.Decrypt(client.street))
@@ -182,10 +182,10 @@ class PersonCRUD:
             else:
                 print("Incorrect input, try again.")
 
-            print(f'\n{_type}: \n')
+            print(f'\n{_type}:')
             data = database.get(columns='*', table=_type)
             for row in data:
-                print(row)
+                # print(row)
                 print("ID          |", row[0])
                 print("Firstname   |", Helper().Decrypt(row[1]))
                 print("Lastname    |", Helper().Decrypt(row[2]))

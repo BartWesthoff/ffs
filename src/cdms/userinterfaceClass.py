@@ -42,8 +42,8 @@ class userinterface:
 
             loginusername = input("What is your username?: ")
             loginpassword = input("What is your password?: ")
-            if loginpassword == "Admin321!" and loginusername == "superadmin":
-            # if loginpassword == "" and loginpassword == "":
+            # if loginpassword == "Admin321!" and loginusername == "superadmin": # works
+            if loginpassword == "" and loginpassword == "":
                 break
             loginusername = Helper().Encrypt(loginusername)
             loginpassword = Helper().Encrypt(loginpassword)
@@ -76,15 +76,15 @@ class userinterface:
 
     def superadminmenu(self):
         callToAction = {
-            "List of users": PersonCRUD().checkUsers,
-            'Check client': PersonCRUD().searchPerson,
-            'add client': PersonCRUD().addPerson,
+            "List of users |sysadmin works": PersonCRUD().checkUsers,
+            'Check client | works': PersonCRUD().searchPerson,
+            'add client | works': PersonCRUD().addPerson,
             'Modify client': PersonCRUD().modifyPerson,
             'Delete client': PersonCRUD().deletePerson,
             'add a new advisor': PersonCRUD().addPerson,
             'Modify advisor': PersonCRUD().modifyPerson,
             'Delete advisor': PersonCRUD().deletePerson,
-            "add a new system administrator": PersonCRUD().addPerson,  # new from previous inheritance
+            "add a new system administrator | works": PersonCRUD().addPerson,  # new from previous inheritance
             "changing advisor password": PersonCRUD().changePassword,  # check if from existing employee
             "make a backup": Helper().makeBackup,
             "see log(s)": Helper().seelogs,

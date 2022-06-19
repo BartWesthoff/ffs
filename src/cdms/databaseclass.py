@@ -87,10 +87,10 @@ class Database:
 
     def createClient(self, client: Client):
         self.cursor.execute(
-            f"INSERT INTO client (firstname,lastname,streetname,housenumber,zipcode,city,emailaddress,mobilephone, date)VALUES (:first, :last,:street,:house,:zip,:city,:email,:mobile,:date)",
+            f"INSERT INTO client (firstname,lastname,streetname,housenumber,zipcode,city,emailaddress,mobilephone, date, uuid)VALUES (:first, :last,:street,:house,:zip,:city,:email,:mobile,:date,:uuid)",
             {"first": client.firstname, "last": client.lastname, "street": client.street, "house": client.housenumber,
              "zip": client.zipcode, "city": client.city, "email": client.mail, "mobile": client.mobile_number,
-             "date": client.registration_date})
+             "date": client.registration_date, "uuid": client.uuid})
 
         self.commit()
 
@@ -177,7 +177,7 @@ class Database:
                 "CREATE TABLE 'client' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT NULL, "
                 "'lastname' VARCHAR(128) NOT NULL, 'streetname' VARCHAR(128) NOT NULL, 'housenumber' INTEGER NOT "
                 "NULL, 'zipcode' VARCHAR(128) NOT NULL, 'city' VARCHAR(128) NOT NULL, 'emailaddress' VARCHAR(128) NOT "
-                "NULL, 'mobilephone' VARCHAR(128) NOT NULL, 'date' VARCHAR(128) NOT NULL)")
+                "NULL, 'mobilephone' VARCHAR(128) NOT NULL, 'date' VARCHAR(128) NOT NULL, 'uuid' VARCHAR(128) NOT NULL)")
         except:
             pass
         try:

@@ -7,7 +7,7 @@ from src.cdms.helperClass import Helper
 class Client:
     # TODO: Loggen als iets fout wordt ingevoerd.
     def __init__(self, firstname=None, lastname=None, mail=None, street=None, housenumber=None, zipcode=None, city=None,
-                 mobile_number=None, registration_date=None, id=None):
+                 mobile_number=None, registration_date=None, id=None, uuid=None):
         self.firstname = firstname
         self.lastname = lastname
         self.mail = mail
@@ -18,12 +18,13 @@ class Client:
         self.mobile_number = mobile_number
         self.registration_date = registration_date
         self.id = id
+        self.uuid = uuid
 
     @staticmethod
     def createClient():
         # print("went in new client")
-        firstname = input("What is your Firstname?: ")
-        lastname = input("What is your Lastname?: ")
+        firstname = input("What is your firstname?: ")
+        lastname = input("What is your lastname?: ")
         mail = ""
         street = ""
         housenumber = -1
@@ -89,7 +90,7 @@ class Client:
         id = ''.join(id) + str(last_digit)
 
         return Client(firstname=firstname, lastname=lastname, mail=mail, street=street, housenumber=housenumber,
-                      zipcode=zipcode, city=city, registration_date=datetime.now(), mobile_number=mobile_number, id=id)
+                      zipcode=zipcode, city=city, registration_date=datetime.now(), mobile_number=mobile_number, uuid=id)
 
 
     def dummyClient(self):
@@ -105,7 +106,7 @@ class Client:
         id = "id"
 
         return Client(firstname=firstname, lastname=lastname, mail=mail, street=street, housenumber=housenumber,
-                        zipcode=zipcode, city=city, registration_date=registration_date, mobile_number=mobile_number, id=id)
+                        zipcode=zipcode, city=city, registration_date=registration_date, mobile_number=mobile_number, id=id, uuid=uuid)
 
     def toClient(self, data):
-        return Client(id=data[0], firstname=data[1], lastname=data[2], street=data[3], housenumber=data[4], zipcode=data[5], city=data[6], mail=data[7], mobile_number=data[8], registration_date=data[9])
+        return Client(id=data[0], firstname=data[1], lastname=data[2], street=data[3], housenumber=data[4], zipcode=data[5], city=data[6], mail=data[7], mobile_number=data[8], registration_date=data[9], uuid=data[10])
