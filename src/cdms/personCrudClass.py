@@ -6,7 +6,6 @@ from src.cdms.helperClass import Helper
 from src.cdms.memberClass import Member
 
 
-# database.write(f"Logging", '`username`, `datetime`, `description`, `suspicious`', f"'{firstname}', '{lastname}', '{username}', '{password}'")
 
 
 class PersonCRUD:
@@ -29,7 +28,6 @@ class PersonCRUD:
             database.createEmployee(kind, firstname, lastname, username, password)
 
         elif kind.lower() == "member":
-            # member = Member().dummyMember()  # todo change to real member
             member = Member().createMember()
             database.createMember(member)
         database.commit()
@@ -37,29 +35,23 @@ class PersonCRUD:
 
     @staticmethod
     def searchPerson(kind):
-        print(kind)
         loop = True
         count = 0
         user = Helper().checkLoggedIn()
-        print(user)
         database = Database("analyse.db")
         data = database.get(columns='*', table=kind)
         for row in data:
-            print(row)
             print("ID          |", row[0])
             print("Firstname   |", Helper().Decrypt(row[1]))
             print("Lastname    |", Helper().Decrypt(row[2]) + "\n")
 
         while loop:
             firstname = input("firstname?: ")
-            print(firstname)
             firstname = Validator().isValidName(firstname)
-            print(firstname)
             firstname = Helper().Encrypt(firstname)
 
             lastname = input("lastname?: ")
             lastname = Validator().isValidName(lastname)
-            print(lastname)
 
             lastname = Helper().Encrypt(lastname)
 
@@ -91,7 +83,6 @@ class PersonCRUD:
         database = Database("analyse.db")
         data = database.get(columns='*', table=kind)
         for row in data:
-            print(row)
             print("ID          |", row[0])
             print("Firstname   |", Helper().Decrypt(row[1]))
             print("Lastname    |", Helper().Decrypt(row[2]))
@@ -108,7 +99,6 @@ class PersonCRUD:
 
         data = database.searchPerson(kind=kind, firstname=firstname, lastname=lastname)
         if data is not None:
-            # database.query(f"DELETE FROM "systemadmin" WHERE 'firstname'='{firstname}' AND 'lastname'='{lastname}'")
             database.deletePerson(table=kind, firstname=firstname, lastname=lastname)
             database.commit()
             print("Deleted")
@@ -119,7 +109,6 @@ class PersonCRUD:
         from src.cdms.userinterfaceClass import userinterface
         database = Database("analyse.db")
         data = database.get(columns='*', table=kind)
-        print(data)
         for row in data:
             print(row)
             print("ID          |", row[0])
@@ -171,7 +160,6 @@ class PersonCRUD:
 
     @staticmethod
     def changePassword(kind):
-        # kinds = ["systemadmin", "member", "admin"]
         database = Database("analyse.db")
 
         from src.cdms.userinterfaceClass import userinterface
@@ -197,7 +185,6 @@ class PersonCRUD:
             data = database.getAllofKind(kind=f"{'advisor' if choice == 2 else 'systemadmin'}")
             if data is not None:
                 for enity in data:
-                    print(enity)
                     print("id                | ", enity[0])
                     print("firstname         | ", Helper.Decrypt(enity[1]))
                     print("lastname          | ", Helper.Decrypt(enity[2]))
@@ -207,18 +194,15 @@ class PersonCRUD:
                 username_target = input(f"What is the username of the {'advisor' if choice == 2 else 'system admin'}: ")
                 username_target = Helper().Encrypt(username_target)
         username_user = Helper().checkLoggedIn()
-        print(username_user)
 
         username_user = Helper().Decrypt(username_user)
 
         _password = input(
             "What will be the password? Min length of 8, no longer than 30 characters, MUST have at least one "
             "lowercase letter, one uppercase letter, one digit and one special character : ")
-        password = Helper().passwordchecker(password=_password)  # TODO check this function
+        password = Helper().passwordchecker(password=_password)
         password = Helper().Encrypt(password)
         username_to_change = username_user if choice == 1 else username_target
-        print(username_to_change)
-        print(password)
 
         database.updatePassword(kind=kind_target, username=username_to_change, password=password)
         database.addLog(
@@ -230,14 +214,13 @@ class PersonCRUD:
 
     @staticmethod
     def checkUsers():
-        # kind kunnen we hier gebruiken?
         from src.cdms.userinterfaceClass import userinterface
         loop = True
         database = Database("analyse.db")
         while loop:
             choice = userinterface().choices(
                 ["Check Advisors", "Check System Administrators",
-                 "Check Super Administrator"])  # TODO check regular memebers
+                 "Check Super Administrator"])
             _type = None
             if choice == 1:
                 _type = "advisor"

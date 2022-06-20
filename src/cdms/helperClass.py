@@ -82,11 +82,9 @@ class Helper:
             return password
 
 
-        # fetch data
 
     @staticmethod
     def usernameChecker(username):
-        # x = re.search("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,30}$", username)
         while len(username) < 5 or len(username) > 10:
             username = input('Please enter correct username, name needs to be between 5 and 10 characters : ')
         return username
@@ -108,20 +106,24 @@ class Helper:
         return _dict["username"]
 
     def makeBackup(self):
+        database = Database("analyse.db")
+        database.addLog(description="database backup", suspicious="no")
+
         copyfile('analyse.db', 'analyse_backup.db')
 
     def restorebackup(self):
+        database = Database("analyse_backup.db")
+        # because its filling in first then backing up with the already logged case
+        database.addLog(description="database restore", suspicious="no")
         copyfile('analyse_backup.db', 'analyse.db')
 
     @staticmethod
     def seelogs():
         from src.cdms.databaseclass import Database
-        # print("went in function")
         database = Database("analyse.db")
         kind = "logging"
         data = database.get(columns='*', table=f'{kind}')
         database.commit()
-        print(data)
         try:
             for row in data:
                 print("ID             |", row[0])

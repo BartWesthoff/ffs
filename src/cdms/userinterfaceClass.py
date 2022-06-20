@@ -34,13 +34,10 @@ class userinterface:
         tries = 0
         choice = self.choices(["advisor", "System administrators", "Super administrator"])
         if choice == 1:
-            # self.advisormenu()
             _type = "advisor"
         elif choice == 2:
-            # self.systemadministatormenu()
             _type = "systemadmin"
         elif choice == 3:
-            # self.superadminmenu()
             _type = "superadmin"
         else:
             Messages().badError()
@@ -50,7 +47,6 @@ class userinterface:
         while loop:
             if tries == 3:
                 print("3 wrong tries, incident logged.")
-                print([ (user,pw) for user,pw in zip(usernames,passwords)])
                 database = Database("analyse.db")
                 database.addLog(description=f"3 wrong tries combinations {[ (user,pw) for user,pw in zip(usernames,passwords)]}.", suspicious="yes")
                 Helper().stopApp()
@@ -61,7 +57,7 @@ class userinterface:
             passwords.append(loginpassword)
             usernames.append(loginusername)
 
-            if loginpassword == "Admin321!!" and loginusername == "superadmin":
+            if loginpassword == "Admin321!" and loginusername == "superadmin":
                 break
 
             loginusername = Helper().Encrypt(loginusername)
@@ -75,7 +71,6 @@ class userinterface:
                 tries += 1
             else:
                 break
-            # print(data)
 
         Helper().logUsername(loginusername)
 
@@ -112,12 +107,12 @@ class userinterface:
             "chang password": PersonCRUD().changePassword,
             "add a new system administrator": PersonCRUD().addPerson,
             'Modify system administrator': PersonCRUD().modifyPerson,
-            'Delete system administrator': PersonCRUD().deletePerson,  # new from previous inheritance
+            'Delete system administrator': PersonCRUD().deletePerson,
             "make a backup": Helper().makeBackup,
+            "restore a backup": Helper().restorebackup,
             "see log(s)": Helper().seelogs,
             "Logout": userinterface().mainscreen
 
-            # TODO create Restore backup
         }
         options = list(callToAction.keys())
         choice = self.choices(options)
@@ -125,7 +120,7 @@ class userinterface:
         if choice == 1:
             callToAction[options[choice - 1]]()
             self.superadminmenu()
-        if choice in [1, 2, 3, 4, 5]:
+        if choice in [2, 3, 4, 5]:
             callToAction[options[choice - 1]]("member")
             self.superadminmenu()
         elif choice in [6, 7, 8]:
@@ -145,7 +140,7 @@ class userinterface:
             callToAction[options[choice - 1]]("systemadmin")
             self.superadminmenu()
         elif choice == 13:
-            callToAction[options[choice - 1]]("systemadmin")
+            callToAction[options[choice - 1]]()
             self.superadminmenu()
 
         elif choice == 14:
@@ -211,7 +206,6 @@ class userinterface:
         choice = self.choices(options)
 
         kind = options[choice - 1].split()[-1]
-        print(kind)
         if choice in [1, 2, 3, 4]:
             callToAction[options[choice - 1]](kind)
             self.advisormenu()

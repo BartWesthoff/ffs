@@ -5,7 +5,6 @@ from src.cdms.helperClass import Helper
 
 
 class Member:
-    # TODO: Loggen als iets fout wordt ingevoerd.
     def __init__(self, firstname=None, lastname=None, mail=None, street=None, housenumber=None, zipcode=None, city=None,
                  mobile_number=None, registration_date=None, id=None, uuid=None):
         self.firstname = firstname
@@ -22,7 +21,6 @@ class Member:
 
     @staticmethod
     def createMember():
-        # print("went in new member")
         firstname = input("What is your Firstname?: ")
         lastname = input("What is your Lastname?: ")
         mail = ""
@@ -71,8 +69,12 @@ class Member:
         while index <= len(listOfCities):
             print(f"{index}. {listOfCities[index - 1]}")
             index += 1
-        city = listOfCities[(int(input("In wich city do you live (choose from 1-10)"))) - 1]
-        # print(city)
+        loop = True
+        while loop:
+            city = input("What is the city (1-10)?: ")
+            if city.isnumeric() and int(city) <= len(listOfCities):
+                city = Helper().Encrypt(listOfCities[int(city) - 1])
+                loop = False
         city = Helper().Encrypt(city)
         loop = True
         while loop:
@@ -87,11 +89,11 @@ class Member:
 
         uuid = [str(randint(0 if i == 0 else 1, 9)) for i in range(9)]
         last_digit = sum(int(i) for i in uuid) % 10
-        uuid = ''.join(id) + str(last_digit)
+        uuid = ''.join(uuid) + str(last_digit)
 
         return Member(firstname=firstname, lastname=lastname, mail=mail, street=street, housenumber=housenumber,
                       zipcode=zipcode, city=city, registration_date=datetime.now(), mobile_number=mobile_number,
-                      uuid=id)
+                      uuid=uuid)
 
 
     def dummyMember(self):

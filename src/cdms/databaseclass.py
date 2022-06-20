@@ -38,7 +38,6 @@ class Database:
         self.close()
 
     def login(self, kind: str, username: str, password: str):
-        # prepared statements for security.
         query = f"SELECT * FROM {kind} WHERE username = ? AND password = ?;"
         self.cursor.execute(query, (username, password))
 
@@ -48,7 +47,6 @@ class Database:
         return result
 
     def searchPerson(self, kind, firstname, lastname):
-        # print(kind, firstname, lastname)
         query = f"SELECT * FROM {kind} WHERE firstname = ? AND lastname = ?;"
         self.cursor.execute(query, (firstname, lastname))
         return self.cursor.fetchone()
@@ -66,7 +64,6 @@ class Database:
         suspicious = Helper().Encrypt(suspicious)
         now = datetime.datetime.now().strftime("%a %w %b %Y")
 
-        print(username, now, description, suspicious)
 
         self.cursor.execute(
             f"INSERT INTO logging (username,datetime,description,suspicious)VALUES (:user, :date,:desc,:sus)",
@@ -77,9 +74,7 @@ class Database:
 
         query = "SELECT ? from ? WHERE ?"
         query2 = f"SELECT * from {table} WHERE ?"
-        # database.get(columns='*', table=_type)
         args = (columns, table, where)
-        # print(query)
         self.cursor.execute(query2, (where,))
 
         rows = self.cursor.fetchall()
@@ -105,84 +100,29 @@ class Database:
 
         self.commit()
 
-    # def write(self, table, columns="", data=""):
-    #     columns = ("firstname",)
-    #     data = ("WesthoffTest",)
-    #
-    #     self.cursor.execute(f'INSERT INTO {table} (?) VALUES (?)', ("firstname", "WesthoffTest"))
-    #     # args = (columns, data)
-    #
-    #     # import datetime
-    #
-    #     # username = Helper().checkLoggedIn()
-    #     # datetime = datetime.datetime.now().strftime("%a %w %b %Y")
-    #     # description = "data has been added"
-    #     # suspicous = "yes"
-    #     # self.cursor.execute(f"Logging", '`username`, `datetime`, `description`, `suspicious`',
-    #     #                     f"'{username}', '{datetime}', '{description}', '{suspicous}'")
-    #
-    #     # # self.cursor.execute(query, [columns[0], data[0]])
-    #     self.commit()
 
-    # def delete(self, table, data):
-    #
-    #     query = "DELETE FROM ? WHERE id = ? ;", (table, data)
-    #
-    #     import datetime
-    #
-    #     username = Helper().checkLoggedIn()
-    #     datetime = datetime.datetime.now().strftime("%a %w %b %Y")
-    #     description = "data has been deleted"
-    #     suspicous = "yes"
-    #     self.cursor.execute(f"Logging", '`username`, `datetime`, `description`, `suspicious`',
-    #                         f"'{username}', '{datetime}', '{description}', '{suspicous}'")
-    #
-    #     self.cursor.execute(query)
 
     def deletePerson(self, table, firstname, lastname):
 
         query = f"DELETE FROM {table} WHERE firstname = ? AND lastname = ? ;"
 
-        # import datetime
-
-        # username = Helper().checkLoggedIn()
-        # datetime = datetime.datetime.now().strftime("%a %w %b %Y")
-        # description = "data has been deleted"
-        # suspicous = "yes"
-        # self.cursor.execute(f"Logging", '`username`, `datetime`, `description`, `suspicious`',
-        #                     f"'{username}', '{datetime}', '{description}', '{suspicous}'")
 
         args = (firstname, lastname)
         self.cursor.execute(query, args)
 
     def updatePassword(self, kind, password, username):
 
-        # try:
-        print(kind, password, username)
         query = f"UPDATE {kind} SET password = ? WHERE username = ?;"
         args = (password, username)
         self.cursor.execute(query, args)
 
-        # import datetime
-
-        # username = Helper().checkLoggedIn()
-        # datetime = datetime.datetime.now().strftime("%a %w %b %Y")
-        # description = f"{username} password has been updated"
-        # suspicous = "yes"
-        # self.cursor.execute(f"Logging", '`username`, `datetime`, `description`, `suspicious`',
-        #                     f"'{username}', '{datetime}', '{description}', '{suspicous}'")
-
-        # except:
-        #     print("something went wrong")
 
     def query(self, sql, values=None):
         if values is None:
             self.cursor.execute(sql)
         else:
             self.cursor.execute(sql, values)
-        # self.conn.commit()
 
-    # Check if all required tables are avalible
     def checkMigrations(self):
 
         try:
