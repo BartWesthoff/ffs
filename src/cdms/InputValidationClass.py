@@ -2,8 +2,6 @@ import io
 import json
 import re
 import sqlite3
-from tabnanny import check
-from turtle import isvisible
 
 
 class Validator:

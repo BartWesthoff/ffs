@@ -1,17 +1,14 @@
-from pdb import lasti2lineno
-
 from src.cdms.InputValidationClass import Validator
 from src.cdms.databaseclass import Database
 from src.cdms.helperClass import Helper
 from src.cdms.memberClass import Member
 
 
-
-
 class PersonCRUD:
 
     @staticmethod
     def addPerson(kind):
+        kind = kind.lower()
         database = Database("analyse.db")
         if kind.lower() in ["advisor", "systemadmin"]:
             firstname = input("firstname?: ")
@@ -35,6 +32,7 @@ class PersonCRUD:
 
     @staticmethod
     def searchPerson(kind):
+        kind = kind.lower()
         loop = True
         count = 0
         user = Helper().checkLoggedIn()
@@ -80,6 +78,7 @@ class PersonCRUD:
 
     @staticmethod
     def deletePerson(kind):
+        kind = kind.lower()
         database = Database("analyse.db")
         data = database.get(columns='*', table=kind)
         for row in data:
@@ -136,6 +135,7 @@ class PersonCRUD:
 
         new_data = input(f"What will be the new {attr[choice - 1]}: ")
         for x in attr:
+            # TODO mooier neerzetten
             if (choice == 1 or choice == 2):
                 new_data = Validator().isValidName(new_data)
             elif (choice == 3):
@@ -160,6 +160,7 @@ class PersonCRUD:
 
     @staticmethod
     def changePassword(kind):
+        kind = kind.lower()
         database = Database("analyse.db")
 
         from src.cdms.userinterfaceClass import userinterface
