@@ -24,7 +24,7 @@ class Validator:
             self.isValidZipcode(zipcode)
         return zipcode
 
-    def isValidname(self, name):
+    def isValidName(self, name):
         if name.isnumeric():
             name = input("name cannot be a integer. Try again: ")
             self.isValidname(name)

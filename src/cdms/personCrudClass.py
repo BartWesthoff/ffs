@@ -12,9 +12,13 @@ class PersonCRUD:
         database = Database("analyse.db")
         if kind.lower() in ["advisor", "systemadmin"]:
             firstname = input("firstname?: ")
+            firstname = Validator().isValidName(firstname)
             firstname = Helper().Encrypt(firstname)
+
             lastname = input("lastname?: ")
+            lastname = Validator().isValidName(lastname)
             lastname = Helper().Encrypt(lastname)
+            
             username = input("username?:")
             username = Helper().usernameChecker(username)
             username = Helper().Encrypt(username)
