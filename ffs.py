@@ -1,4 +1,7 @@
-from src.cdms.userinterfaceClass import userinterface
-
+from src.cdms.userinterfaceClass import UserInterface, Role
+from src.cdms.menus import *
 if __name__ == "__main__":
-    userinterface().mainscreen()
+    # UserInterface().main_screen()
+    # print(Role.SYSTEM_ADMINISTATOR)
+    menu(1)
+

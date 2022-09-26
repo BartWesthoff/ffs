@@ -12,62 +12,62 @@ class PersonCRUD:
         database = Database("analyse.db")
         if kind.lower() in ["advisor", "systemadmin"]:
             firstname = input("firstname?: ")
-            firstname = Helper().Encrypt(firstname)
+            firstname = Helper().encrypt(firstname)
             lastname = input("lastname?: ")
-            lastname = Helper().Encrypt(lastname)
+            lastname = Helper().encrypt(lastname)
             username = input("username?:")
-            username = Helper().usernameChecker(username)
-            username = Helper().Encrypt(username)
+            username = Helper().username_checker(username)
+            username = Helper().encrypt(username)
             password = input("password?: ")
-            password = Helper().passwordchecker(password)
-            password = Helper().Encrypt(password)
+            password = Helper().password_checker(password)
+            password = Helper().encrypt(password)
 
             database.createEmployee(kind, firstname, lastname, username, password)
 
         elif kind.lower() == "member":
-            member = Member().createMember()
-            database.createMember(member)
+            member = Member().create_member()
+            database.create_member(member)
         database.commit()
         database.close()
 
     @staticmethod
-    def searchPerson(kind):
+    def search_person(kind):
         kind = kind.lower()
         loop = True
         count = 0
-        user = Helper().checkLoggedIn()
+        user = Helper().check_logged_in()
         database = Database("analyse.db")
         data = database.get(columns='*', table=kind)
         for row in data:
             print("ID          |", row[0])
-            print("Firstname   |", Helper().Decrypt(row[1]))
-            print("Lastname    |", Helper().Decrypt(row[2]) + "\n")
+            print("Firstname   |", Helper().decrypt(row[1]))
+            print("Lastname    |", Helper().decrypt(row[2]) + "\n")
 
         while loop:
             firstname = input("firstname?: ")
-            firstname = Validator().isValidName(firstname)
-            firstname = Helper().Encrypt(firstname)
+            firstname = Validator().is_valid_name(firstname)
+            firstname = Helper().encrypt(firstname)
 
             lastname = input("lastname?: ")
-            lastname = Validator().isValidName(lastname)
+            lastname = Validator().is_valid_name(lastname)
 
-            lastname = Helper().Encrypt(lastname)
+            lastname = Helper().encrypt(lastname)
 
-            data = database.searchPerson(kind=kind, firstname=firstname, lastname=lastname)
+            data = database.search_person(kind=kind, firstname=firstname, lastname=lastname)
             database.commit()
             if data is not None:
 
-                member = Member().toMember(data)
+                member = Member().to_member(data)
 
                 print("UUID          |", member.uuid)
-                print("Firstname     |", Helper.Decrypt(member.firstname))
-                print("Lastname      |", Helper.Decrypt(member.lastname))
-                print("Street        |", Helper.Decrypt(member.street))
-                print("Housenumber   |", Helper.Decrypt(member.housenumber))
-                print("Zipcode       |", Helper.Decrypt(member.zipcode))
-                print("City          |", Helper.Decrypt(member.city))
-                print("mail          |", Helper.Decrypt(member.mail))
-                print("Phone         |", Helper.Decrypt(member.mobile_number))
+                print("Firstname     |", Helper.decrypt(member.firstname))
+                print("Lastname      |", Helper.decrypt(member.lastname))
+                print("Street        |", Helper.decrypt(member.street))
+                print("Housenumber   |", Helper.decrypt(member.housenumber))
+                print("Zipcode       |", Helper.decrypt(member.zipcode))
+                print("City          |", Helper.decrypt(member.city))
+                print("mail          |", Helper.decrypt(member.mail))
+                print("Phone         |", Helper.decrypt(member.mobile_number))
                 print("creation date |", member.registration_date)
 
                 loop = False
@@ -77,81 +77,81 @@ class PersonCRUD:
         database.close()
 
     @staticmethod
-    def deletePerson(kind):
+    def delete_person(kind):
         kind = kind.lower()
         database = Database("analyse.db")
         data = database.get(columns='*', table=kind)
         for row in data:
             print("ID          |", row[0])
-            print("Firstname   |", Helper().Decrypt(row[1]))
-            print("Lastname    |", Helper().Decrypt(row[2]))
+            print("Firstname   |", Helper().decrypt(row[1]))
+            print("Lastname    |", Helper().decrypt(row[2]))
             print(f"Role        | {kind}\n")
 
         firstname = input("firstname?: ")
-        firstname = Validator().isValidName(firstname)
+        firstname = Validator().is_valid_name(firstname)
 
         lastname = input("lastname?: ")
-        lastname = Validator().isValidName(lastname)
+        lastname = Validator().is_valid_name(lastname)
 
-        firstname = Helper().Encrypt(firstname)
-        lastname = Helper().Encrypt(lastname)
+        firstname = Helper().encrypt(firstname)
+        lastname = Helper().encrypt(lastname)
 
-        data = database.searchPerson(kind=kind, firstname=firstname, lastname=lastname)
+        data = database.search_person(kind=kind, firstname=firstname, lastname=lastname)
         if data is not None:
-            database.deletePerson(table=kind, firstname=firstname, lastname=lastname)
+            database.delete_person(table=kind, firstname=firstname, lastname=lastname)
             database.commit()
             print("Deleted")
         else:
             print("Person not found, Try again.\n")
 
-    def modifyPerson(self, kind):
-        from src.cdms.userinterfaceClass import userinterface
+    def modify_person(self, kind):
+        from src.cdms.userinterfaceClass import UserInterface
         database = Database("analyse.db")
         data = database.get(columns='*', table=kind)
         for row in data:
             print(row)
             print("ID          |", row[0])
-            print("Firstname   |", Helper().Decrypt(row[1]))
-            print("Lastname    |", Helper().Decrypt(row[2]))
+            print("Firstname   |", Helper().decrypt(row[1]))
+            print("Lastname    |", Helper().decrypt(row[2]))
             print(f"Role        | {kind}\n")
 
         _firstname = input(f"What is the firstname of the {kind}?: ")
-        _firstname = Validator().isValidName(_firstname)
+        _firstname = Validator().is_valid_name(_firstname)
 
         _lastname = input(f"What is the lastname of the {kind}?: ")
-        _lastname = Validator().isValidName(_lastname)
+        _lastname = Validator().is_valid_name(_lastname)
 
-        _firstname = Helper().Encrypt(_firstname)
-        _lastname = Helper().Encrypt(_lastname)
-        data = database.searchPerson(kind=kind, firstname=_firstname, lastname=_lastname)
+        _firstname = Helper().encrypt(_firstname)
+        _lastname = Helper().encrypt(_lastname)
+        data = database.search_person(kind=kind, firstname=_firstname, lastname=_lastname)
         if data is None:
             print("Member not found, try again.")
-            self.modifyPerson(kind)
+            self.modify_person(kind)
         attr = ["firstname", "lastname", "streetname", "housenumber", "zipcode", "city", "emailaddress", "mobilephone"]
         choices = []
         for att in attr:
             choices.append(f"Modify {att}")
-        choice = userinterface().choices(choices)
+        choice = UserInterface().choices(choices)
 
         new_data = input(f"What will be the new {attr[choice - 1]}: ")
         for x in attr:
             # TODO mooier neerzetten
             if (choice == 1 or choice == 2):
-                new_data = Validator().isValidName(new_data)
+                new_data = Validator().is_valid_name(new_data)
             elif (choice == 3):
-                new_data = Validator().isValidStreetname(new_data)
+                new_data = Validator().is_valid_streetname(new_data)
             elif (choice == 4):
-                new_data = Validator().isValidNumber(new_data)
+                new_data = Validator().is_valid_number(new_data)
             elif (choice == 5):
-                new_data = Validator().isValidZipcode(new_data)
+                new_data = Validator().is_valid_zipcode(new_data)
             elif (choice == 6):
-                new_data = Validator().isValidZipcode(new_data)
+                new_data = Validator().is_valid_zipcode(new_data)
             elif (choice == 7):
-                new_data = Validator().isValidEmail(new_data)
+                new_data = Validator().is_valid_email(new_data)
             elif (choice == 8):
-                new_data = Validator().isValidEmail(new_data)
+                new_data = Validator().is_valid_email(new_data)
 
-        new_data = Helper().Encrypt(new_data)
+        new_data = Helper().encrypt(new_data)
         database.query(
             f"UPDATE {kind} SET {attr[choice - 1]} = ? WHERE firstname = ? AND lastname = ?;",
             (new_data, _firstname, _lastname))
@@ -163,8 +163,8 @@ class PersonCRUD:
         kind = kind.lower()
         database = Database("analyse.db")
 
-        from src.cdms.userinterfaceClass import userinterface
-        choice = userinterface().choices(
+        from src.cdms.UserInterfaceClass import UserInterface
+        choice = UserInterface().choices(
             ["Reset own password.", "Reset an advisors password.", "Reset an systemadmin password"])
         kind_target = ""
         if choice == 1 and kind == "superadmin":
@@ -183,31 +183,31 @@ class PersonCRUD:
         username_target = None
         Hastarget = choice in [2, 3]
         if Hastarget:
-            data = database.getAllofKind(kind=f"{'advisor' if choice == 2 else 'systemadmin'}")
+            data = database.get_all_of_kind(kind=f"{'advisor' if choice == 2 else 'systemadmin'}")
             if data is not None:
                 for enity in data:
                     print("id                | ", enity[0])
-                    print("firstname         | ", Helper.Decrypt(enity[1]))
-                    print("lastname          | ", Helper.Decrypt(enity[2]))
-                    print("username          | ", Helper.Decrypt(enity[3]))
-                    print("password          | ", Helper.Decrypt(enity[4]))
+                    print("firstname         | ", Helper.decrypt(enity[1]))
+                    print("lastname          | ", Helper.decrypt(enity[2]))
+                    print("username          | ", Helper.decrypt(enity[3]))
+                    print("password          | ", Helper.decrypt(enity[4]))
 
                 username_target = input(f"What is the username of the {'advisor' if choice == 2 else 'system admin'}: ")
-                username_target = Helper().Encrypt(username_target)
-        username_user = Helper().checkLoggedIn()
+                username_target = Helper().encrypt(username_target)
+        username_user = Helper().check_logged_in()
 
-        username_user = Helper().Decrypt(username_user)
+        username_user = Helper().decrypt(username_user)
 
         _password = input(
             "What will be the password? Min length of 8, no longer than 30 characters, MUST have at least one "
             "lowercase letter, one uppercase letter, one digit and one special character : ")
-        password = Helper().passwordchecker(password=_password)
-        password = Helper().Encrypt(password)
+        password = Helper().password_checker(password=_password)
+        password = Helper().encrypt(password)
         username_to_change = username_user if choice == 1 else username_target
 
-        database.updatePassword(kind=kind_target, username=username_to_change, password=password)
-        database.addLog(
-            description=f"{username_user} changed password for {username_to_change} to {Helper().Decrypt(password)}",
+        database.update_password(kind=kind_target, username=username_to_change, password=password)
+        database.add_log(
+            description=f"{username_user} changed password for {username_to_change} to {Helper().decrypt(password)}",
             suspicious="yes")
 
         database.commit()
@@ -215,11 +215,11 @@ class PersonCRUD:
 
     @staticmethod
     def checkUsers():
-        from src.cdms.userinterfaceClass import userinterface
+        from src.cdms.UserInterfaceClass import UserInterface
         loop = True
         database = Database("analyse.db")
         while loop:
-            choice = userinterface().choices(
+            choice = UserInterface().choices(
                 ["Check Advisors", "Check System Administrators",
                  "Check Super Administrator"])
             _type = None
@@ -237,9 +237,9 @@ class PersonCRUD:
             for row in data:
                 print(row)
                 print("ID          |", row[0])
-                print("Firstname   |", Helper().Decrypt(row[1]))
-                print("Lastname    |", Helper().Decrypt(row[2]))
-                print("Username    |", Helper().Decrypt(row[3]))
+                print("Firstname   |", Helper().decrypt(row[1]))
+                print("Lastname    |", Helper().decrypt(row[2]))
+                print("Username    |", Helper().decrypt(row[3]))
                 print(f"Role        | {_type}\n")
             loop = False
 
