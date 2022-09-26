@@ -20,7 +20,7 @@ class Member:
         self.uuid = uuid
 
     @staticmethod
-    def createMember():
+    def create_member():
         firstname = input("What is your Firstname?: ")
         lastname = input("What is your Lastname?: ")
         mail = ""
@@ -28,14 +28,14 @@ class Member:
         housenumber = -1
         zipcode = ""
         mobile_number = ""
-        firstname = Helper().Encrypt(firstname)
-        lastname = Helper().Encrypt(lastname)
+        firstname = Helper().encrypt(firstname)
+        lastname = Helper().encrypt(lastname)
         loop = True
         while loop:
             mail = input("What is the email?: ")
             _validEmail = re.search("^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", mail)
             if _validEmail:
-                mail = Helper().Encrypt(mail)
+                mail = Helper().encrypt(mail)
                 loop = False
             else:
                 print("Email is incorrect, try again.")
@@ -43,7 +43,7 @@ class Member:
         while loop:
             street = input("What is the streetname?: ")
             if street.isalpha():
-                street = Helper().Encrypt(street)
+                street = Helper().encrypt(street)
                 loop = False
             else:
                 print("Streetname is incorrect, try again.")
@@ -51,7 +51,7 @@ class Member:
         while loop:
             housenumber = input("What is the house number?: ")
             if housenumber.isnumeric():
-                housenumber = Helper().Encrypt(housenumber)
+                housenumber = Helper().encrypt(housenumber)
                 loop = False
             else:
                 print("Housenumber is incorrect, try again.")
@@ -60,7 +60,7 @@ class Member:
             zipcode = input("What is the zipcode?: ").upper()
             if zipcode[0:3].isnumeric() and zipcode[4:5].isalpha() and len(zipcode) == 6:
                 loop = False
-                zipcode = Helper().Encrypt(zipcode)
+                zipcode = Helper().encrypt(zipcode)
             else:
                 print("Wrong zipcode, try again.")
         listOfCities = ["Rotterdam", "Amsterdam", "Alkmaar", "Maastricht", "Utrecht", "Almere", "Lelystad", "Maassluis",
@@ -73,9 +73,9 @@ class Member:
         while loop:
             city = input("What is the city (1-10)?: ")
             if city.isnumeric() and int(city) <= len(listOfCities):
-                city = Helper().Encrypt(listOfCities[int(city) - 1])
+                city = Helper().encrypt(listOfCities[int(city) - 1])
                 loop = False
-        city = Helper().Encrypt(city)
+        city = Helper().encrypt(city)
         loop = True
         while loop:
             mobile_number = input("What is your mobile number?:\n31-6-")
@@ -85,7 +85,7 @@ class Member:
                 print("mobile number is not correct, try again.")
 
         mobile_number = "31-6-" + mobile_number
-        mobile_number = Helper().Encrypt(mobile_number)
+        mobile_number = Helper().encrypt(mobile_number)
 
         uuid = [str(randint(0 if i == 0 else 1, 9)) for i in range(9)]
         last_digit = sum(int(i) for i in uuid) % 10
@@ -95,8 +95,8 @@ class Member:
                       zipcode=zipcode, city=city, registration_date=datetime.now(), mobile_number=mobile_number,
                       uuid=uuid)
 
-
-    def dummyMember(self):
+    @staticmethod
+    def dummy_member():
         firstname = "test"
         lastname = "test"
         mail = "mail"
@@ -110,7 +110,10 @@ class Member:
         uuid = "uuid"
 
         return Member(firstname=firstname, lastname=lastname, mail=mail, street=street, housenumber=housenumber,
-                        zipcode=zipcode, city=city, registration_date=registration_date, mobile_number=mobile_number, id=id, uuid=uuid)
-
-    def toMember(self, data):
-        return Member(id=data[0], firstname=data[1], lastname=data[2], street=data[3], housenumber=data[4], zipcode=data[5], city=data[6], mail=data[7], mobile_number=data[8], registration_date=data[9], uuid=data[10])
+                      zipcode=zipcode, city=city, registration_date=registration_date, mobile_number=mobile_number,
+                      id=id, uuid=uuid)
+    @staticmethod
+    def to_member(data):
+        return Member(id=data[0], firstname=data[1], lastname=data[2], street=data[3], housenumber=data[4],
+                      zipcode=data[5], city=data[6], mail=data[7], mobile_number=data[8], registration_date=data[9],
+                      uuid=data[10])

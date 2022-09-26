@@ -1,21 +1,15 @@
-import io
-import json
-import re
-import sqlite3
-
-
-class Messages:
+class Exceptions:
 
     @staticmethod
-    def falseNumber():
+    def not_a_number():
         return "Input is not a number, try again.\n"
 
     @staticmethod
-    def wrongNumber():
+    def wrong_index():
         return "Option is not in the listed options or not a number, try again.\n"
 
     @staticmethod
-    def badError():
-        return "Bad input. Incident logged."
+    def bad_error():
+        return "Bad input"
 
     

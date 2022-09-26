@@ -14,7 +14,7 @@ je kan alleen nog first en lastname aanpassen. dat moet alles zijn.
 
 wnr je een password aanmaakt voor een advisor, admin etc krijg je deze error: 
 TypeError: 'NoneType' object is not iterable
-File "D:\Github\ffs\src\cdms\helperClass.py", line 19, in Encrypt
+File "D:\Github\ffs\src\cdms\helperClass.py", line 19, in encrypt
     for c in text:
 
 logs zijn leeg.

@@ -1,6 +1,5 @@
 import datetime
 import sqlite3
-from ast import arg
 
 from src.cdms.helperClass import Helper
 from src.cdms.memberClass import Member
@@ -46,24 +45,23 @@ class Database:
             return False
         return result
 
-    def searchPerson(self, kind, firstname, lastname):
+    def search_person(self, kind, firstname, lastname):
         query = f"SELECT * FROM {kind} WHERE firstname = ? AND lastname = ?;"
         self.cursor.execute(query, (firstname, lastname))
         return self.cursor.fetchone()
 
-    def getAllofKind(self, kind):
+    def get_all_of_kind(self, kind):
         query = f"SELECT * FROM {kind};"
         self.cursor.execute(query)
         return self.cursor.fetchall()
 
-    def addLog(self, description, suspicious):
+    def add_log(self, description, suspicious):
 
-        username = Helper().checkLoggedIn()
-        username = Helper().Encrypt(username)
-        description = Helper().Encrypt(description)
-        suspicious = Helper().Encrypt(suspicious)
+        username = Helper().check_logged_in()
+        username = Helper().encrypt(username)
+        description = Helper().encrypt(description)
+        suspicious = Helper().encrypt(suspicious)
         now = datetime.datetime.now().strftime("%a %w %b %Y")
-
 
         self.cursor.execute(
             f"INSERT INTO logging (username,datetime,description,suspicious)VALUES (:user, :date,:desc,:sus)",
@@ -80,17 +78,17 @@ class Database:
         rows = self.cursor.fetchall()
         return rows[len(rows) - limit if limit else 0:]
 
-    def getLast(self, table, columns):
+    def get_last(self, table, columns):
 
         return self.get(table, columns, limit=1)[0]
 
-    def createEmployee(self, kind, firstname, lastname, username, password):
+    def create_employee(self, kind, firstname, lastname, username, password):
         self.cursor.execute(f"INSERT INTO {kind} VALUES (:id, :first,:last,:user,:pass)",
                             {"id": None, "first": firstname, "last": lastname, "user": username,
                              "pass": password})
         self.commit()
 
-    def createMember(self, member: Member):
+    def create_member(self, member: Member):
         self.cursor.execute(
             f"INSERT INTO member (firstname,lastname,streetname,housenumber,zipcode,city,emailaddress,mobilephone, "
             f"date,uuid)VALUES (:first, :last,:street,:house,:zip,:city,:email,:mobile,:date,:uuid)",
@@ -100,22 +98,18 @@ class Database:
 
         self.commit()
 
-
-
-    def deletePerson(self, table, firstname, lastname):
+    def delete_person(self, table, firstname, lastname):
 
         query = f"DELETE FROM {table} WHERE firstname = ? AND lastname = ? ;"
-
 
         args = (firstname, lastname)
         self.cursor.execute(query, args)
 
-    def updatePassword(self, kind, password, username):
+    def update_password(self, kind, password, username):
 
         query = f"UPDATE {kind} SET password = ? WHERE username = ?;"
         args = (password, username)
         self.cursor.execute(query, args)
-
 
     def query(self, sql, values=None):
         if values is None:
@@ -123,7 +117,7 @@ class Database:
         else:
             self.cursor.execute(sql, values)
 
-    def checkMigrations(self):
+    def check_migrations(self):
 
         try:
             self.query(
