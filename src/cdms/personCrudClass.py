@@ -22,7 +22,7 @@ class PersonCRUD:
             password = Helper().password_checker(password)
             password = Helper().encrypt(password)
 
-            database.createEmployee(kind, firstname, lastname, username, password)
+            database.create_employee(kind, firstname, lastname, username, password)
 
         elif kind.lower() == "member":
             member = Member().create_member()

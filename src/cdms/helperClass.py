@@ -87,8 +87,8 @@ class Helper:
         return username
 
     @staticmethod
-    def is_valid_number(input):
-        return input.isnumeric()
+    def is_valid_number(number):
+        return number.isnumeric()
 
     @staticmethod
     def log_username(username):
