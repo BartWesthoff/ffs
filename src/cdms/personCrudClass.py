@@ -163,7 +163,7 @@ class PersonCRUD:
         kind = kind.lower()
         database = Database("analyse.db")
 
-        from src.cdms.UserInterfaceClass import UserInterface
+        from src.cdms.userinterfaceClass import UserInterface
         choice = UserInterface().choices(
             ["Reset own password.", "Reset an advisors password.", "Reset an systemadmin password"])
         kind_target = ""
@@ -215,7 +215,7 @@ class PersonCRUD:
 
     @staticmethod
     def checkUsers():
-        from src.cdms.UserInterfaceClass import UserInterface
+        from src.cdms.userinterfaceClass import UserInterface
         loop = True
         database = Database("analyse.db")
         while loop:

@@ -1,7 +1,7 @@
 from src.cdms.databaseclass import Database
 from src.cdms.exceptions import Exceptions
 from src.cdms.helperClass import Helper
-from src.cdms.menus import menu
+
 from src.cdms.personCrudClass import PersonCRUD
 
 

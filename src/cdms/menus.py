@@ -35,6 +35,7 @@ class Action:
 
 
 def menu(user_access_level: int):
+    from src.cdms.userinterfaceClass import UserInterface, Role
     """ TO DEBUG: menu(Role.SUPER_ADMINISTATOR) | menu(Role.SYSTEM_ADMINISTATOR) | menu(Role.ADVISOR) or use 0, 1, 2 """
     check_member = Action("check member", Role.ADVISOR, crud.search_person, "member")
     add_member = Action("add member", Role.ADVISOR, crud.addPerson, "member")
