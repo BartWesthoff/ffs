@@ -3,9 +3,6 @@ import re
 
 class Validator:
 
-    def __init__(self):
-        pass
-
     def is_valid_number(self, number):
         if not number.isnumeric():
             number = input("Must be a number, try again: ")
@@ -22,6 +19,11 @@ class Validator:
         if len(zipcode) != 6:
             zipcode = input("Please enter a valid zipcode, try again: ")
             self.is_valid_zipcode(zipcode)
+
+        # TODO: REPLACE   of error codes specifiek maken
+        # if not zipcode[0:3].isnumeric() or not zipcode[4:5].isalpha() or len(zipcode) != 6:
+        #     zipcode = input("Please enter a valid zipcode, try again: ")
+        #     self.is_valid_zipcode(zipcode)
         return zipcode.capitalize()
 
     def is_valid_name(self, name):
@@ -53,6 +55,7 @@ class Validator:
         return email.lower()
 
     def is_valid_phone_number(self, number):
+        # TODO Specifieke error codes
         if not number.isnumeric() or len(number) != 8:
             number = input("Please enter a valid number: ")
             self.is_valid_phone_number(number)

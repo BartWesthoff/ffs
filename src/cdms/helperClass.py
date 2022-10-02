@@ -3,7 +3,6 @@ import re
 from shutil import copyfile
 
 
-
 class Helper:
 
     @staticmethod
@@ -47,6 +46,7 @@ class Helper:
         decrypted_message = ""
         alphabet = "abcdefghijklmnopqrstuvwxyz"
         alphabet_upper = "abcdefghijklmnopqrstuvwxyz".upper()
+        # TODO: REPLACE alphabet_upper = alphabet.upper()
         numbers = "0123456789"
         for c in text:
             if c in alphabet:
@@ -70,7 +70,7 @@ class Helper:
         return decrypted_message
 
     def password_checker(self, password):
-        x = re.search("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,30}$", password)
+        x = re.search(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,30}$", password)
         error = '''\n Please enter correct password. Min length of 8, no longer than 30 characters, 
         MUST have at least one lowercase letter, one uppercase letter, one digit and one special character :'''
         if not x:
@@ -87,15 +87,13 @@ class Helper:
         return username
 
     @staticmethod
-    def is_valid_number(number):
-        return number.isnumeric()
-
-    @staticmethod
+    # TODO: ENCRYPT/DECRYPT USERNAME
     def log_username(username):
         _dict = {"username": username}
         with open("username.json", "w+") as f:
             json.dump(_dict, f)
 
+    # TODO: ENCRYPT/DECRYPT USERNAME
     @staticmethod
     def check_logged_in():
         with open("username.json", "r") as f:
@@ -104,6 +102,7 @@ class Helper:
 
     @staticmethod
     def make_backup():
+        # TODO low: Circular import vermijden
         from src.cdms.databaseclass import Database
 
         database = Database("analyse.db")
@@ -113,6 +112,7 @@ class Helper:
 
     @staticmethod
     def restore_backup():
+        # TODO low: Circular import vermijden
         from src.cdms.databaseclass import Database
 
         database = Database("analyse_backup.db")
@@ -122,6 +122,7 @@ class Helper:
 
     @staticmethod
     def see_logs():
+        # TODO low: Circular import vermijden
         from src.cdms.databaseclass import Database
         database = Database("analyse.db")
         kind = "logging"
@@ -136,7 +137,8 @@ class Helper:
                 print("suspicious     |", Helper().decrypt(row[4]), "\n")
 
 
-        except:
+        # TODO: Goede exception handling
+        except Exception as e:
             print("logs not found, try again")
 
         database.close()

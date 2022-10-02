@@ -89,6 +89,7 @@ class Member:
                       uuid=data[10])
 
     def __str__(self):
+        """ dit is to str() methode"""
         return f"Member: \n" \
                f"Id: {self.id}\n" \
                f"UUID: {self.uuid}\n" \

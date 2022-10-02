@@ -91,6 +91,8 @@ class UserInterface:
             self.system_administator_menu()
         if _type == "superadmin":
             self.super_admin_menu()
+
+        # TODO  onderstaand gebruiken en dan die if statements boven wegdoen
         # menu(type)
 
     def choices(self, choices, question="Which option do you want to choose?: "):
@@ -108,16 +110,16 @@ class UserInterface:
     # TODO NIELS: menu kan vervangen worden door menus(Role.SUPER_ADMINISTATOR)
     def super_admin_menu(self):
         callToAction = {
-            "List of users": PersonCRUD().checkUsers,
+            "List of users": PersonCRUD().check_users,
             'Check member': PersonCRUD().search_person,
-            'add member': PersonCRUD().addPerson,
+            'add member': PersonCRUD().add_person,
             'Modify member': PersonCRUD().modify_person,
             'Delete member': PersonCRUD().delete_person,
-            'add a new advisor': PersonCRUD().addPerson,
+            'add a new advisor': PersonCRUD().add_person,
             'Modify advisor': PersonCRUD().modify_person,
             'Delete advisor': PersonCRUD().delete_person,
-            "chang password": PersonCRUD().changePassword,
-            "add a new system administrator": PersonCRUD().addPerson,
+            "chang password": PersonCRUD().change_password,
+            "add a new system administrator": PersonCRUD().add_person,
             'Modify system administrator': PersonCRUD().modify_person,
             'Delete system administrator': PersonCRUD().delete_person,
             "make a backup": Helper().make_backup,

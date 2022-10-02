@@ -4,10 +4,12 @@ from src.cdms.helperClass import Helper
 from src.cdms.memberClass import Member
 
 
+# TODO deze hele class testen
+
 class PersonCRUD:
 
     @staticmethod
-    def addPerson(kind):
+    def add_person(kind):
         kind = kind.lower()
         database = Database("analyse.db")
         if kind.lower() in ["advisor", "systemadmin"]:
@@ -58,7 +60,7 @@ class PersonCRUD:
             if data is not None:
 
                 member = Member().to_member(data)
-
+                # TODO hier kunnen we denk de __str__ in de member class gebruiken
                 print("UUID          |", member.uuid)
                 print("Firstname     |", Helper.decrypt(member.firstname))
                 print("Lastname      |", Helper.decrypt(member.lastname))
@@ -105,6 +107,7 @@ class PersonCRUD:
             print("Person not found, Try again.\n")
 
     def modify_person(self, kind):
+        #TODO circulaire import
         from src.cdms.userinterfaceClass import UserInterface
         database = Database("analyse.db")
         data = database.get(columns='*', table=kind)
@@ -134,21 +137,21 @@ class PersonCRUD:
         choice = UserInterface().choices(choices)
 
         new_data = input(f"What will be the new {attr[choice - 1]}: ")
-        for x in attr:
+        for _ in attr:
             # TODO mooier neerzetten
-            if (choice == 1 or choice == 2):
+            if choice == 1 or choice == 2:
                 new_data = Validator().is_valid_name(new_data)
-            elif (choice == 3):
+            elif choice == 3:
                 new_data = Validator().is_valid_streetname(new_data)
-            elif (choice == 4):
+            elif choice == 4:
                 new_data = Validator().is_valid_number(new_data)
-            elif (choice == 5):
+            elif choice == 5:
                 new_data = Validator().is_valid_zipcode(new_data)
-            elif (choice == 6):
+            elif choice == 6:
                 new_data = Validator().is_valid_zipcode(new_data)
-            elif (choice == 7):
+            elif choice == 7:
                 new_data = Validator().is_valid_email(new_data)
-            elif (choice == 8):
+            elif choice == 8:
                 new_data = Validator().is_valid_email(new_data)
 
         new_data = Helper().encrypt(new_data)
@@ -159,7 +162,7 @@ class PersonCRUD:
         database.close()
 
     @staticmethod
-    def changePassword(kind):
+    def change_password(kind):
         kind = kind.lower()
         database = Database("analyse.db")
 
@@ -214,7 +217,7 @@ class PersonCRUD:
         database.close()
 
     @staticmethod
-    def checkUsers():
+    def check_users():
         from src.cdms.userinterfaceClass import UserInterface
         loop = True
         database = Database("analyse.db")
