@@ -1,6 +1,7 @@
 from src.cdms.databaseclass import Database
 from src.cdms.exceptions import Exceptions
 from src.cdms.helperClass import Helper
+from src.cdms.menus import menu
 
 from src.cdms.personCrudClass import PersonCRUD
 
@@ -39,14 +40,14 @@ class UserInterface:
         choice = self.choices(["advisor", "System administrators", "Super administrator"])
 
         if choice == 1:
-            _type = "advisor"
-            # type = Role.ADVISOR
+            # _type = "advisor"
+            type = Role.ADVISOR
         elif choice == 2:
-            _type = "systemadmin"
-            # type = Role.SYSTEM_ADMINISTATOR
+            # _type = "systemadmin"
+            type = Role.SYSTEM_ADMINISTATOR
         elif choice == 3:
-            _type = "superadmin"
-            # type = Role.SUPER_ADMINISTATOR
+            # _type = "superadmin"
+            type = Role.SUPER_ADMINISTATOR
         else:
             Exceptions.bad_error()
             Helper().stop_app()
@@ -93,11 +94,11 @@ class UserInterface:
             self.super_admin_menu()
 
         # TODO  onderstaand gebruiken en dan die if statements boven wegdoen
-        # menu(type)
+        menu(type)
 
     def choices(self, choices, question="Which option do you want to choose?: "):
         for idx, choice in enumerate(choices):
-            print(f"{idx}. {choice}")
+            print(f"{idx+1}. {choice}")
         c = input(question)
 
         if c.isnumeric() and len(choices) >= int(c) > 0:

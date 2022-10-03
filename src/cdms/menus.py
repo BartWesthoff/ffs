@@ -54,7 +54,8 @@ def menu(user_access_level: int):
 
     delete_member = Action("delete member", Role.SYSTEM_ADMINISTATOR, Crud.delete_person, "member")
 
-    # reset_system_admin_password = Action("reset system administator password", Role.SUPER_ADMINISTATOR) ## not implemented
+    # reset_system_admin_password = Action("reset system administator password", Role.SUPER_ADMINISTATOR) ## not
+    # implemented
     add_system_administrator = Action("add system administrator", Role.SUPER_ADMINISTATOR, Crud.add_person,
                                       "systemadmin")
     modify_system_administrator = Action("modify system administrator", Role.SUPER_ADMINISTATOR, Crud.modify_person,
@@ -72,7 +73,7 @@ def menu(user_access_level: int):
 
     available_actions = []
     for action in actions:
-        if user_access_level >= action.acces_level:
+        if user_access_level >= action.access_level:
             available_actions.append(action)
     options = [action.name for action in available_actions]
     choice = UserInterface().choices(options)
