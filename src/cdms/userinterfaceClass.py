@@ -36,17 +36,17 @@ class UserInterface:
         passwords = []
         tries = 0
         _type = ""
-        # type = Role.EMPTY
+        type = Role.EMPTY
         choice = self.choices(["advisor", "System administrators", "Super administrator"])
 
         if choice == 1:
-            # _type = "advisor"
+            _type = "advisor"
             type = Role.ADVISOR
         elif choice == 2:
-            # _type = "systemadmin"
+            _type = "systemadmin"
             type = Role.SYSTEM_ADMINISTATOR
         elif choice == 3:
-            # _type = "superadmin"
+            _type = "superadmin"
             type = Role.SUPER_ADMINISTATOR
         else:
             Exceptions.bad_error()
@@ -68,7 +68,7 @@ class UserInterface:
             passwords.append(login_password)
             usernames.append(login_username)
 
-            if login_password == "Admin321!" and login_username == "superadmin":
+            if login_password == "a" and login_username == "a":
                 break
 
             login_username = Helper().encrypt(login_username)

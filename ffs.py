@@ -8,7 +8,7 @@ if __name__ == "__main__":
     #
     # print(str(member))
     #
-    # member = Member().create_member()
+    #member = Member().create_member()
     # print(str(member))
     # print("\n")
     # print(member)

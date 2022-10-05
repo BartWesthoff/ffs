@@ -1,6 +1,7 @@
 import re
 from datetime import datetime
 from random import *
+from src.cdms.databaseclass import Database
 
 from src.cdms.InputValidationClass import Validator
 from src.cdms.helperClass import Helper
@@ -26,6 +27,8 @@ class Member:
     @staticmethod
     def create_member():
         from src.cdms.userinterfaceClass import UserInterface
+        database = Database("analyse.db")
+
         firstname = Validator().is_valid_name(input("What is your Firstname?: "))
         firstname = Helper().encrypt(firstname)
 
@@ -60,9 +63,11 @@ class Member:
 
         # TODO: Encrypt en dycrypt uuid and registration date
         # TODO: ID skippen en UUID van maken
-        return Member(firstname=firstname, lastname=lastname, mail=email, street=street, house_number=house_number,
+
+        member =  Member(firstname=firstname, lastname=lastname, mail=email, street=street, house_number=house_number,
                       zipcode=zipcode, city=city, registration_date=datetime.now(), mobile_number=mobile_number,
                       uuid=uuid)
+        database.create_member(member)
 
     @staticmethod
     def dummy_member():

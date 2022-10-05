@@ -3,6 +3,7 @@ import re
 from shutil import copyfile
 
 
+
 class Helper:
 
     @staticmethod
@@ -82,8 +83,29 @@ class Helper:
 
     @staticmethod
     def username_checker(username):
-        while len(username) < 5 or len(username) > 10:
-            username = input('Please enter correct username, name needs to be between 5 and 10 characters : ')
+        from src.cdms.databaseclass import Database
+        database = Database("analyse.db")
+        while True:
+            test = 0
+            dataAdvisor = database.get_all_of_kind(kind='advisor')
+            database.commit()
+
+            for ch in username:
+                if ch[0].isalpha():
+                    test += 1
+                break
+
+            if len(username) >= 6 and len(username) < 10:
+                test += 1
+            
+            for row in dataAdvisor:
+                if Helper().decrypt(row[3]) == username:
+                    test += 1
+
+            if test == 2:
+                break
+            print(test)
+            username = input('Please enter correct username, name needs to be unique, between 6 and 10 characters and start with an letter : ')
         return username
 
     @staticmethod

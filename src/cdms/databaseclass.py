@@ -2,8 +2,6 @@ import datetime
 import sqlite3
 
 from src.cdms.helperClass import Helper
-from src.cdms.memberClass import Member
-
 
 class Database:
     def __init__(self, name=None):
@@ -49,6 +47,11 @@ class Database:
         query = f"SELECT * FROM {kind} WHERE firstname = ? AND lastname = ?;"
         self.cursor.execute(query, (firstname, lastname))
         return self.cursor.fetchone()
+    
+    def search_person_by_id(self, kind, id):
+        query = f"SELECT * FROM {kind} WHERE id = ?;"
+        self.cursor.execute(query, (id))
+        return self.cursor.fetchone()
 
     def get_all_of_kind(self, kind):
         query = f"SELECT * FROM {kind};"
@@ -88,15 +91,15 @@ class Database:
                              "pass": password})
         self.commit()
 
-    def create_member(self, member: Member):
-        self.cursor.execute(
-            f"INSERT INTO member (firstname,lastname,streetname,housenumber,zipcode,city,emailaddress,mobilephone, "
-            f"date,uuid)VALUES (:first, :last,:street,:house,:zip,:city,:email,:mobile,:date,:uuid)",
-            {"first": member.firstname, "last": member.lastname, "street": member.street, "house": member.housenumber,
-             "zip": member.zipcode, "city": member.city, "email": member.mail, "mobile": member.mobile_number,
-             "date": member.registration_date, "uuid": member.uuid})
+    # def create_member(self, member: Member):
+    #     self.cursor.execute(
+    #         f"INSERT INTO member (firstname,lastname,streetname,housenumber,zipcode,city,emailaddress,mobilephone, "
+    #         f"date,uuid)VALUES (:first, :last,:street,:house,:zip,:city,:email,:mobile,:date,:uuid)",
+    #         {"first": member.firstname, "last": member.lastname, "street": member.street, "house": member.housenumber,
+    #          "zip": member.zipcode, "city": member.city, "email": member.mail, "mobile": member.mobile_number,
+    #          "date": member.registration_date, "uuid": member.uuid})
 
-        self.commit()
+    #     self.commit()
 
     def delete_person(self, table, firstname, lastname):
 
