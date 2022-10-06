@@ -1,7 +1,7 @@
 import re
 from datetime import datetime
 from random import *
-from src.cdms.databaseclass import Database
+
 
 from src.cdms.InputValidationClass import Validator
 from src.cdms.helperClass import Helper
@@ -26,6 +26,7 @@ class Member:
 
     @staticmethod
     def create_member():
+        from src.cdms.databaseclass import Database
         from src.cdms.userinterfaceClass import UserInterface
         database = Database("analyse.db")
 
@@ -65,7 +66,7 @@ class Member:
         # TODO: ID skippen en UUID van maken
 
         member =  Member(firstname=firstname, lastname=lastname, mail=email, street=street, house_number=house_number,
-                      zipcode=zipcode, city=city, registration_date=datetime.now(), mobile_number=mobile_number,
+                      zipcode=zipcode, city=city, registration_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S"), mobile_number=mobile_number,
                       uuid=uuid)
         database.create_member(member)
 

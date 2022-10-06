@@ -1,6 +1,6 @@
 import datetime
 import sqlite3
-
+from src.cdms.memberClass import Member
 from src.cdms.helperClass import Helper
 
 class Database:
@@ -50,7 +50,7 @@ class Database:
     
     def search_person_by_id(self, kind, id):
         query = f"SELECT * FROM {kind} WHERE id = ?;"
-        self.cursor.execute(query, (id))
+        self.cursor.execute(query, (id,))
         return self.cursor.fetchone()
 
     def get_all_of_kind(self, kind):
@@ -64,7 +64,7 @@ class Database:
         username = Helper().encrypt(username)
         description = Helper().encrypt(description)
         suspicious = Helper().encrypt(suspicious)
-        now = datetime.datetime.now().strftime("%a %w %b %Y")
+        now = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
         self.cursor.execute(
             f"INSERT INTO logging (username,datetime,description,suspicious)VALUES (:user, :date,:desc,:sus)",
@@ -90,16 +90,16 @@ class Database:
                             {"id": None, "first": firstname, "last": lastname, "user": username,
                              "pass": password})
         self.commit()
-
-    # def create_member(self, member: Member):
-    #     self.cursor.execute(
-    #         f"INSERT INTO member (firstname,lastname,streetname,housenumber,zipcode,city,emailaddress,mobilephone, "
-    #         f"date,uuid)VALUES (:first, :last,:street,:house,:zip,:city,:email,:mobile,:date,:uuid)",
-    #         {"first": member.firstname, "last": member.lastname, "street": member.street, "house": member.housenumber,
-    #          "zip": member.zipcode, "city": member.city, "email": member.mail, "mobile": member.mobile_number,
-    #          "date": member.registration_date, "uuid": member.uuid})
-
-    #     self.commit()
+    
+    def create_member(self, member: Member):
+        self.cursor.execute(
+            # f"INSERT INTO member (firstname,lastname,streetname,housenumber,zipcode,city,emailaddress,mobilephone, "
+            # f"date,uuid)VALUES (:first, :last,:street,:house,:zip,:city,:email,:mobile,:date,:uuid)",
+            # {"first": member.firstname, "last": member.lastname, "street": member.street, "house": member.house_number,
+            #  "zip": member.zipcode, "city": member.city, "email": member.mail, "mobile": member.mobile_number,
+            #  "date": member.registration_date, "uuid": member.uuid})
+            "INSERT INTO member VALUES (?,?, ?, ?, ?, ?,?,?,?,?,?)", (None,member.firstname, member.lastname, member.street, member.house_number, member.zipcode, member.city, member.mail, member.mobile_number,member.registration_date, member.uuid ))
+        self.commit()
 
     def delete_person(self, table, firstname, lastname):
 

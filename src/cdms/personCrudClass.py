@@ -27,8 +27,7 @@ class PersonCRUD:
             database.create_employee(kind, firstname, lastname, username, password)
 
         elif kind.lower() == "member":
-            member = Member().create_member()
-            database.create_member(member)
+            Member().create_member()
         database.commit()
         database.close()
 
@@ -46,16 +45,10 @@ class PersonCRUD:
             print("Lastname    |", Helper().decrypt(row[2]) + "\n")
 
         while loop:
-            firstname = input("firstname?: ")
-            firstname = Validator().is_valid_name(firstname)
-            firstname = Helper().encrypt(firstname)
-
-            lastname = input("lastname?: ")
-            lastname = Validator().is_valid_name(lastname)
-
-            lastname = Helper().encrypt(lastname)
-
-            data = database.search_person(kind=kind, firstname=firstname, lastname=lastname)
+            
+            id = input("ID?: ")
+            id = Validator().is_valid_number(id)
+            data = database.search_person_by_id(kind=kind, id=id)
             database.commit()
             if data is not None:
 
@@ -65,7 +58,7 @@ class PersonCRUD:
                 print("Firstname     |", Helper.decrypt(member.firstname))
                 print("Lastname      |", Helper.decrypt(member.lastname))
                 print("Street        |", Helper.decrypt(member.street))
-                print("Housenumber   |", Helper.decrypt(member.housenumber))
+                print("Housenumber   |", Helper.decrypt(member.house_number))
                 print("Zipcode       |", Helper.decrypt(member.zipcode))
                 print("City          |", Helper.decrypt(member.city))
                 print("mail          |", Helper.decrypt(member.mail))

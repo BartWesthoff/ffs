@@ -79,19 +79,25 @@ class UserInterface:
             # data = database.login(kind=str(type), username=login_username, password=login_password)
 
             if not data:
+                database.add_log(
+                    description=f"Unsuccesful login for {[(user, pw) for user, pw in zip(usernames, passwords)]}. ",
+                    suspicious="no")
                 print("Wrong username or password, try again.\n")
                 tries += 1
             else:
+                database.add_log(
+                    description=f"logged in",
+                    suspicious="no")
                 break
 
         Helper().log_username(login_username)
 
-        if _type == "advisor":
-            self.advisor_menu()
-        if _type == "systemadmin":
-            self.system_administator_menu()
-        if _type == "superadmin":
-            self.super_admin_menu()
+        # if _type == "advisor":
+        #     self.advisor_menu()
+        # if _type == "systemadmin":
+        #     self.system_administator_menu()
+        # if _type == "superadmin":
+        #     self.super_admin_menu()
 
         # TODO  onderstaand gebruiken en dan die if statements boven wegdoen
         menu(type)
