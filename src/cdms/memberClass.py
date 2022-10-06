@@ -2,10 +2,8 @@ import re
 from datetime import datetime
 from random import *
 
-
 from src.cdms.InputValidationClass import Validator
 from src.cdms.helperClass import Helper
-
 
 
 class Member:
@@ -65,10 +63,12 @@ class Member:
         # TODO: Encrypt en dycrypt uuid and registration date
         # TODO: ID skippen en UUID van maken
 
-        member =  Member(firstname=firstname, lastname=lastname, mail=email, street=street, house_number=house_number,
-                      zipcode=zipcode, city=city, registration_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S"), mobile_number=mobile_number,
-                      uuid=uuid)
+        member = Member(firstname=firstname, lastname=lastname, mail=email, street=street, house_number=house_number,
+                        zipcode=zipcode, city=city, registration_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+                        mobile_number=mobile_number,
+                        uuid=uuid)
         database.create_member(member)
+        return member
 
     @staticmethod
     def dummy_member():
