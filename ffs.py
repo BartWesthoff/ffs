@@ -1,9 +1,11 @@
+from src.cdms.databaseclass import Database
 from src.cdms.memberClass import Member
 from src.cdms.userinterfaceClass import UserInterface, Role
 from src.cdms.menus import *
 
 if __name__ == "__main__":
     UserInterface().main_screen()
+
     # member = Member().dummy_member()
     #
     # print(str(member))
@@ -12,3 +14,4 @@ if __name__ == "__main__":
     # print(str(member))
     # print("\n")
     # print(member)
+

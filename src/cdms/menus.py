@@ -84,4 +84,5 @@ def menu(user_access_level: int):
         chosen_function.function()
     else:
         chosen_function.function(**chosen_function.arguments)
+
     menu(user_access_level=user_access_level)

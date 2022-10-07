@@ -3,6 +3,7 @@ import sqlite3
 from src.cdms.memberClass import Member
 from src.cdms.helperClass import Helper
 
+
 class Database:
     def __init__(self, name=None):
         self.conn = None
@@ -47,7 +48,7 @@ class Database:
         query = f"SELECT * FROM {kind} WHERE firstname = ? AND lastname = ?;"
         self.cursor.execute(query, (firstname, lastname))
         return self.cursor.fetchone()
-    
+
     def search_person_by_id(self, kind, id):
         query = f"SELECT * FROM {kind} WHERE id = ?;"
         self.cursor.execute(query, (id,))
@@ -90,7 +91,7 @@ class Database:
                             {"id": None, "first": firstname, "last": lastname, "user": username,
                              "pass": password})
         self.commit()
-    
+
     def create_member(self, member: Member):
         self.cursor.execute(
             # f"INSERT INTO member (firstname,lastname,streetname,housenumber,zipcode,city,emailaddress,mobilephone, "
@@ -98,7 +99,9 @@ class Database:
             # {"first": member.firstname, "last": member.lastname, "street": member.street, "house": member.house_number,
             #  "zip": member.zipcode, "city": member.city, "email": member.mail, "mobile": member.mobile_number,
             #  "date": member.registration_date, "uuid": member.uuid})
-            "INSERT INTO member VALUES (?,?, ?, ?, ?, ?,?,?,?,?,?)", (None,member.firstname, member.lastname, member.street, member.house_number, member.zipcode, member.city, member.mail, member.mobile_number,member.registration_date, member.uuid ))
+            "INSERT INTO member VALUES (?,?, ?, ?, ?, ?,?,?,?,?,?)", (
+            None, member.firstname, member.lastname, member.street, member.house_number, member.zipcode, member.city,
+            member.mail, member.mobile_number, member.registration_date, member.uuid))
         self.commit()
 
     def delete_person(self, table, firstname, lastname):
@@ -110,6 +113,7 @@ class Database:
 
     def update_password(self, kind, password, username):
 
+        print(f"UPDATE {kind} SET password = {password} WHERE username = {username};")
         query = f"UPDATE {kind} SET password = ? WHERE username = ?;"
         self.cursor.execute(query, (password, username))
 
