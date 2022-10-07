@@ -37,6 +37,7 @@ class Database:
 
     def login(self, kind: str, username: str, password: str):
         query = f"SELECT * FROM {kind} WHERE username = ? AND password = ?;"
+        print(f"SELECT * FROM {kind} WHERE username = {username} AND password = {password};")
         self.cursor.execute(query, (username, password))
 
         result = self.cursor.fetchone()
@@ -46,16 +47,19 @@ class Database:
 
     def search_person(self, kind, firstname, lastname):
         query = f"SELECT * FROM {kind} WHERE firstname = ? AND lastname = ?;"
+        print(f"SELECT * FROM {kind} WHERE firstname = {firstname} AND lastname = {lastname};")
         self.cursor.execute(query, (firstname, lastname))
         return self.cursor.fetchone()
 
     def search_person_by_id(self, kind, id):
         query = f"SELECT * FROM {kind} WHERE id = ?;"
+        print(f"SELECT * FROM {kind} WHERE id = {id};")
         self.cursor.execute(query, (id,))
         return self.cursor.fetchone()
 
     def get_all_of_kind(self, kind):
         query = f"SELECT * FROM {kind};"
+        print(f"SELECT * FROM {kind};")
         self.cursor.execute(query)
         return self.cursor.fetchall()
 
@@ -70,11 +74,11 @@ class Database:
         self.cursor.execute(
             f"INSERT INTO logging (username,datetime,description,suspicious)VALUES (:user, :date,:desc,:sus)",
             {"user": username, "date": now, "desc": description, "sus": suspicious})
+        print(f"INSERT INTO logging (username,datetime,description,suspicious)VALUES ({username}, {now},{description},{suspicious})")
         self.commit()
 
     def get(self, table, columns, limit=None, where=1):
 
-        query = "SELECT ? from ? WHERE ?"
         query2 = f"SELECT * from {table} WHERE ?"
         args = (columns, table, where)
         self.cursor.execute(query2, (where,))
@@ -107,7 +111,7 @@ class Database:
     def delete_person(self, table, firstname, lastname):
 
         query = f"DELETE FROM {table} WHERE firstname = ? AND lastname = ? ;"
-
+        print(f"DELETE FROM {table} WHERE firstname = {firstname} AND lastname = {lastname};")
         args = (firstname, lastname)
         self.cursor.execute(query, args)
 
