@@ -88,6 +88,8 @@ class Helper:
         while True:
             test = 0
             dataAdvisor = database.get_all_of_kind(kind='advisor')
+            dataSystemAdmin = database.get_all_of_kind(kind='systemadmin')
+
             database.commit()
 
             for ch in username:
@@ -99,6 +101,10 @@ class Helper:
                 test += 1
             
             for row in dataAdvisor:
+                if Helper().decrypt(row[3]) == username:
+                    test += 1
+
+            for row in dataSystemAdmin:
                 if Helper().decrypt(row[3]) == username:
                     test += 1
 

@@ -117,9 +117,7 @@ class Database:
 
     def update_password(self, kind, password, username):
 
-        print(f"UPDATE {kind} SET password = {password} WHERE username = {username};")
-        query = f"UPDATE {kind} SET password = ? WHERE username = ?;"
-        self.cursor.execute(query, (password, username))
+        self.cursor.execute(f"UPDATE {kind} SET password = ? WHERE username = ?;", (password, username))
 
     def query(self, sql, values=None):
         if values is None:
