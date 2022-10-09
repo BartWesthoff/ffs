@@ -59,6 +59,9 @@ class Member:
                         mobile_number=mobile_number,
                         id=uuid)
         database.create_member(member)
+        database.add_log(
+                    description=f"Member created with uuid {uuid}.",
+                    suspicious="no")
         return member
 
     def search_member(self, search_term):
