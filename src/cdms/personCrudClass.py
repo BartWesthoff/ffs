@@ -30,7 +30,9 @@ class PersonCRUD:
 
             registration_date = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
-            database.create_employee(kind, firstname, lastname, username, password, registration_date)
+            id = Helper.generate_uuid()
+            database.create_employee(kind=kind, firstname=firstname, lastname=lastname, username=username,
+                                     password=password, id=id, registration_date=registration_date)
 
         elif kind.lower() == "member":
             Member().create_member()

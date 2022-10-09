@@ -57,9 +57,7 @@ class Member:
         mobile_number = "31-6-" + mobile_number
         mobile_number = Helper().encrypt(mobile_number)
 
-        id = [str(randint(0 if i == 0 else 1, 9)) for i in range(9)]
-        last_digit = sum(int(i) for i in id) % 10
-        id = ''.join(id) + str(last_digit)
+
 
         member = Member(firstname=firstname, lastname=lastname, mail=email, street=street, house_number=house_number,
                         zipcode=zipcode, city=city, registration_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S"),

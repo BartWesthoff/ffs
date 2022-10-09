@@ -1,5 +1,6 @@
 import json
 import re
+from random import randint
 from shutil import copyfile
 
 
@@ -81,6 +82,13 @@ class Helper:
             print('\n Password is accepted.')
             return password
 
+
+    @staticmethod
+    def generate_uuid():
+        # TODO: checken of id niet in database zit
+        uuid = [str(randint(0 if i == 0 else 1, 9)) for i in range(9)]
+        last_digit = sum(int(i) for i in uuid) % 10
+        return ''.join(uuid) + str(last_digit)
     @staticmethod
     def username_checker(username):
         from src.cdms.databaseclass import Database
@@ -144,7 +152,7 @@ class Helper:
         from src.cdms.databaseclass import Database
 
         database = Database("analyse_backup.db")
-        # because its filling in first then backing up with the already logged case
+        # because it's filling in first then backing up with the already logged case
         database.add_log(description="database restore", suspicious="no")
         copyfile('analyse_backup.db', 'analyse.db')
 

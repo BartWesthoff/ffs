@@ -94,9 +94,9 @@ class Database:
 
         return self.get(table, columns, limit=1)[0]
 
-    def create_employee(self, kind, firstname, lastname, username, password, registration_date):
+    def create_employee(self, kind, firstname, lastname, username, password, registration_date, id):
         self.cursor.execute(f"INSERT INTO {kind} VALUES (:id, :first,:last,:user,:pass,:date)",
-                            {"id": None, "first": firstname, "last": lastname, "user": username,
+                            {"id": id, "first": firstname, "last": lastname, "user": username,
                              "pass": password, "date": registration_date})
         self.commit()
 
