@@ -49,10 +49,8 @@ class PersonCRUD:
             print("Firstname   |", Helper().decrypt(row[1]))
             print("Lastname    |", Helper().decrypt(row[2]))
             print(f"Role        | {kind}\n")
+
         people = []
-        if len(people) == 0:
-            print("No people found, try again.")
-            return people
         print("Please fill in ID, firstname, lastname, address, e-mailadress or phonenumber of the person you want to "
               "modify.")
         search_key = input("Who do you want to search?: ")
@@ -72,6 +70,19 @@ class PersonCRUD:
         database.close()
         return people
 
+    def search_employee_username(self, kind, username):
+        database = Database("analyse.db")
+        data = database.search_employee_by_username(kind=kind, username=Helper.encrypt(username))
+        people = []
+
+        for row in data:
+            user = User.to_user_decrypt(row)
+            if user.search_user(search_term=username.lower()):
+                people.append(user)
+
+        database.close()
+        return people[0]
+
     def search_employee(self, kind):
         database = Database("analyse.db")
         data = database.get(columns='*', table=kind)
@@ -82,9 +93,7 @@ class PersonCRUD:
             print("Lastname    |", Helper().decrypt(row[2]))
             print(f"Role        | {kind}\n")
         people = []
-        if len(people) == 0:
-            print("No people found, try again.")
-            return people
+
         print("Please fill in ID, firstname, lastname, address, e-mailadress or phonenumber of the person you want to "
               "modify.")
         search_key = input("Who do you want to search?: ")
@@ -95,7 +104,7 @@ class PersonCRUD:
 
         if len(people) == 0:
             print("No people found, try again.")
-            self.search_employee(kind=kind)
+            return people
 
         for person in people:
             print(person)
@@ -198,11 +207,11 @@ class PersonCRUD:
         elif choice == 4:
             person_to_modify.lastname = new_data
 
-
         database.update_user(kind=kind, firstname=person_to_modify.firstname, lastname=person_to_modify.lastname,
                              username=person_to_modify.username, password=person_to_modify.password,
                              id=person_to_modify.id, old_firstname=old_firstname,
-                             old_lastname=old_lastname, registration_date=person_to_modify.registration_date, old_username=old_username)
+                             old_lastname=old_lastname, registration_date=person_to_modify.registration_date,
+                             old_username=old_username)
         database.commit()
         database.close()
 
@@ -288,14 +297,7 @@ class PersonCRUD:
         # TODO even checken of kind permissie heeft voor het veranderen van wachtworden
         from src.cdms.userinterfaceClass import UserInterface
         from src.cdms.userinterfaceClass import Role
-        # role = Role.EMPTY
 
-        # if kind == "advisor":
-        #     role = Role.ADVISOR
-        # elif kind == "superadmin":
-        #     role = Role.SUPER_ADMINISTATOR
-        # elif kind == "systemadmin":
-        #     role = Role.SYSTEM_ADMINISTATOR
         actions = [("Reset an advisors password.", Role.SYSTEM_ADMINISTATOR),
                    ("Reset an systemadmin password.", Role.SUPER_ADMINISTATOR)]
 
@@ -312,25 +314,32 @@ class PersonCRUD:
             kind = "advisor"
         if action_to_perform == "Reset an systemadmin password.":
             kind = "systemadmin"
-        user = self.search_employee(kind=kind)
+
+        if action_to_perform == "Reset own password.":
+            user = self.search_employee_username(kind=kind, username=Helper().check_logged_in())
+        else:
+            user = self.search_employee(kind=kind)
+
         if user is None or len(user) == 0:
             return None
         print(user)
-        username_user = Helper().check_logged_in()
-        username_target = user[0].username
+
+        person_to_modify = user[0]
+        username_target = person_to_modify.username
         new_password = input(
             "What will be the password? Min length of 8, no longer than 30 characters, MUST have at least one "
             "lowercase letter, one uppercase letter, one digit and one special character : ")
         password = Validator().is_valid_password(password=new_password)
         password = Helper().encrypt(password)
+
         print(f"{password=}")
-        username_to_change = username_user if action_to_perform == "Reset own password." else username_target
-        print(f"{username_to_change=}")
         print(f"{kind=}")
-        database.update_password(kind=kind, username=Helper.encrypt(username_to_change), password=password)
-        username_user = Helper().decrypt(username_user)
+        user = User.to_user_encrypt(person_to_modify)
+        database.update_password(kind=kind, username=Helper.encrypt(person_to_modify.username), password=password, user=user)
+
+        username_user = Helper().decrypt(person_to_modify.username)
         database.add_log(
-            description=f"{username_user} changed password for {username_to_change} to {Helper().decrypt(password)}",
+            description=f"{username_user} changed password for {person_to_modify.username} to {Helper().decrypt(password)}",
             suspicious="yes")
 
         database.close()

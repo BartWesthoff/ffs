@@ -63,6 +63,15 @@ class Database:
 
         return self.cursor.fetchone()
 
+
+    def search_employee_by_username(self, kind, username):
+        query2 = f"SELECT * from {kind} WHERE username = ?"
+        print(f"SELECT * from {kind} WHERE username = {username}")
+        args = (username)
+        self.cursor.execute(query2, args)
+
+        rows = self.cursor.fetchone()
+        return rows
     def search_person_by_id(self, kind, id):
         query = f"SELECT * FROM {kind} WHERE id = ?;"
         print(f"SELECT * FROM {kind} WHERE id = {id};")
@@ -147,13 +156,19 @@ class Database:
         args = (firstname, lastname)
         self.cursor.execute(query, args)
 
-    def update_password(self, kind, password, username):
-        print(f"UPDATE {kind} SET password = ? WHERE username = ?;", (password, username))
-        # self.cursor.execute(f"UPDATE {kind} SET password = ? WHERE username = ?;", (password, username))
-        query = f"UPDATE {kind} SET password = ? WHERE username = ?;"
-        args = (password, username)
+    def update_password(self, kind, password, username, user):
+
+        query = f"DELETE FROM {kind} WHERE username = ? ;"
+        print(f"DELETE FROM {kind} WHERE  username = {username};")
+        args = (username,)
         self.cursor.execute(query, args)
         self.commit()
+
+        self.cursor.execute(f"INSERT INTO {kind} VALUES (:id, :first,:last,:user,:pass,:date)",
+                            {"id": user.id, "first": user.firstname, "last": user.lastname, "user": user.username,
+                                "pass": password, "date": user.registration_date})
+        self.commit()
+
 
     def query(self, sql, values=None):
         if values is None:
