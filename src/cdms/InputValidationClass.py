@@ -16,10 +16,15 @@ class Validator:
         return int(number)
 
     def is_valid_password(self, password):
+        from src.cdms.databaseclass import Database
+        database = Database("analyse.db")
         x = re.search(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,30}$", password)
         error = '''\n Please enter correct password. Min length of 8, no longer than 30 characters, 
          MUST have at least one lowercase letter, one uppercase letter, one digit and one special character :'''
         if not x:
+            database.add_log(
+                    description=f"Password is not valid.",
+                    suspicious="no")
             password = input(error)
             self.is_valid_password(password)
         else:

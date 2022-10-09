@@ -34,7 +34,9 @@ class PersonCRUD:
             uuid = Helper.generate_uuid()
             database.create_employee(kind=kind, firstname=firstname, lastname=lastname, username=username,
                                      password=password, id=uuid, registration_date=registration_date)
-
+            database.add_log(
+                    description=f"Created a {kind}.",
+                    suspicious="no")
         elif kind.lower() == "member":
             Member().create_member()
         database.commit()
@@ -43,32 +45,37 @@ class PersonCRUD:
     def search_member(self, kind):
         database = Database("analyse.db")
         data = database.get(columns='*', table=kind)
-        for row in data:
-            # print(row)
-            print("ID          |", row[0])
-            print("Firstname   |", Helper().decrypt(row[1]))
-            print("Lastname    |", Helper().decrypt(row[2]))
-            print(f"Role        | {kind}\n")
+        if not data:
+            print(f"No {kind}'s found.")
+        else:
+            for row in data:
+                # print(row)
+                print("ID          |", row[0])
+                print("Firstname   |", Helper().decrypt(row[1]))
+                print("Lastname    |", Helper().decrypt(row[2]))
+                print(f"Role        | {kind}\n")
+            people = []
+            if len(people) == 0:
+                print("No people found, try again.")
+                return people
+            print("Please fill in ID, firstname, lastname, address, e-mailadress or phonenumber of the person you want to "
+                "modify.")
+            search_key = input("Who do you want to search?: ")
+            for row in data:
+                member = Member.to_member_decrypt(row)
+                if member.search_member(search_term=search_key.lower()):
+                    people.append(member)
 
-        people = []
-        print("Please fill in ID, firstname, lastname, address, e-mailadress or phonenumber of the person you want to "
-              "modify.")
-        search_key = input("Who do you want to search?: ")
-        for row in data:
-            member = Member.to_member_decrypt(row)
-            if member.search_member(search_term=search_key.lower()):
-                people.append(member)
+            if len(people) == 0:
+                print("No people found, try again.")
+                self.search_member(kind=kind)
 
-        if len(people) == 0:
-            print("No people found, try again.")
-            self.search_member(kind=kind)
+            for person in people:
+                print(person)
+                print("list of people found")
 
-        for person in people:
-            print(person)
-            print("list of people found")
-
-        database.close()
-        return people
+            database.close()
+            return people
 
     def search_employee_username(self, kind, username):
         database = Database("analyse.db")
@@ -340,7 +347,7 @@ class PersonCRUD:
         username_user = Helper().decrypt(person_to_modify.username)
         database.add_log(
             description=f"{username_user} changed password for {person_to_modify.username} to {Helper().decrypt(password)}",
-            suspicious="yes")
+            suspicious="no")
 
         database.close()
 

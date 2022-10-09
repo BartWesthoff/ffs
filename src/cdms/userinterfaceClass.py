@@ -30,6 +30,7 @@ class UserInterface:
             self.main_screen()
 
     def login_screen(self):
+        database = Database("analyse.db")
         loop = True
         login_username = ""
         usernames = []
@@ -50,13 +51,11 @@ class UserInterface:
             type = Role.SUPER_ADMINISTATOR
         else:
             Exceptions.bad_error()
-            Helper().stop_app()
             self.login_screen()
 
         while loop:
             if tries == 3:
                 print("3 wrong tries, incident logged.")
-                database = Database("analyse.db")
                 database.add_log(
                     description=f"3 wrong tries combinations {[(user, pw) for user, pw in zip(usernames, passwords)]}.",
                     suspicious="yes")
@@ -69,11 +68,13 @@ class UserInterface:
             usernames.append(login_username)
 
             if login_password == "a" and login_username == "a":
+                database.add_log(
+                    description=f"logged in",
+                    suspicious="no")
                 break
 
             login_username = Helper().encrypt(login_username)
             login_password = Helper().encrypt(login_password)
-            database = Database("analyse.db")
 
             data = database.login(kind=_type, username=login_username, password=login_password)
             # data = database.login(kind=str(type), username=login_username, password=login_password)
