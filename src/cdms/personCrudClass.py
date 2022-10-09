@@ -55,9 +55,6 @@ class PersonCRUD:
                 print("Lastname    |", Helper().decrypt(row[2]))
                 print(f"Role        | {kind}\n")
             people = []
-            if len(people) == 0:
-                print("No people found, try again.")
-                return people
             print("Please fill in ID, firstname, lastname, address, e-mailadress or phonenumber of the person you want to "
                 "modify.")
             search_key = input("Who do you want to search?: ")

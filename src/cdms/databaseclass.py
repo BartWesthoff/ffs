@@ -67,7 +67,7 @@ class Database:
     def search_employee_by_username(self, kind, username):
         query2 = f"SELECT * from {kind} WHERE username = ?"
         print(f"SELECT * from {kind} WHERE username = {username}")
-        args = (username)
+        args = (username,)
         self.cursor.execute(query2, args)
 
         rows = self.cursor.fetchone()
