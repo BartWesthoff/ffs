@@ -176,19 +176,33 @@ class PersonCRUD:
         choice = UserInterface().choices(choices)
 
         new_data = input(f"What will be the new {attr[choice - 1]}: ")
+
+        person_to_modify = people[0]
+        old_firstname = Helper().encrypt(person_to_modify.firstname)
+        old_lastname = Helper.encrypt(person_to_modify.lastname)
+        old_username = Helper.encrypt(person_to_modify.username)
         for _ in attr:
             # TODO mooier neerzetten
             if choice != 2:
                 new_data = Validator().is_valid_name(new_data)
             else:
                 new_data = Validator().is_valid_password(new_data)
-
+        person_to_modify = User.to_user_encrypt(person_to_modify)
         new_data = Helper().encrypt(new_data)
+        if choice == 1:
+            person_to_modify.username = new_data
+        elif choice == 2:
+            person_to_modify.password = new_data
+        elif choice == 3:
+            person_to_modify.firstname = new_data
+        elif choice == 4:
+            person_to_modify.lastname = new_data
 
-        print(people[0].id)
-        database.query(
-            f"UPDATE {kind} SET {attr[choice - 1]} = ? WHERE id = ?;",
-            (new_data, Helper.encrypt(people[0].id)))
+
+        database.update_user(kind=kind, firstname=person_to_modify.firstname, lastname=person_to_modify.lastname,
+                             username=person_to_modify.username, password=person_to_modify.password,
+                             id=person_to_modify.id, old_firstname=old_firstname,
+                             old_lastname=old_lastname, registration_date=person_to_modify.registration_date, old_username=old_username)
         database.commit()
         database.close()
 
@@ -207,35 +221,17 @@ class PersonCRUD:
         print("Please fill in ID, firstname, lastname, address, e-mailadress or phonenumber of the person you want to "
               "modify.")
         search_key = input("Who do you want to modify?: ")
-        attr = []
-        if kind == "member":
-            attr = Member.get_attributes()
-            for row in data:
-                member = Member.to_member_decrypt(row)
-                if member.search_member(search_term=search_key.lower()):
-                    people.append(member)
 
-        if kind == "advisor":
-            attr = Advisor.get_attributes()
-            for row in data:
-                print(row)
-                advisor = Advisor.to_advisor_decrypt(row)
-
-                if advisor.search_advisor(search_key.lower()):
-                    people.append(advisor)
+        attr = Member.get_attributes()
+        for row in data:
+            member = Member.to_member_decrypt(row)
+            if member.search_member(search_term=search_key.lower()):
+                people.append(member)
 
         for person in people:
             print(person)
             print("list of people found")
 
-        # _firstname = input(f"What is the firstname of the {kind}?: ")
-        # _firstname = Validator().is_valid_name(_firstname)
-        #
-        # _lastname = input(f"What is the lastname of the {kind}?: ")
-        # _lastname = Validator().is_valid_name(_lastname)
-        #
-        # _firstname = Helper().encrypt(_firstname)
-        # _lastname = Helper().encrypt(_lastname)
         if len(people) == 0:
             print("No people found, try again.")
             self.modify_member(kind=kind)

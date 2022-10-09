@@ -104,6 +104,12 @@ class Database:
 
         return self.get(table, columns, limit=1)[0]
 
+    def update_user(self, kind, old_firstname, old_lastname, firstname, lastname, username, password, registration_date, id, old_username):
+        self.delete_employee(table=kind, firstname=old_firstname, lastname=old_lastname, username=old_username)
+        self.commit()
+        self.create_employee(kind, firstname, lastname, username, password, registration_date, id)
+        self.commit()
+
     def update_member(self, member, old_firstname, old_lastname):
         self.delete_person(table="member", firstname=old_firstname, lastname=old_lastname)
         self.commit()
