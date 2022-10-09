@@ -1,6 +1,7 @@
 import datetime
 
 from src.cdms.InputValidationClass import Validator
+from src.cdms.UserClass import User
 from src.cdms.advisorClass import Advisor
 from src.cdms.databaseclass import Database
 from src.cdms.helperClass import Helper
@@ -53,7 +54,6 @@ class PersonCRUD:
             print("Lastname    |", Helper().decrypt(row[2]) + "\n")
 
         while loop:
-
 
             id = Validator().is_valid_number(input("ID?: "))
             data = database.search_person_by_id(kind=kind, id=id)
@@ -131,7 +131,6 @@ class PersonCRUD:
                 member = Member.to_member_decrypt(row)
                 if member.search_member(search_term=search_key.lower()):
                     people.append(member)
-
 
         if kind == "advisor":
             attr = Advisor.get_attributes()
@@ -258,10 +257,11 @@ class PersonCRUD:
         from src.cdms.userinterfaceClass import UserInterface
         loop = True
         database = Database("analyse.db")
-        while loop:
+        data = None
+        while data is None:
             choice = UserInterface().choices(
                 ["Check Advisors", "Check System Administrators", "Check Super Administrator", "All users"])
-            _type = None
+            _type = "all"
             if choice == 1:
                 _type = "advisor"
             elif choice == 2:
@@ -273,29 +273,23 @@ class PersonCRUD:
             else:
                 print("Incorrect input, try again.")
 
-            print(f'\n{_type}: \n')
-
+            print("")  # voor wat ruimte
             if _type == "all":
                 for user_type in ["advisor", "systemadmin", "superadmin"]:
                     data = database.get(columns='*', table=user_type)
                     for row in data:
-                        print(f"Role        | {user_type}\n")
-                        print("ID          |", row[0])
-                        print("Firstname   |", Helper().decrypt(row[1]))
-                        print("Lastname    |", Helper().decrypt(row[2]))
-                        print("Username    |", Helper().decrypt(row[3]))
+                        user = User.to_user_decrypt(row)
+                        print(f"Role: {_type}")
+                        print(user)
 
-            else:
+            elif _type in ["advisor", "systemadmin", "superadmin"]:
                 data = database.get(columns='*', table=_type)
                 for row in data:
-                    # print(row)
-                    print(f"Role        | {_type}\n")
-                    print("ID          |", row[0])
-                    print("Firstname   |", Helper().decrypt(row[1]))
-                    print("Lastname    |", Helper().decrypt(row[2]))
-                    print("Username    |", Helper().decrypt(row[3]))
-
-
-            loop = False
+                    user = User.to_user_decrypt(row)
+                    print(f"Role: {_type}")
+                    print(user)
+            else:
+                print("Wrong type of user, try again.")
+                PersonCRUD.check_users()
 
         database.close()

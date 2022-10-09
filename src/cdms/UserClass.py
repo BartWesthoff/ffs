@@ -1,3 +1,6 @@
+from src.cdms.helperClass import Helper
+
+
 class User:
 
     def __init__(self, username, password, firstname, lastname, registration_date, id):
@@ -25,3 +28,20 @@ class User:
                f"Firstname: {self.firstname} \n" \
                f"Lastname: {self.lastname} \n" \
                f"Registration date: {self.registration_date} \n"
+    @staticmethod
+    def to_user(data):
+        return User(id=data[0], username=data[1], password=data[2], firstname=data[3], lastname=data[4],
+                    registration_date=data[5])
+
+    @staticmethod
+    def to_user_decrypt(data):
+        if type(data) == User:
+            return User(id=Helper().decrypt(data.id), username=Helper().decrypt(data.username),
+                        password=Helper().decrypt(data.password),
+                        firstname=Helper().decrypt(data.firstname), lastname=Helper().decrypt(data.lastname),
+                        registration_date=data.registration_date)
+        else:
+            return User(id=Helper().decrypt(data[0]), username=Helper().decrypt(data[1]),
+                        password=Helper().decrypt(data[2]),
+                        firstname=Helper().decrypt(data[3]), lastname=Helper().decrypt(data[4]),
+                        registration_date=data[5])

@@ -95,7 +95,7 @@ class UserInterface:
 
     def choices(self, choices, question="Which option do you want to choose?: "):
         for idx, choice in enumerate(choices):
-            print(f"{idx+1}. {choice}")
+            print(f"{idx + 1}. {choice}")
         c = input(question)
 
         if c.isnumeric() and len(choices) >= int(c) > 0:
