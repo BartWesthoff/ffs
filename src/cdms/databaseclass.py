@@ -102,9 +102,9 @@ class Database:
 
     def create_member(self, member: Member):
         self.cursor.execute(
-            "INSERT INTO member VALUES (?,?, ?, ?, ?, ?,?,?,?,?,?)", (
-            member.id, member.firstname, member.lastname, member.street, member.house_number, member.zipcode, member.city,
-            member.mail, member.mobile_number, member.registration_date))
+            "INSERT INTO member VALUES (?,?, ?, ?, ?, ?,?,?,?,?)", (
+            None,member.firstname, member.lastname, member.street, member.house_number, member.zipcode, member.city,
+            member.mail, member.mobile_number, member.registration_date, member.id))
         self.commit()
 
     def delete_person(self, table, firstname, lastname):
