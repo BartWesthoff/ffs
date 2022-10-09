@@ -45,19 +45,19 @@ class Database:
             return False
         return result
 
-    def search_person(self, kind, firstname, lastname, id):
+    def search_person(self, kind, firstname, lastname):
         query = f"SELECT * FROM {kind} WHERE firstname = ? AND lastname = ?;"
-        query2= f"SELECT * FROM {kind} WHERE id = ?;"
-        # print(f"SELECT * FROM {kind} WHERE firstname = {firstname} AND lastname = {lastname};")
-        print(f"SELECT * FROM {kind} WHERE id = {id};")
-        # self.cursor.execute(query, (firstname, lastname))
-        self.cursor.execute(query2, (id,))
+
+        print(f"SELECT * FROM {kind} WHERE firstname = {firstname} AND lastname = {lastname};")
+
+        self.cursor.execute(query, (firstname, lastname))
+
         return self.cursor.fetchone()
 
     def search_person_by_id(self, kind, id):
         query = f"SELECT * FROM {kind} WHERE id = ?;"
         print(f"SELECT * FROM {kind} WHERE id = {id};")
-        self.cursor.execute(query, (id,))
+        self.cursor.execute(query, id)
         return self.cursor.fetchone()
 
     def get_all_of_kind(self, kind):
@@ -77,7 +77,8 @@ class Database:
         self.cursor.execute(
             f"INSERT INTO logging (username,datetime,description,suspicious)VALUES (:user, :date,:desc,:sus)",
             {"user": username, "date": now, "desc": description, "sus": suspicious})
-        print(f"INSERT INTO logging (username,datetime,description,suspicious)VALUES ({username}, {now},{description},{suspicious})")
+        print(
+            f"INSERT INTO logging (username,datetime,description,suspicious)VALUES ({username}, {now},{description},{suspicious})")
         self.commit()
 
     def get(self, table, columns, limit=None, where=1):
@@ -95,6 +96,9 @@ class Database:
         return self.get(table, columns, limit=1)[0]
 
     def create_employee(self, kind, firstname, lastname, username, password, registration_date, id):
+
+        print(f"INSERT INTO {kind} VALUES ({id}, {firstname}, {lastname}, {username}, {password}, {registration_date})")
+
         self.cursor.execute(f"INSERT INTO {kind} VALUES (:id, :first,:last,:user,:pass,:date)",
                             {"id": id, "first": firstname, "last": lastname, "user": username,
                              "pass": password, "date": registration_date})
@@ -102,16 +106,17 @@ class Database:
 
     def create_member(self, member: Member):
         self.cursor.execute(
-            "INSERT INTO member VALUES (?,?, ?, ?, ?, ?,?,?,?,?,?)", (
-            member.id, member.firstname, member.lastname, member.street, member.house_number, member.zipcode, member.city,
-            member.mail, member.mobile_number, member.registration_date))
+            "INSERT INTO member VALUES (:id, :first,:last,:email,:street,:house_number, :zipcode, :city, :phone, :date)",
+            {"id": member.id, "first": member.firstname, "last": member.lastname, "email": member.mail,
+                "street": member.street, "house_number": member.house_number, "zipcode": member.zipcode,
+                "city": member.city, "phone": member.mobile_number, "date": member.registration_date})
         self.commit()
 
-    def delete_person(self, table, firstname, lastname):
+    def delete_person(self, table, firstname, lastname, username):
 
-        query = f"DELETE FROM {table} WHERE firstname = ? AND lastname = ? ;"
-        print(f"DELETE FROM {table} WHERE firstname = {firstname} AND lastname = {lastname};")
-        args = (firstname, lastname)
+        query = f"DELETE FROM {table} WHERE firstname = ? AND lastname = ? AND lastname = ? ;"
+        print(f"DELETE FROM {table} WHERE firstname = {firstname} AND lastname = {lastname} AND lastname = {lastname};")
+        args = (firstname, lastname, username)
         self.cursor.execute(query, args)
 
     def update_password(self, kind, password, username):
@@ -131,36 +136,28 @@ class Database:
                 "CREATE TABLE 'systemadmin' ('id' INTEGER PRIMARY KEY NOT NULL, 'firstname' VARCHAR(128) NOT "
                 "NULL, 'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'date' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) "
                 "NOT NULL)")
-        except:
-            pass
-        try:
+
             self.query(
                 "CREATE TABLE 'advisor' ('id' INTEGER PRIMARY KEY NOT NULL, 'firstname' VARCHAR(128) NOT NULL, "
                 "'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'date' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) NOT "
                 "NULL)")
-        except:
-            pass
-        try:
+
             self.query(
                 "CREATE TABLE 'member' ('id' INTEGER PRIMARY KEY NOT NULL, 'firstname' VARCHAR(128) NOT NULL, "
                 "'lastname' VARCHAR(128) NOT NULL, 'streetname' VARCHAR(128) NOT NULL, 'housenumber' INTEGER NOT "
                 "NULL, 'zipcode' VARCHAR(128) NOT NULL, 'city' VARCHAR(128) NOT NULL, 'emailaddress' VARCHAR(128) NOT "
                 "NULL, 'mobilephone' VARCHAR(128) NOT NULL, 'date' VARCHAR(128) NOT NULL)")
-        except:
-            pass
-        try:
+
             self.query(
                 "CREATE TABLE 'superadmin' ('id' INTEGER PRIMARY KEY NOT NULL, 'firstname' VARCHAR(128) NOT "
                 "NULL, 'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) "
                 "NOT NULL)")
-        except:
-            pass
-        try:
+
             self.query(
                 "CREATE TABLE 'logging' ('number' INTEGER PRIMARY KEY AUTOINCREMENT, 'username' VARCHAR(128) NOT "
                 "NULL, 'datetime' VARCHAR(128) NOT NULL, 'description' VARCHAR(128) NOT NULL, 'suspicious' VARCHAR("
                 "128) NOT NULL)")
         except:
-            pass
+            Exception("Error while creating tables")
         self.open("analyse.db")
         self.commit()

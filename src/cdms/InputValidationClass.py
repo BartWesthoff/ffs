@@ -9,6 +9,16 @@ class Validator:
             self.is_valid_number(number)
         return int(number)
 
+    def is_valid_password(self, password):
+        x = re.search(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,30}$", password)
+        error = '''\n Please enter correct password. Min length of 8, no longer than 30 characters, 
+         MUST have at least one lowercase letter, one uppercase letter, one digit and one special character :'''
+        if not x:
+            password = input(error)
+            self.is_valid_password(password)
+        else:
+            print('\n Password is accepted.')
+            return password
     def is_valid_zipcode(self, zipcode):
         if not zipcode[0:3].isnumeric():
             zipcode = input("Please enter a valid zipcode, try again: ")

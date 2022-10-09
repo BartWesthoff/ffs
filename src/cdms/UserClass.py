@@ -19,14 +19,14 @@ class User:
 
     @staticmethod
     def get_attributes():
-        return ["id", "username", "password", "firstname", "lastname"]
+        return ["username", "password", "firstname", "lastname"]
 
     def __str__(self):
         return f"ID: {self.id}\n" \
-               f"Username: {self.username} \n" \
-               f"Password: {self.password} \n" \
                f"Firstname: {self.firstname} \n" \
                f"Lastname: {self.lastname} \n" \
+               f"Username: {self.username} \n" \
+               f"Password: {self.password} \n" \
                f"Registration date: {self.registration_date} \n"
     @staticmethod
     def to_user(data):
@@ -41,7 +41,10 @@ class User:
                         firstname=Helper().decrypt(data.firstname), lastname=Helper().decrypt(data.lastname),
                         registration_date=data.registration_date)
         else:
-            return User(id=Helper().decrypt(data[0]), username=Helper().decrypt(data[1]),
-                        password=Helper().decrypt(data[2]),
-                        firstname=Helper().decrypt(data[3]), lastname=Helper().decrypt(data[4]),
+            return User(id=Helper().decrypt(data[0]),
+                        password=Helper().decrypt(data[4]),username=Helper().decrypt(data[3]),
+                        firstname=Helper().decrypt(data[1]), lastname=Helper().decrypt(data[2]),
                         registration_date=data[5])
+
+
+# TODO: short list goedzetten

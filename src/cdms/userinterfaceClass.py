@@ -27,7 +27,7 @@ class UserInterface:
             Helper().stop_app()
         else:
             Exceptions.bad_error()
-            Helper().stop_app()
+            self.main_screen()
 
     def login_screen(self):
         loop = True

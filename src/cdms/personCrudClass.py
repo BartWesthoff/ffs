@@ -26,7 +26,7 @@ class PersonCRUD:
             username = Helper().username_checker(input("username?: "))
             username = Helper().encrypt(username)
 
-            password = Helper().password_checker(input("password?: "))
+            password = Validator().is_valid_password(input("password?: "))
             password = Helper().encrypt(password)
 
             registration_date = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -40,74 +40,149 @@ class PersonCRUD:
         database.commit()
         database.close()
 
-    @staticmethod
-    def search_person(kind):
-        kind = kind.lower()
-        loop = True
-        # count = 0
-        # user = Helper().check_logged_in()
+    def search_member(self, kind):
         database = Database("analyse.db")
         data = database.get(columns='*', table=kind)
         for row in data:
-            print("ID          |", row[0])
-            print("Firstname   |", Helper().decrypt(row[1]))
-            print("Lastname    |", Helper().decrypt(row[2]) + "\n")
-
-        while loop:
-
-            id = Validator().is_valid_number(input("ID?: "))
-            data = database.search_person_by_id(kind=kind, id=id)
-            database.commit()
-            if data is not None:
-
-                member = Member().to_member(data)
-                # TODO hier kunnen we denk de __str__ in de member class gebruiken
-                print("ID          |", member.id)
-                print("Firstname     |", Helper.decrypt(member.firstname))
-                print("Lastname      |", Helper.decrypt(member.lastname))
-                print("Street        |", Helper.decrypt(member.street))
-                print("Housenumber   |", Helper.decrypt(member.house_number))
-                print("Zipcode       |", Helper.decrypt(member.zipcode))
-                print("City          |", Helper.decrypt(member.city))
-                print("mail          |", Helper.decrypt(member.mail))
-                print("Phone         |", Helper.decrypt(member.mobile_number))
-                print("creation date |", member.registration_date)
-
-                loop = False
-            elif data is None:
-                print("Member not found, try again.")
-
-        database.close()
-
-    @staticmethod
-    def delete_person(kind):
-        kind = kind.lower()
-        database = Database("analyse.db")
-        data = database.get(columns='*', table=kind)
-        for row in data:
+            # print(row)
             print("ID          |", row[0])
             print("Firstname   |", Helper().decrypt(row[1]))
             print("Lastname    |", Helper().decrypt(row[2]))
             print(f"Role        | {kind}\n")
+        people = []
+        print("Please fill in ID, firstname, lastname, address, e-mailadress or phonenumber of the person you want to "
+              "modify.")
+        search_key = input("Who do you want to search?: ")
+        for row in data:
+            member = Member.to_member_decrypt(row)
+            if member.search_member(search_term=search_key.lower()):
+                people.append(member)
+
+        if len(people) == 0:
+            print("No people found, try again.")
+            self.search_member(kind=kind)
+
+        for person in people:
+            print(person)
+            print("list of people found")
+
+        database.close()
+        return people
+
+    def search_employee(self, kind):
+        database = Database("analyse.db")
+        data = database.get(columns='*', table=kind)
+        for row in data:
+            # print(row)
+            print("ID          |", row[0])
+            print("Firstname   |", Helper().decrypt(row[1]))
+            print("Lastname    |", Helper().decrypt(row[2]))
+            print(f"Role        | {kind}\n")
+        people = []
+        print("Please fill in ID, firstname, lastname, address, e-mailadress or phonenumber of the person you want to "
+              "modify.")
+        search_key = input("Who do you want to search?: ")
+        for row in data:
+            user = User.to_user_decrypt(row)
+            if user.search_user(search_term=search_key.lower()):
+                people.append(user)
+
+        if len(people) == 0:
+            print("No people found, try again.")
+            self.search_employee(kind=kind)
+
+        for person in people:
+            print(person)
+            print("list of people found")
+
+        database.close()
+        return people
+
+    def delete_person(self, kind):
+        from src.cdms.userinterfaceClass import UserInterface
+        kind = kind.lower()
+        database = Database("analyse.db")
+        # data = database.get(columns='*', table=kind)
+        # for row in data:
+        #     print("ID          |", row[0])
+        #     print("Firstname   |", Helper().decrypt(row[1]))
+        #     print("Lastname    |", Helper().decrypt(row[2]))
+        #     print(f"Role        | {kind}\n")
+        # if kind == "member":
+        #     members = []
+        #     for row in data:
+        #         member = Member.to_member_decrypt(row)
+        #         members.append(member)
+        people = []
         if kind == "member":
-            members = []
-            for row in data:
-                member = Member.to_member_decrypt(row)
-                members.append(member)
-
-        firstname = Validator().is_valid_name(input("firstname?: "))
-        firstname = Helper().encrypt(firstname)
-
-        lastname = Validator().is_valid_name(input("lastname?: "))
-        lastname = Helper().encrypt(lastname)
-
-        data = database.search_person(kind=kind, firstname=firstname, lastname=lastname)
-        if data is not None:
-            database.delete_person(table=kind, firstname=firstname, lastname=lastname)
-            database.commit()
-            print("Deleted")
+            people = self.search_member(kind=kind)
+        elif kind == "advisor" or kind == "systemadmin":
+            people = self.search_employee(kind=kind)
         else:
-            print("Person not found, Try again.\n")
+            print("No people found, try again.")
+            UserInterface().main_screen()
+        print(people[0].id)
+        for person in people:
+            print(Helper.encrypt(person.username))
+            data = database.search_person(kind=kind, firstname=Helper.encrypt(person.firstname), lastname=Helper.encrypt(person.lastname))
+            print(data)
+            if data is not None:
+                database.delete_person(table=kind, firstname=Helper.encrypt(person.firstname), lastname=Helper.encrypt(person.lastname), username=Helper.encrypt(person.username))
+                database.commit()
+                print(f"{person.firstname} {person.lastname} Deleted")
+
+
+    def modify_user(self, kind):
+        # TODO circulaire import
+        from src.cdms.userinterfaceClass import UserInterface
+        database = Database("analyse.db")
+        data = database.get(columns='*', table=kind)
+        for row in data:
+            # print(row)
+            print("ID          |", row[0])
+            print("Firstname   |", Helper().decrypt(row[1]))
+            print("Lastname    |", Helper().decrypt(row[2]))
+            print(f"Role        | {kind}\n")
+        people = []
+        print("Please fill in ID, firstname, lastname, address, e-mailadress or phonenumber of the person you want to "
+              "modify.")
+        search_key = input("Who do you want to modify?: ")
+        attr = Advisor.get_attributes()  # ["username", "password", "firstname", "lastname"]
+        for row in data:
+            print(row)
+            user = User.to_user_decrypt(row)
+
+            if user.search_user(search_key.lower()):
+                people.append(user)
+        if len(people) == 0:
+            print("No people found, try again.")
+            self.modify_person(kind=kind)
+
+        for person in people:
+            print(person)
+            print("list of people found")
+
+        choices = []
+        for att in attr:
+            choices.append(f"Modify {att}")
+        choice = UserInterface().choices(choices)
+
+        new_data = input(f"What will be the new {attr[choice - 1]}: ")
+        for _ in attr:
+            # TODO mooier neerzetten
+            if choice != 2:
+                new_data = Validator().is_valid_name(new_data)
+            else:
+                new_data = Validator().is_valid_password(new_data)
+
+        new_data = Helper().encrypt(new_data)
+
+        print(people[0].id)
+        database.query(
+            f"UPDATE {kind} SET {attr[choice - 1]} = ? WHERE id = ?;",
+            (new_data, Helper.encrypt(people[0].id)))
+        database.commit()
+        database.close()
 
     def modify_person(self, kind):
         # TODO circulaire import
@@ -185,7 +260,7 @@ class PersonCRUD:
         print(people[0].id)
         database.query(
             f"UPDATE {kind} SET {attr[choice - 1]} = ? WHERE id = ?;",
-            (new_data, people[0].id))
+            (new_data, Helper.encrypt(people[0].id)))
         database.commit()
         database.close()
 
@@ -237,7 +312,7 @@ class PersonCRUD:
         _password = input(
             "What will be the password? Min length of 8, no longer than 30 characters, MUST have at least one "
             "lowercase letter, one uppercase letter, one digit and one special character : ")
-        password = Helper().password_checker(password=_password)
+        password = Validator().is_valid_password(password=_password)
         password = Helper().encrypt(password)
         print(f"{password=}")
         username_to_change = username_user if action_to_perform == "Reset own password." else username_target
@@ -278,15 +353,17 @@ class PersonCRUD:
                 for user_type in ["advisor", "systemadmin", "superadmin"]:
                     data = database.get(columns='*', table=user_type)
                     for row in data:
+                        print(row)
                         user = User.to_user_decrypt(row)
-                        print(f"Role: {_type}")
+                        print(f"Role: {user_type.capitalize()}")
                         print(user)
 
             elif _type in ["advisor", "systemadmin", "superadmin"]:
                 data = database.get(columns='*', table=_type)
                 for row in data:
+                    print(row)
                     user = User.to_user_decrypt(row)
-                    print(f"Role: {_type}")
+                    print(f"Role: {_type.capitalize()}")
                     print(user)
             else:
                 print("Wrong type of user, try again.")

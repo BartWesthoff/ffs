@@ -1,7 +1,4 @@
-import re
 from datetime import datetime
-from random import *
-
 from src.cdms.InputValidationClass import Validator
 from src.cdms.helperClass import Helper
 
@@ -20,8 +17,6 @@ class Member:
         self.mobile_number = mobile_number
         self.registration_date = registration_date
         self.id = id
-        self.attributes = ["firstname", "lastname", "email", "streetname", "housenumber", "zipcode", "city", "mobile "
-                                                                                                             "number"]
 
     @staticmethod
     def create_member():
@@ -57,20 +52,26 @@ class Member:
         mobile_number = "31-6-" + mobile_number
         mobile_number = Helper().encrypt(mobile_number)
 
-
+        uuid = Helper.generate_uuid()
 
         member = Member(firstname=firstname, lastname=lastname, mail=email, street=street, house_number=house_number,
                         zipcode=zipcode, city=city, registration_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
                         mobile_number=mobile_number,
-                        id=id)
+                        id=uuid)
         database.create_member(member)
         return member
 
     def search_member(self, search_term):
-        for attribute in self.attributes:
+        for attribute in self.get_attributes():
             if search_term in getattr(self, attribute).lower():
                 return True
         return False
+
+
+    @staticmethod
+    def get_attributes():
+        return ["firstname", "lastname", "mail", "street", "house_number", "zipcode", "city", "mobile_number"]
+
 
     @staticmethod
     def dummy_member():
@@ -93,7 +94,7 @@ class Member:
     def to_member(data):
         return Member(id=data[0], firstname=data[1], lastname=data[2], street=data[3], house_number=data[4],
                       zipcode=data[5], city=data[6], mail=data[7], mobile_number=data[8], registration_date=data[9],
-                    )
+                      )
 
     @staticmethod
     def to_member_decrypt(data):
@@ -127,6 +128,3 @@ class Member:
                f"Registration date: {self.registration_date} \n" \
                f""
 
-    @staticmethod
-    def get_attributes():
-        return ["firstname", "lastname", "email", "streetname", "housenumber", "zipcode", "city", "mobile number"]

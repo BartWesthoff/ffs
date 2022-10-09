@@ -71,16 +71,7 @@ class Helper:
                 decrypted_message += c
         return decrypted_message
 
-    def password_checker(self, password):
-        x = re.search(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,30}$", password)
-        error = '''\n Please enter correct password. Min length of 8, no longer than 30 characters, 
-        MUST have at least one lowercase letter, one uppercase letter, one digit and one special character :'''
-        if not x:
-            password = input(error)
-            self.password_checker(password)
-        else:
-            print('\n Password is accepted.')
-            return password
+
 
 
     @staticmethod
