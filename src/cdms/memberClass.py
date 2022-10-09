@@ -1,6 +1,6 @@
 from datetime import datetime
-from src.cdms.InputValidationClass import Validator
-from src.cdms.helperClass import Helper
+from cdms.InputValidationClass import Validator
+from cdms.helperClass import Helper
 
 
 class Member:
@@ -20,8 +20,8 @@ class Member:
 
     @staticmethod
     def create_member():
-        from src.cdms.databaseclass import Database
-        from src.cdms.userinterfaceClass import UserInterface
+        from cdms.databaseclass import Database
+        from cdms.userinterfaceClass import UserInterface
         database = Database("analyse.db")
 
         firstname = Validator().is_valid_name(input("What is your Firstname?: "))

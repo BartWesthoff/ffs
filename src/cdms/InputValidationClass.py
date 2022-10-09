@@ -5,7 +5,7 @@ import re
 class Validator:
 
     def is_valid_number(self, number):
-        from src.cdms.databaseclass import Database
+        from cdms.databaseclass import Database
         if not number.isnumeric():
             number = input("Must be a number, try again: ")
             database = Database("analyse.db")
@@ -16,7 +16,7 @@ class Validator:
         return int(number)
 
     def is_valid_password(self, password):
-        from src.cdms.databaseclass import Database
+        from cdms.databaseclass import Database
         database = Database("analyse.db")
         x = re.search(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,30}$", password)
         error = '''\n Please enter correct password. Min length of 8, no longer than 30 characters, 
@@ -31,7 +31,7 @@ class Validator:
             print('\n Password is accepted.')
             return password
     def is_valid_zipcode(self, zipcode):
-        from src.cdms.databaseclass import Database
+        from cdms.databaseclass import Database
         if not zipcode[0:3].isnumeric():
             database = Database("analyse.db")
             zipcode = input("Please enter a valid zipcode, try again: ")
@@ -62,7 +62,7 @@ class Validator:
         return zipcode.capitalize()
 
     def is_valid_name(self, name):
-        from src.cdms.databaseclass import Database
+        from cdms.databaseclass import Database
         if not name.isalpha():
             name = input("name cannot include a integer. Try again: ")
             database = Database("analyse.db")
@@ -82,7 +82,7 @@ class Validator:
         return name.capitalize()
 
     def is_valid_email(self, email):
-        from src.cdms.databaseclass import Database
+        from cdms.databaseclass import Database
         valid_email = re.search(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", email)
         if not valid_email:
             email = input("Please enter a valid email: ")
@@ -94,7 +94,7 @@ class Validator:
         return email.lower()
 
     def is_valid_phone_number(self, number):
-        from src.cdms.databaseclass import Database
+        from cdms.databaseclass import Database
         # TODO Specifieke error codes
         if not number.isnumeric() or len(number) != 8:
             number = input("Please enter a valid number: ")

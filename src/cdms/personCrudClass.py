@@ -1,11 +1,11 @@
 import datetime
 
-from src.cdms.InputValidationClass import Validator
-from src.cdms.UserClass import User
-from src.cdms.advisorClass import Advisor
-from src.cdms.databaseclass import Database
-from src.cdms.helperClass import Helper
-from src.cdms.memberClass import Member
+from cdms.InputValidationClass import Validator
+from cdms.UserClass import User
+from cdms.advisorClass import Advisor
+from cdms.databaseclass import Database
+from cdms.helperClass import Helper
+from cdms.memberClass import Member
 
 
 # TODO deze hele class testen
@@ -47,6 +47,9 @@ class PersonCRUD:
         data = database.get(columns='*', table=kind)
         if not data:
             print(f"No {kind}'s found.")
+            database.add_log(
+                    description=f"Searched for {kind}. No {kind}'s found.",
+                    suspicious="no")
         else:
             for row in data:
                 # print(row)
@@ -71,21 +74,21 @@ class PersonCRUD:
                 print(person)
                 print("list of people found")
 
+            database.add_log(
+                    description=f"Searched for {kind}.",
+                    suspicious="no")
             database.close()
             return people
 
     def search_employee_username(self, kind, username):
         database = Database("analyse.db")
-        data = database.search_employee_by_username(kind=kind, username=Helper.encrypt(username))
+        data = database.search_employee_by_username(kind=kind, username=username)
         people = []
-
         for row in data:
             user = User.to_user_decrypt(row)
-            if user.search_user(search_term=username.lower()):
-                people.append(user)
-
+            people.append(user)
         database.close()
-        return people[0]
+        return people
 
     def search_employee(self, kind):
         database = Database("analyse.db")
@@ -107,10 +110,16 @@ class PersonCRUD:
                 people.append(user)
 
         if len(people) == 0:
+            database.add_log(
+                    description=f"Searched for {kind}. No {kind}'s found.",
+                    suspicious="no")
             print("No people found, try again.")
             return people
 
         for person in people:
+            database.add_log(
+                    description=f"Searched for {kind}.",
+                    suspicious="no")
             print(person)
             print("list of people found")
 
@@ -122,30 +131,32 @@ class PersonCRUD:
         database = Database("analyse.db")
         people = self.search_member(kind=kind)
 
-        print(people[0].id)
-        for person in people:
-            print(Helper.encrypt(person.username))
-            data = database.search_person(kind=kind, firstname=Helper.encrypt(person.firstname),
-                                          lastname=Helper.encrypt(person.lastname))
-            print(data)
-            if data is not None:
-                database.delete_person(table=kind, firstname=Helper.encrypt(person.firstname),
-                                       lastname=Helper.encrypt(person.lastname))
-                database.commit()
-                print(f"{person.firstname} {person.lastname} Deleted")
+        if not people:
+            print(f"No {kind}'s found.")
+        else:
+            print(people[0].id)
+            for person in people:
+                data = database.search_person(kind=kind, firstname=Helper.encrypt(person.firstname),
+                                            lastname=Helper.encrypt(person.lastname))
+                print(data)
+                if data is not None:
+                    database.delete_person(table=kind, firstname=Helper.encrypt(person.firstname),
+                                        lastname=Helper.encrypt(person.lastname))
+                    database.commit()
+                    print(f"{person.firstname} {person.lastname} Deleted")
 
     def delete_employee(self, kind):
         kind = kind.lower()
         database = Database("analyse.db")
         people = self.search_employee(kind=kind)
 
-        print(people[0].id)
+       
         for person in people:
-            print(Helper.encrypt(person.username))
+         
             data = database.search_employee(kind=kind, firstname=Helper.encrypt(person.firstname),
                                             lastname=Helper.encrypt(person.lastname),
                                             username=Helper.encrypt(person.username))
-            print(data)
+           
             if data is not None:
                 database.delete_employee(table=kind, firstname=Helper.encrypt(person.firstname),
                                          lastname=Helper.encrypt(person.lastname),
@@ -155,152 +166,159 @@ class PersonCRUD:
 
     def modify_user(self, kind):
         # TODO circulaire import
-        from src.cdms.userinterfaceClass import UserInterface
+        from cdms.userinterfaceClass import UserInterface
         database = Database("analyse.db")
         data = database.get(columns='*', table=kind)
-        for row in data:
-            # print(row)
-            print("ID          |", row[0])
-            print("Firstname   |", Helper().decrypt(row[1]))
-            print("Lastname    |", Helper().decrypt(row[2]))
-            print(f"Role        | {kind}\n")
-        people = []
-        print("Please fill in ID, firstname, lastname, address, e-mailadress or phonenumber of the person you want to "
-              "modify.")
-        search_key = input("Who do you want to modify?: ")
-        attr = Advisor.get_attributes()  # ["username", "firstname", "lastname"]
-        for row in data:
-            print(row)
-            user = User.to_user_decrypt(row)
+        if not data:
+            print(f"No {kind}'s found.")
+        else:
+            for row in data:
+                # print(row)
+                print("ID          |", row[0])
+                print("Firstname   |", Helper().decrypt(row[1]))
+                print("Lastname    |", Helper().decrypt(row[2]))
+                print(f"Role        | {kind}\n")
+            people = []
+            print("Please fill in ID, firstname, lastname, address, e-mailadress or phonenumber of the person you want to "
+                "modify.")
+            search_key = input("Who do you want to modify?: ")
+            attr = Advisor.get_attributes()  # ["username", "firstname", "lastname"]
+            for row in data:
+                print(row)
+                user = User.to_user_decrypt(row)
 
-            if user.search_user(search_key.lower()):
-                people.append(user)
-        if len(people) == 0:
-            print("No people found, try again.")
-            self.modify_member(kind=kind)
+                if user.search_user(search_key.lower()):
+                    people.append(user)
+            if len(people) == 0:
+                print("No people found, try again.")
+                self.modify_member(kind=kind)
 
-        for person in people:
-            print(person)
-            print("list of people found")
+            for person in people:
+                print(person)
+                print("list of people found")
 
-        choices = []
-        for att in attr:
-            choices.append(f"Modify {att}")
-        choice = UserInterface().choices(choices)
+            choices = []
+            for att in attr:
+                choices.append(f"Modify {att}")
+            choice = UserInterface().choices(choices)
 
-        new_data = input(f"What will be the new {attr[choice - 1]}: ")
+            new_data = input(f"What will be the new {attr[choice - 1]}: ")
 
-        person_to_modify = people[0]
-        old_firstname = Helper().encrypt(person_to_modify.firstname)
-        old_lastname = Helper.encrypt(person_to_modify.lastname)
-        old_username = Helper.encrypt(person_to_modify.username)
-        for _ in attr:
-            # TODO mooier neerzetten
-            if choice != 2:
-                new_data = Validator().is_valid_name(new_data)
-            else:
-                new_data = Validator().is_valid_password(new_data)
-        person_to_modify = User.to_user_encrypt(person_to_modify)
-        new_data = Helper().encrypt(new_data)
-        if choice == 1:
-            person_to_modify.username = new_data
-        elif choice == 2:
-            person_to_modify.password = new_data
-        elif choice == 3:
-            person_to_modify.firstname = new_data
-        elif choice == 4:
-            person_to_modify.lastname = new_data
+            person_to_modify = people[0]
+            old_firstname = Helper().encrypt(person_to_modify.firstname)
+            old_lastname = Helper.encrypt(person_to_modify.lastname)
+            old_username = Helper.encrypt(person_to_modify.username)
+            for _ in attr:
+                # TODO mooier neerzetten
+                if choice != 2:
+                    new_data = Validator().is_valid_name(new_data)
+                else:
+                    new_data = Validator().is_valid_password(new_data)
+            person_to_modify = User.to_user_encrypt(person_to_modify)
+            new_data = Helper().encrypt(new_data)
+            if choice == 1:
+                person_to_modify.username = new_data
+            elif choice == 2:
+                person_to_modify.password = new_data
+            elif choice == 3:
+                person_to_modify.firstname = new_data
+            elif choice == 4:
+                person_to_modify.lastname = new_data
 
-        database.update_user(kind=kind, firstname=person_to_modify.firstname, lastname=person_to_modify.lastname,
-                             username=person_to_modify.username, password=person_to_modify.password,
-                             id=person_to_modify.id, old_firstname=old_firstname,
-                             old_lastname=old_lastname, registration_date=person_to_modify.registration_date,
-                             old_username=old_username)
-        database.commit()
-        database.close()
+            database.update_user(kind=kind, firstname=person_to_modify.firstname, lastname=person_to_modify.lastname,
+                                username=person_to_modify.username, password=person_to_modify.password,
+                                id=person_to_modify.id, old_firstname=old_firstname,
+                                old_lastname=old_lastname, registration_date=person_to_modify.registration_date,
+                                old_username=old_username)
+            database.commit()
+            database.close()
 
     def modify_member(self, kind):
         # TODO circulaire import
-        from src.cdms.userinterfaceClass import UserInterface
+        from cdms.userinterfaceClass import UserInterface
         database = Database("analyse.db")
         data = database.get(columns='*', table=kind)
-        for row in data:
-            # print(row)
-            print("ID          |", row[0])
-            print("Firstname   |", Helper().decrypt(row[1]))
-            print("Lastname    |", Helper().decrypt(row[2]))
-            print(f"Role        | {kind}\n")
-        people = []
-        print("Please fill in ID, firstname, lastname, address, e-mailadress or phonenumber of the person you want to "
-              "modify.")
-        search_key = input("Who do you want to modify?: ")
-
-        attr = Member.get_attributes()
-        for row in data:
-            member = Member.to_member_decrypt(row)
-            if member.search_member(search_term=search_key.lower()):
-                people.append(member)
-
-        for person in people:
-            print(person)
-            print("list of people found")
-
-        if len(people) == 0:
-            print("No people found, try again.")
-            self.modify_member(kind=kind)
-
-        person_to_modify = people[0]
-        choices = []
-        for att in attr:
-            choices.append(f"Modify {att}")
-        choice = UserInterface().choices(choices)
-
-        if choice == 7:
-            list_of_cities = ["Rotterdam", "Amsterdam", "Alkmaar", "Maastricht", "Utrecht", "Almere", "Lelystad",
-                              "Maassluis",
-                              "Vlaardingen", "Schiedam"]
-            city_index = UserInterface().choices(choices=list_of_cities, question="Please select a city: ")
-            new_data = list_of_cities[city_index - 1]
+        if not data:
+            print(f"No {kind}'s found.")
         else:
-            new_data = input(f"What will be the new {attr[choice - 1]}: ")
-        old_firstname = Helper().encrypt(person_to_modify.firstname)
-        old_lastname = Helper.encrypt(person_to_modify.lastname)
-        for _ in attr:
-            # TODO mooier neerzetten
-            if choice == 1:
-                new_data = Validator().is_valid_name(new_data)
-                person_to_modify.firstname = new_data
-            if choice == 2:
-                new_data = Validator().is_valid_name(new_data)
-                person_to_modify.lastname = new_data
-            elif choice == 3:
-                new_data = Validator().is_valid_email(new_data)
-                person_to_modify.email = new_data
-            elif choice == 4:
-                new_data = Validator().is_valid_name(new_data)
-                person_to_modify.street = new_data
-            elif choice == 5:
-                new_data = Validator().is_valid_number(new_data)
-                person_to_modify.house_number = new_data
-            elif choice == 6:
-                new_data = Validator().is_valid_zipcode(new_data)
-                person_to_modify.zipcode = new_data
-            elif choice == 7:
-                new_data = Validator().is_valid_name(new_data)
-                person_to_modify.city = new_data
-            elif choice == 8:
-                new_data = Validator().is_valid_phone_number(new_data)
-                person_to_modify.phone_number = new_data
-        person_to_modify = Member.to_member_encrypt(person_to_modify)
-        database.update_member(member=person_to_modify, old_firstname=old_firstname, old_lastname=old_lastname)
-        database.close()
+
+            for row in data:
+                # print(row)
+                print("ID          |", row[0])
+                print("Firstname   |", Helper().decrypt(row[1]))
+                print("Lastname    |", Helper().decrypt(row[2]))
+                print(f"Role        | {kind}\n")
+            people = []
+            print("Please fill in ID, firstname, lastname, address, e-mailadress or phonenumber of the person you want to "
+                "modify.")
+            search_key = input("Who do you want to modify?: ")
+
+            attr = Member.get_attributes()
+            for row in data:
+                member = Member.to_member_decrypt(row)
+                if member.search_member(search_term=search_key.lower()):
+                    people.append(member)
+
+            for person in people:
+                print(person)
+                print("list of people found")
+
+            if len(people) == 0:
+                print("No people found, try again.")
+                self.modify_member(kind=kind)
+
+            person_to_modify = people[0]
+            choices = []
+            for att in attr:
+                choices.append(f"Modify {att}")
+            choice = UserInterface().choices(choices)
+
+            if choice == 7:
+                list_of_cities = ["Rotterdam", "Amsterdam", "Alkmaar", "Maastricht", "Utrecht", "Almere", "Lelystad",
+                                "Maassluis",
+                                "Vlaardingen", "Schiedam"]
+                city_index = UserInterface().choices(choices=list_of_cities, question="Please select a city: ")
+                new_data = list_of_cities[city_index - 1]
+            else:
+                new_data = input(f"What will be the new {attr[choice - 1]}: ")
+            old_firstname = Helper().encrypt(person_to_modify.firstname)
+            old_lastname = Helper.encrypt(person_to_modify.lastname)
+            for _ in attr:
+                # TODO mooier neerzetten
+                if choice == 1:
+                    new_data = Validator().is_valid_name(new_data)
+                    person_to_modify.firstname = new_data
+                if choice == 2:
+                    new_data = Validator().is_valid_name(new_data)
+                    person_to_modify.lastname = new_data
+                elif choice == 3:
+                    new_data = Validator().is_valid_email(new_data)
+                    person_to_modify.email = new_data
+                elif choice == 4:
+                    new_data = Validator().is_valid_name(new_data)
+                    person_to_modify.street = new_data
+                elif choice == 5:
+                    new_data = Validator().is_valid_number(new_data)
+                    person_to_modify.house_number = new_data
+                elif choice == 6:
+                    new_data = Validator().is_valid_zipcode(new_data)
+                    person_to_modify.zipcode = new_data
+                elif choice == 7:
+                    new_data = Validator().is_valid_name(new_data)
+                    person_to_modify.city = new_data
+                elif choice == 8:
+                    new_data = Validator().is_valid_phone_number(new_data)
+                    person_to_modify.phone_number = new_data
+            person_to_modify = Member.to_member_encrypt(person_to_modify)
+            database.update_member(member=person_to_modify, old_firstname=old_firstname, old_lastname=old_lastname)
+            database.close()
 
     def change_password(self, kind, access):
         kind = kind.lower()
         database = Database("analyse.db")
         # TODO even checken of kind permissie heeft voor het veranderen van wachtworden
-        from src.cdms.userinterfaceClass import UserInterface
-        from src.cdms.userinterfaceClass import Role
+        from cdms.userinterfaceClass import UserInterface
+        from cdms.userinterfaceClass import Role
 
         actions = [("Reset an advisors password.", Role.SYSTEM_ADMINISTATOR),
                    ("Reset an systemadmin password.", Role.SUPER_ADMINISTATOR)]
@@ -350,7 +368,7 @@ class PersonCRUD:
 
     @staticmethod
     def check_users():
-        from src.cdms.userinterfaceClass import UserInterface
+        from cdms.userinterfaceClass import UserInterface
         loop = True
         database = Database("analyse.db")
         data = None

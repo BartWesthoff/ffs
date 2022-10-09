@@ -82,7 +82,7 @@ class Helper:
         return ''.join(uuid) + str(last_digit)
     @staticmethod
     def username_checker(username):
-        from src.cdms.databaseclass import Database
+        from cdms.databaseclass import Database
         database = Database("analyse.db")
         while True:
             test = 0
@@ -130,7 +130,7 @@ class Helper:
     @staticmethod
     def make_backup():
         # TODO low: Circular import vermijden
-        from src.cdms.databaseclass import Database
+        from cdms.databaseclass import Database
 
         database = Database("analyse.db")
         database.add_log(description="database backup", suspicious="no")
@@ -140,7 +140,7 @@ class Helper:
     @staticmethod
     def restore_backup():
         # TODO low: Circular import vermijden
-        from src.cdms.databaseclass import Database
+        from cdms.databaseclass import Database
 
         database = Database("analyse_backup.db")
         # because it's filling in first then backing up with the already logged case
@@ -150,11 +150,12 @@ class Helper:
     @staticmethod
     def see_logs():
         # TODO low: Circular import vermijden
-        from src.cdms.databaseclass import Database
+        from cdms.databaseclass import Database
         database = Database("analyse.db")
         kind = "logging"
         data = database.get(columns='*', table=f'{kind}')
         database.commit()
+        print(data)
         try:
             for row in data:
                 print("ID             |", row[0])

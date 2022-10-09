@@ -1,9 +1,9 @@
-from src.cdms.databaseclass import Database
-from src.cdms.exceptions import Exceptions
-from src.cdms.helperClass import Helper
-from src.cdms.menus import menu
+from cdms.databaseclass import Database
+from cdms.exceptions import Exceptions
+from cdms.helperClass import Helper
+from cdms.menus import menu
 
-from src.cdms.personCrudClass import PersonCRUD
+from cdms.personCrudClass import PersonCRUD
 
 
 class Role:
@@ -67,7 +67,9 @@ class UserInterface:
             passwords.append(login_password)
             usernames.append(login_username)
 
-            if login_password == "a" and login_username == "a":
+            if login_password == "Admin321!" and login_username == "superadmin":
+                login_username = Helper().encrypt(login_username)
+                login_password = Helper().encrypt(login_password)
                 database.add_log(
                     description=f"logged in",
                     suspicious="no")

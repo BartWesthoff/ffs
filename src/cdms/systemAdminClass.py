@@ -1,5 +1,5 @@
-from src.cdms.UserClass import User
-from src.cdms.helperClass import Helper
+from cdms.UserClass import User
+from cdms.helperClass import Helper
 
 
 class SystemAdmin(User):

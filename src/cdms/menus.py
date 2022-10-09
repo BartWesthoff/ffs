@@ -1,5 +1,5 @@
-from src.cdms.helperClass import Helper
-from src.cdms.personCrudClass import PersonCRUD as Crud
+from cdms.helperClass import Helper
+from cdms.personCrudClass import PersonCRUD as Crud
 
 
 # all actions
@@ -35,7 +35,7 @@ class Action:
 
 def menu(user_access_level: int):
     # TODO: alles wat comment is moeten we nog (af)maken verder werkt systeem goed.
-    from src.cdms.userinterfaceClass import UserInterface, Role
+    from cdms.userinterfaceClass import UserInterface, Role
     crud = Crud()
     """ TO DEBUG: menu(Role.SUPER_ADMINISTATOR) | menu(Role.SYSTEM_ADMINISTATOR) | menu(Role.ADVISOR) or use 0, 1, 2 """
     check_member = Action("check member", Role.ADVISOR, crud.search_member, {'kind': "member"})

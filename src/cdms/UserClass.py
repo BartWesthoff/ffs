@@ -1,4 +1,4 @@
-from src.cdms.helperClass import Helper
+from cdms.helperClass import Helper
 
 
 class User:

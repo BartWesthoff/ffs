@@ -1,7 +1,7 @@
 import datetime
 import sqlite3
-from src.cdms.memberClass import Member
-from src.cdms.helperClass import Helper
+from cdms.memberClass import Member
+from cdms.helperClass import Helper
 
 
 class Database:
@@ -37,7 +37,6 @@ class Database:
 
     def login(self, kind: str, username: str, password: str):
         query = f"SELECT * FROM {kind} WHERE username = ? AND password = ?;"
-        print(f"SELECT * FROM {kind} WHERE username = {username} AND password = {password};")
         self.cursor.execute(query, (username, password))
 
         result = self.cursor.fetchone()
@@ -48,7 +47,6 @@ class Database:
     def search_employee(self, kind, firstname, lastname, username):
         query = f"SELECT * FROM {kind} WHERE firstname = ? AND lastname = ? AND username = ? ;"
 
-        print(f"SELECT * FROM {kind} WHERE firstname = {firstname} AND lastname = {lastname} and username {username};")
 
         self.cursor.execute(query, (firstname, lastname, username))
 
@@ -57,7 +55,6 @@ class Database:
     def search_person(self, kind, firstname, lastname):
         query = f"SELECT * FROM {kind} WHERE firstname = ? AND lastname = ?;"
 
-        print(f"SELECT * FROM {kind} WHERE firstname = {firstname} AND lastname = {lastname};")
 
         self.cursor.execute(query, (firstname, lastname))
 
@@ -69,25 +66,22 @@ class Database:
         print(f"SELECT * from {kind} WHERE username = {username}")
         args = (username,)
         self.cursor.execute(query2, args)
-
-        rows = self.cursor.fetchone()
+        rows = self.cursor.fetchall()
         return rows
     def search_person_by_id(self, kind, id):
         query = f"SELECT * FROM {kind} WHERE id = ?;"
-        print(f"SELECT * FROM {kind} WHERE id = {id};")
         self.cursor.execute(query, id)
         return self.cursor.fetchone()
 
     def get_all_of_kind(self, kind):
         query = f"SELECT * FROM {kind};"
-        print(f"SELECT * FROM {kind};")
         self.cursor.execute(query)
         return self.cursor.fetchall()
 
     def add_log(self, description, suspicious):
 
         username = Helper().check_logged_in()
-        username = Helper().encrypt(username)
+        # username_encryp = Helper().encrypt(username)
         description = Helper().encrypt(description)
         suspicious = Helper().encrypt(suspicious)
         now = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -95,14 +89,12 @@ class Database:
         self.cursor.execute(
             f"INSERT INTO logging (username,datetime,description,suspicious)VALUES (:user, :date,:desc,:sus)",
             {"user": username, "date": now, "desc": description, "sus": suspicious})
-        print(
-            f"INSERT INTO logging (username,datetime,description,suspicious)VALUES ({username}, {now},{description},{suspicious})")
+      
         self.commit()
 
     def get(self, table, columns, limit=None, where=1):
 
         query2 = f"SELECT * from {table} WHERE ?"
-        print(f"SELECT * from {table} WHERE {where}")
         args = (columns, table, where)
         self.cursor.execute(query2, (where,))
 
@@ -127,7 +119,6 @@ class Database:
 
     def create_employee(self, kind, firstname, lastname, username, password, registration_date, id):
 
-        print(f"INSERT INTO {kind} VALUES ({id}, {firstname}, {lastname}, {username}, {password}, {registration_date})")
 
         self.cursor.execute(f"INSERT INTO {kind} VALUES (:id, :first,:last,:user,:pass,:date)",
                             {"id": id, "first": firstname, "last": lastname, "user": username,
@@ -145,21 +136,18 @@ class Database:
     def delete_employee(self, table, firstname, lastname, username):
 
         query = f"DELETE FROM {table} WHERE firstname = ? AND lastname = ? AND username = ? ;"
-        print(f"DELETE FROM {table} WHERE firstname = {firstname} AND lastname = {lastname} AND username = {lastname};")
         args = (firstname, lastname, username)
         self.cursor.execute(query, args)
 
     def delete_person(self, table, firstname, lastname):
 
         query = f"DELETE FROM {table} WHERE firstname = ? AND lastname = ?;"
-        print(f"DELETE FROM {table} WHERE firstname = {firstname} AND lastname = {lastname};")
         args = (firstname, lastname)
         self.cursor.execute(query, args)
 
     def update_password(self, kind, password, username, user):
 
         query = f"DELETE FROM {kind} WHERE username = ? ;"
-        print(f"DELETE FROM {kind} WHERE  username = {username};")
         args = (username,)
         self.cursor.execute(query, args)
         self.commit()

@@ -1,7 +1,7 @@
-from src.cdms.databaseclass import Database
-from src.cdms.memberClass import Member
-from src.cdms.userinterfaceClass import UserInterface, Role
-from src.cdms.menus import *
+from cdms.databaseclass import Database
+from cdms.memberClass import Member
+from cdms.userinterfaceClass import UserInterface, Role
+from cdms.menus import *
 
 if __name__ == "__main__":
     UserInterface().main_screen()
