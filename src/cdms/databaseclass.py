@@ -45,6 +45,15 @@ class Database:
             return False
         return result
 
+    def search_employee(self, kind, firstname, lastname, username):
+        query = f"SELECT * FROM {kind} WHERE firstname = ? AND lastname = ? AND username = ? ;"
+
+        print(f"SELECT * FROM {kind} WHERE firstname = {firstname} AND lastname = {lastname} and username {username};")
+
+        self.cursor.execute(query, (firstname, lastname, username))
+
+        return self.cursor.fetchone()
+
     def search_person(self, kind, firstname, lastname):
         query = f"SELECT * FROM {kind} WHERE firstname = ? AND lastname = ?;"
 
@@ -112,11 +121,18 @@ class Database:
                 "city": member.city, "phone": member.mobile_number, "date": member.registration_date})
         self.commit()
 
-    def delete_person(self, table, firstname, lastname, username):
+    def delete_employee(self, table, firstname, lastname, username):
 
-        query = f"DELETE FROM {table} WHERE firstname = ? AND lastname = ? AND lastname = ? ;"
-        print(f"DELETE FROM {table} WHERE firstname = {firstname} AND lastname = {lastname} AND lastname = {lastname};")
+        query = f"DELETE FROM {table} WHERE firstname = ? AND lastname = ? AND username = ? ;"
+        print(f"DELETE FROM {table} WHERE firstname = {firstname} AND lastname = {lastname} AND username = {lastname};")
         args = (firstname, lastname, username)
+        self.cursor.execute(query, args)
+
+    def delete_person(self, table, firstname, lastname):
+
+        query = f"DELETE FROM {table} WHERE firstname = ? AND lastname = ?;"
+        print(f"DELETE FROM {table} WHERE firstname = {firstname} AND lastname = {lastname};")
+        args = (firstname, lastname)
         self.cursor.execute(query, args)
 
     def update_password(self, kind, password, username):

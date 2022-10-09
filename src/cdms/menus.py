@@ -45,7 +45,7 @@ def menu(user_access_level: int):
     list_of_users = Action("list of users", Role.SYSTEM_ADMINISTATOR, crud.check_users, None)
     add_new_advisor = Action("add advisor", Role.SYSTEM_ADMINISTATOR, crud.add_person, {'kind': "advisor"})
     modify_advisor = Action("modify advisor", Role.SYSTEM_ADMINISTATOR, crud.modify_user, {'kind': "advisor"})
-    delete_advisor = Action("delete advisor", Role.SYSTEM_ADMINISTATOR, crud.delete_person, {'kind': "advisor"})
+    delete_advisor = Action("delete advisor", Role.SYSTEM_ADMINISTATOR, crud.delete_employee, {'kind': "advisor"})
     # reset_advisor_password = Action("reset advisor password", Role.SYSTEM_ADMINISTATOR) ## not implemented
 
     # TODO: testen!!!
@@ -61,7 +61,7 @@ def menu(user_access_level: int):
                                    {'kind': "systemadmin"})
     modify_system_administrator = Action("modify system administrator", Role.SUPER_ADMINISTATOR, crud.modify_user,
                                          {'kind': "systemadmin"})
-    delete_system_administrator = Action("delete system administrator", Role.SUPER_ADMINISTATOR, crud.delete_person,
+    delete_system_administrator = Action("delete system administrator", Role.SUPER_ADMINISTATOR, crud.delete_employee,
                                          {'kind': "systemadmin"})
 
     logout = Action("logout", Role.ADVISOR, UserInterface().main_screen, None)

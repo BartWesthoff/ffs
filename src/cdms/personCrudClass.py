@@ -17,23 +17,23 @@ class PersonCRUD:
         kind = kind.lower()
         database = Database("analyse.db")
         if kind.lower() in ["advisor", "systemadmin"]:
-            firstname = Validator().is_valid_name(input("What is your Firstname?: "))
+            firstname = Validator().is_valid_name(input("What is your firstname?: "))
             firstname = Helper().encrypt(firstname)
 
-            lastname = Validator().is_valid_name(input("What is your Lastname?: "))
+            lastname = Validator().is_valid_name(input("What is your lastname?: "))
             lastname = Helper().encrypt(lastname)
 
-            username = Helper().username_checker(input("username?: "))
+            username = Helper().username_checker(input("What is your username?: "))
             username = Helper().encrypt(username)
 
-            password = Validator().is_valid_password(input("password?: "))
+            password = Validator().is_valid_password(input("What is your password?: "))
             password = Helper().encrypt(password)
 
             registration_date = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
-            id = Helper.generate_uuid()
+            uuid = Helper.generate_uuid()
             database.create_employee(kind=kind, firstname=firstname, lastname=lastname, username=username,
-                                     password=password, id=id, registration_date=registration_date)
+                                     password=password, id=uuid, registration_date=registration_date)
 
         elif kind.lower() == "member":
             Member().create_member()
@@ -99,38 +99,40 @@ class PersonCRUD:
         return people
 
     def delete_person(self, kind):
-        from src.cdms.userinterfaceClass import UserInterface
         kind = kind.lower()
         database = Database("analyse.db")
-        # data = database.get(columns='*', table=kind)
-        # for row in data:
-        #     print("ID          |", row[0])
-        #     print("Firstname   |", Helper().decrypt(row[1]))
-        #     print("Lastname    |", Helper().decrypt(row[2]))
-        #     print(f"Role        | {kind}\n")
-        # if kind == "member":
-        #     members = []
-        #     for row in data:
-        #         member = Member.to_member_decrypt(row)
-        #         members.append(member)
-        people = []
-        if kind == "member":
-            people = self.search_member(kind=kind)
-        elif kind == "advisor" or kind == "systemadmin":
-            people = self.search_employee(kind=kind)
-        else:
-            print("No people found, try again.")
-            UserInterface().main_screen()
+        people = self.search_member(kind=kind)
+
         print(people[0].id)
         for person in people:
             print(Helper.encrypt(person.username))
-            data = database.search_person(kind=kind, firstname=Helper.encrypt(person.firstname), lastname=Helper.encrypt(person.lastname))
+            data = database.search_person(kind=kind, firstname=Helper.encrypt(person.firstname),
+                                          lastname=Helper.encrypt(person.lastname))
             print(data)
             if data is not None:
-                database.delete_person(table=kind, firstname=Helper.encrypt(person.firstname), lastname=Helper.encrypt(person.lastname), username=Helper.encrypt(person.username))
+                database.delete_person(table=kind, firstname=Helper.encrypt(person.firstname),
+                                       lastname=Helper.encrypt(person.lastname))
                 database.commit()
                 print(f"{person.firstname} {person.lastname} Deleted")
 
+    def delete_employee(self, kind):
+        kind = kind.lower()
+        database = Database("analyse.db")
+        people = self.search_employee(kind=kind)
+
+        print(people[0].id)
+        for person in people:
+            print(Helper.encrypt(person.username))
+            data = database.search_employee(kind=kind, firstname=Helper.encrypt(person.firstname),
+                                            lastname=Helper.encrypt(person.lastname),
+                                            username=Helper.encrypt(person.username))
+            print(data)
+            if data is not None:
+                database.delete_employee(table=kind, firstname=Helper.encrypt(person.firstname),
+                                         lastname=Helper.encrypt(person.lastname),
+                                         username=Helper.encrypt(person.username))
+                database.commit()
+                print(f"{person.firstname} {person.lastname} Deleted")
 
     def modify_user(self, kind):
         # TODO circulaire import
