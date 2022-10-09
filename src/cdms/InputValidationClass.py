@@ -27,22 +27,12 @@ class Validator:
         return zipcode.capitalize()
 
     def is_valid_name(self, name):
-        if name.isnumeric():
-            name = input("name cannot be a integer. Try again: ")
+        if not name.isalpha():
+            name = input("name cannot include a integer. Try again: ")
             self.is_valid_name(name)
         if len(name) > 20:
             name = input("name cannot be a longer than 20 characters. Try again: ")
             self.is_valid_name(name)
-
-        return name.capitalize()
-
-    def is_valid_streetname(self, name):
-        if not name.isalpha():
-            name = input("Streetname cannot contain an integer. Try again: ")
-            self.is_valid_streetname(name)
-        if len(name) > 20:
-            name = input("Name cannot be a longer than 20 characters. Try again: ")
-            self.is_valid_streetname(name)
 
         return name.capitalize()
 

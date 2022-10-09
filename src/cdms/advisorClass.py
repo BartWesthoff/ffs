@@ -1,34 +1,19 @@
 """"
 Advisor class
 """
+from src.cdms.UserClass import User
 from src.cdms.helperClass import Helper
 
 
-class Advisor:
+class Advisor(User):
 
     def __init__(self, username, password, firstname, lastname, uuid, registration_date):
-        self.username = username
-        self.password = password
-        self.firstname = firstname
-        self.lastname = lastname
-        self.registration_date = registration_date
-        self.uuid = uuid
-        self.attributes = ["username", "password", "firstname", "lastname"]
+        super().__init__(username, password, firstname, lastname, uuid, registration_date)
 
     @staticmethod
     def to_advisor(data):
         return Advisor(uuid=data[4], username=data[0], password=data[1], firstname=data[2], lastname=data[3],
                        registration_date=data[5])
-
-    def search_advisor(self, search_term):
-        for attribute in self.attributes:
-            if search_term in getattr(self, attribute).lower():
-                return True
-        return False
-
-    @staticmethod
-    def get_attributes():
-        return ["username", "password", "firstname", "lastname"]
 
     @staticmethod
     def to_advisor_decrypt(data):
@@ -42,7 +27,6 @@ class Advisor:
                            firstname=Helper().decrypt(data[2]), lastname=Helper().decrypt(data[3]),
                            registration_date=data[5], uuid=data[4])
 
-
     def __str__(self):
         """ dit is to str() methode"""
         return f"Advisor: \n" \
@@ -52,10 +36,3 @@ class Advisor:
                f"Firstname: {self.firstname} \n" \
                f"Lastname: {self.lastname} \n" \
                f"Registration date: {self.registration_date} \n"
-
-
-
-
-
-
-

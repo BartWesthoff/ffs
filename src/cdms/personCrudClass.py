@@ -17,10 +17,13 @@ class PersonCRUD:
         database = Database("analyse.db")
         if kind.lower() in ["advisor", "systemadmin"]:
             firstname = input("firstname?: ")
+            firstname = Validator().is_valid_name(firstname)
             firstname = Helper().encrypt(firstname)
             lastname = input("lastname?: ")
+            lastname = Validator().is_valid_name(lastname)
             lastname = Helper().encrypt(lastname)
             username = input("username?: ")
+
             username = Helper().username_checker(username)
             username = Helper().encrypt(username)
             password = input("password?: ")
@@ -257,8 +260,7 @@ class PersonCRUD:
         database = Database("analyse.db")
         while loop:
             choice = UserInterface().choices(
-                ["Check Advisors", "Check System Administrators",
-                 "Check Super Administrator", "All; users"])
+                ["Check Advisors", "Check System Administrators", "Check Super Administrator", "All; users"])
             _type = None
             if choice == 1:
                 _type = "advisor"

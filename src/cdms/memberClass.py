@@ -39,14 +39,14 @@ class Member:
         email = Validator().is_valid_email(input("Please enter a email-address: "))
         email = Helper().encrypt(email)
 
-        street = Validator().is_valid_streetname(input("Please enter a streetname: "))
+        street = Validator().is_valid_name(input("Please enter a streetname: "))
         street = Helper().encrypt(street)
 
         house_number = Validator().is_valid_number(input("Please enter a house number: "))
         house_number = Helper().encrypt(house_number)
 
         zipcode = Validator().is_valid_zipcode(input("Please enter a zipcode: "))
-        zipcode = Helper().encrypt(zipcode)
+        zipcode = Helper().encrypt(zipcode.upper())
 
         list_of_cities = ["Rotterdam", "Amsterdam", "Alkmaar", "Maastricht", "Utrecht", "Almere", "Lelystad",
                           "Maassluis",
