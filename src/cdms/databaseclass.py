@@ -45,10 +45,13 @@ class Database:
             return False
         return result
 
-    def search_person(self, kind, firstname, lastname):
+    def search_person(self, kind, firstname, lastname, id):
         query = f"SELECT * FROM {kind} WHERE firstname = ? AND lastname = ?;"
-        print(f"SELECT * FROM {kind} WHERE firstname = {firstname} AND lastname = {lastname};")
-        self.cursor.execute(query, (firstname, lastname))
+        query2= f"SELECT * FROM {kind} WHERE id = ?;"
+        # print(f"SELECT * FROM {kind} WHERE firstname = {firstname} AND lastname = {lastname};")
+        print(f"SELECT * FROM {kind} WHERE id = {id};")
+        # self.cursor.execute(query, (firstname, lastname))
+        self.cursor.execute(query2, (id,))
         return self.cursor.fetchone()
 
     def search_person_by_id(self, kind, id):
@@ -80,6 +83,7 @@ class Database:
     def get(self, table, columns, limit=None, where=1):
 
         query2 = f"SELECT * from {table} WHERE ?"
+        print(f"SELECT * from {table} WHERE {where}")
         args = (columns, table, where)
         self.cursor.execute(query2, (where,))
 
@@ -90,10 +94,10 @@ class Database:
 
         return self.get(table, columns, limit=1)[0]
 
-    def create_employee(self, kind, firstname, lastname, username, password):
-        self.cursor.execute(f"INSERT INTO {kind} VALUES (:id, :first,:last,:user,:pass)",
+    def create_employee(self, kind, firstname, lastname, username, password, registration_date):
+        self.cursor.execute(f"INSERT INTO {kind} VALUES (:id, :first,:last,:user,:pass,:date)",
                             {"id": None, "first": firstname, "last": lastname, "user": username,
-                             "pass": password})
+                             "pass": password, "date": registration_date})
         self.commit()
 
     def create_member(self, member: Member):
@@ -116,7 +120,7 @@ class Database:
         self.cursor.execute(query, args)
 
     def update_password(self, kind, password, username):
-
+        print(f"UPDATE {kind} SET password = ? WHERE username = ?;", (password, username))
         self.cursor.execute(f"UPDATE {kind} SET password = ? WHERE username = ?;", (password, username))
 
     def query(self, sql, values=None):
@@ -130,14 +134,14 @@ class Database:
         try:
             self.query(
                 "CREATE TABLE 'systemadmin' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT "
-                "NULL, 'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) "
+                "NULL, 'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'date' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) "
                 "NOT NULL)")
         except:
             pass
         try:
             self.query(
                 "CREATE TABLE 'advisor' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT NULL, "
-                "'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) NOT "
+                "'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'date' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) NOT "
                 "NULL)")
         except:
             pass

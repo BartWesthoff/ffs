@@ -21,6 +21,8 @@ class Member:
         self.registration_date = registration_date
         self.id = id
         self.uuid = uuid
+        self.attributes = ["firstname", "lastname", "email", "streetname", "housenumber", "zipcode", "city", "mobile "
+                                                                                                             "number"]
 
     @staticmethod
     def create_member():
@@ -70,6 +72,12 @@ class Member:
         database.create_member(member)
         return member
 
+    def search_member(self, search_term):
+        for attribute in self.attributes:
+            if search_term in getattr(self, attribute).lower():
+                return True
+        return False
+
     @staticmethod
     def dummy_member():
         firstname = "test"
@@ -94,6 +102,23 @@ class Member:
                       zipcode=data[5], city=data[6], mail=data[7], mobile_number=data[8], registration_date=data[9],
                       uuid=data[10])
 
+    @staticmethod
+    def to_member_decrypt(data):
+        # TOOD: make generic for data en member (self)
+        if type(data) == Member:
+            return Member(id=data.id, firstname=Helper().decrypt(data.firstname),
+                          lastname=Helper().decrypt(data.lastname),
+                          street=Helper().decrypt(data.street), house_number=Helper().decrypt(data.house_number),
+                          zipcode=Helper().decrypt(data.zipcode), city=Helper().decrypt(data.city),
+                          mail=Helper().decrypt(data.mail), mobile_number=Helper().decrypt(data.mobile_number),
+                          registration_date=data.registration_date, uuid=data.uuid)
+        else:
+            return Member(id=data[0], firstname=Helper().decrypt(data[1]), lastname=Helper().decrypt(data[2]),
+                          street=Helper().decrypt(data[3]), house_number=Helper().decrypt(data[4]),
+                          zipcode=Helper().decrypt(data[5]), city=Helper().decrypt(data[6]),
+                          mail=Helper().decrypt(data[7]), mobile_number=Helper().decrypt(data[8]),
+                          registration_date=data[9], uuid=data[10])
+
     def __str__(self):
         """ dit is to str() methode"""
         return f"Member: \n" \
@@ -109,3 +134,7 @@ class Member:
                f"Mobile number: {self.mobile_number} \n" \
                f"Registration date: {self.registration_date} \n" \
                f""
+
+    @staticmethod
+    def get_attributes():
+        return ["firstname", "lastname", "email", "streetname", "housenumber", "zipcode", "city", "mobile number"]
