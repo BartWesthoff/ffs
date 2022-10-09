@@ -1,3 +1,4 @@
+from src.cdms.helperClass import Helper
 from src.cdms.personCrudClass import PersonCRUD as Crud
 
 
@@ -39,8 +40,9 @@ def menu(user_access_level: int):
     """ TO DEBUG: menu(Role.SUPER_ADMINISTATOR) | menu(Role.SYSTEM_ADMINISTATOR) | menu(Role.ADVISOR) or use 0, 1, 2 """
     check_member = Action("check member", Role.ADVISOR, crud.search_member, {'kind': "member"})
     add_member = Action("add member", Role.ADVISOR, crud.add_person, {'kind': "member"})
-    modify_member = Action("modify member", Role.ADVISOR,  crud.modify_person, {'kind': "member"})
-    change_password = Action("change password", Role.ADVISOR, crud.change_password, {'kind': "advisor"})
+    modify_member = Action("modify member", Role.ADVISOR,  crud.modify_member, {'kind': "member"})
+    change_password = Action("change password", Role.ADVISOR, crud.change_password, {'kind': "advisor",
+                                                                                     'access': user_access_level})
 
     list_of_users = Action("list of users", Role.SYSTEM_ADMINISTATOR, crud.check_users, None)
     add_new_advisor = Action("add advisor", Role.SYSTEM_ADMINISTATOR, crud.add_person, {'kind': "advisor"})
@@ -49,9 +51,9 @@ def menu(user_access_level: int):
     # reset_advisor_password = Action("reset advisor password", Role.SYSTEM_ADMINISTATOR) ## not implemented
 
     # TODO: testen!!!
-    # make_a_backup = Action("make a backup", Role.SYSTEM_ADMINISTATOR, Helper.make_backup)
-    # restore_a_backup = Action("restore a backup", Role.SYSTEM_ADMINISTATOR, Helper.restore_backup)
-    # see_logs = Action("see log(s)", Role.SYSTEM_ADMINISTATOR, Helper.see_logs)
+    make_a_backup = Action("make a backup", Role.SYSTEM_ADMINISTATOR, Helper.make_backup, None)
+    restore_a_backup = Action("restore a backup", Role.SYSTEM_ADMINISTATOR, Helper.restore_backup, None)
+    see_logs = Action("see log(s)", Role.SYSTEM_ADMINISTATOR, Helper.see_logs, None)
 
     delete_member = Action("delete member", Role.SYSTEM_ADMINISTATOR, crud.delete_person, {'kind': "member"})
 
@@ -68,9 +70,12 @@ def menu(user_access_level: int):
 
     actions = [list_of_users, check_member, add_member, modify_member, change_password, add_new_advisor, modify_advisor,
                delete_advisor,
-               # make_a_backup, restore_a_backup, see_logs,
+               make_a_backup, restore_a_backup,
+               see_logs,
                delete_member, add_system_administrator,
                modify_system_administrator, delete_system_administrator, logout]
+
+
 
     available_actions = []
     for action in actions:

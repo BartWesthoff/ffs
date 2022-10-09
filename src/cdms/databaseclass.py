@@ -104,6 +104,12 @@ class Database:
 
         return self.get(table, columns, limit=1)[0]
 
+    def update_member(self, member, old_firstname, old_lastname):
+        self.delete_person(table="member", firstname=old_firstname, lastname=old_lastname)
+        self.commit()
+        self.create_member(member)
+        self.commit()
+
     def create_employee(self, kind, firstname, lastname, username, password, registration_date, id):
 
         print(f"INSERT INTO {kind} VALUES ({id}, {firstname}, {lastname}, {username}, {password}, {registration_date})")
@@ -117,8 +123,8 @@ class Database:
         self.cursor.execute(
             "INSERT INTO member VALUES (:id, :first,:last,:email,:street,:house_number, :zipcode, :city, :phone, :date)",
             {"id": member.id, "first": member.firstname, "last": member.lastname, "email": member.mail,
-                "street": member.street, "house_number": member.house_number, "zipcode": member.zipcode,
-                "city": member.city, "phone": member.mobile_number, "date": member.registration_date})
+             "street": member.street, "house_number": member.house_number, "zipcode": member.zipcode,
+             "city": member.city, "phone": member.mobile_number, "date": member.registration_date})
         self.commit()
 
     def delete_employee(self, table, firstname, lastname, username):
@@ -137,7 +143,11 @@ class Database:
 
     def update_password(self, kind, password, username):
         print(f"UPDATE {kind} SET password = ? WHERE username = ?;", (password, username))
-        self.cursor.execute(f"UPDATE {kind} SET password = ? WHERE username = ?;", (password, username))
+        # self.cursor.execute(f"UPDATE {kind} SET password = ? WHERE username = ?;", (password, username))
+        query = f"UPDATE {kind} SET password = ? WHERE username = ?;"
+        args = (password, username)
+        self.cursor.execute(query, args)
+        self.commit()
 
     def query(self, sql, values=None):
         if values is None:

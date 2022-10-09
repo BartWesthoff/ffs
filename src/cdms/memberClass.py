@@ -67,11 +67,24 @@ class Member:
                 return True
         return False
 
-
     @staticmethod
     def get_attributes():
         return ["firstname", "lastname", "mail", "street", "house_number", "zipcode", "city", "mobile_number"]
 
+    @staticmethod
+    def to_member_encrypt(data):
+        if type(data) == Member:
+            return Member(firstname=Helper().encrypt(data.firstname), lastname=Helper().encrypt(data.lastname),
+                          mail=Helper().encrypt(data.mail), street=Helper().encrypt(data.street),
+                          house_number=Helper().encrypt(data.house_number), zipcode=Helper().encrypt(data.zipcode),
+                          city=Helper().encrypt(data.city), mobile_number=Helper().encrypt(data.mobile_number),
+                          registration_date=data.registration_date, id=data.id)
+        else:
+            return Member(firstname=Helper().encrypt(data[0]), lastname=Helper().encrypt(data[1]),
+                          mail=Helper().encrypt(data[2]), street=Helper().encrypt(data[3]),
+                          house_number=Helper().encrypt(data[4]), zipcode=Helper().encrypt(data[5]),
+                          city=Helper().encrypt(data[6]), mobile_number=Helper().encrypt(data[7]),
+                          registration_date=data[8], id=data[9])
 
     @staticmethod
     def dummy_member():
@@ -127,4 +140,3 @@ class Member:
                f"Mobile number: {self.mobile_number} \n" \
                f"Registration date: {self.registration_date} \n" \
                f""
-

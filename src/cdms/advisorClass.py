@@ -15,6 +15,20 @@ class Advisor(User):
         return Advisor(username=data[0], password=data[1], firstname=data[2], lastname=data[3],
                        registration_date=data[5])
 
+
+    @staticmethod
+    def to_advisor_encrypt(data):
+        if type(data) == Advisor:
+            return Advisor(id=Helper().encrypt(data.id), username=Helper().encrypt(data.username),
+                           password=Helper().encrypt(data.password),
+                           firstname=Helper().encrypt(data.firstname), lastname=Helper().encrypt(data.lastname),
+                           registration_date=data.registration_date)
+        else:
+            return Advisor(id=Helper().encrypt(data[0]),
+                           password=Helper().encrypt(data[4]), username=Helper().encrypt(data[3]),
+                           firstname=Helper().encrypt(data[1]), lastname=Helper().encrypt(data[2]),
+                           registration_date=data[5])
+
     @staticmethod
     def to_advisor_decrypt(data):
 
