@@ -9,7 +9,7 @@ from src.cdms.helperClass import Helper
 class Member:
     def __init__(self, firstname=None, lastname=None, mail=None, street=None, house_number=None, zipcode=None,
                  city=None,
-                 mobile_number=None, registration_date=None, id=None, uuid=None):
+                 mobile_number=None, registration_date=None, id=None):
         self.firstname = firstname
         self.lastname = lastname
         self.mail = mail
@@ -20,7 +20,6 @@ class Member:
         self.mobile_number = mobile_number
         self.registration_date = registration_date
         self.id = id
-        self.uuid = uuid
         self.attributes = ["firstname", "lastname", "email", "streetname", "housenumber", "zipcode", "city", "mobile "
                                                                                                              "number"]
 
@@ -58,17 +57,14 @@ class Member:
         mobile_number = "31-6-" + mobile_number
         mobile_number = Helper().encrypt(mobile_number)
 
-        uuid = [str(randint(0 if i == 0 else 1, 9)) for i in range(9)]
-        last_digit = sum(int(i) for i in uuid) % 10
-        uuid = ''.join(uuid) + str(last_digit)
-
-        # TODO: Encrypt en dycrypt uuid and registration date
-        # TODO: ID skippen en UUID van maken
+        id = [str(randint(0 if i == 0 else 1, 9)) for i in range(9)]
+        last_digit = sum(int(i) for i in id) % 10
+        id = ''.join(id) + str(last_digit)
 
         member = Member(firstname=firstname, lastname=lastname, mail=email, street=street, house_number=house_number,
                         zipcode=zipcode, city=city, registration_date=datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
                         mobile_number=mobile_number,
-                        uuid=uuid)
+                        id=id)
         database.create_member(member)
         return member
 
@@ -90,17 +86,16 @@ class Member:
         mobile_number = "mobile_number"
         registration_date = datetime.now().strftime("%d-%m-%Y")
         id = "id"
-        uuid = "uuid"
 
         return Member(firstname=firstname, lastname=lastname, mail=mail, street=street, house_number=house_number,
                       zipcode=zipcode, city=city, registration_date=registration_date, mobile_number=mobile_number,
-                      id=id, uuid=uuid)
+                      id=id)
 
     @staticmethod
     def to_member(data):
         return Member(id=data[0], firstname=data[1], lastname=data[2], street=data[3], house_number=data[4],
                       zipcode=data[5], city=data[6], mail=data[7], mobile_number=data[8], registration_date=data[9],
-                      uuid=data[10])
+                    )
 
     @staticmethod
     def to_member_decrypt(data):
@@ -111,19 +106,18 @@ class Member:
                           street=Helper().decrypt(data.street), house_number=Helper().decrypt(data.house_number),
                           zipcode=Helper().decrypt(data.zipcode), city=Helper().decrypt(data.city),
                           mail=Helper().decrypt(data.mail), mobile_number=Helper().decrypt(data.mobile_number),
-                          registration_date=data.registration_date, uuid=data.uuid)
+                          registration_date=data.registration_date)
         else:
             return Member(id=data[0], firstname=Helper().decrypt(data[1]), lastname=Helper().decrypt(data[2]),
                           street=Helper().decrypt(data[3]), house_number=Helper().decrypt(data[4]),
                           zipcode=Helper().decrypt(data[5]), city=Helper().decrypt(data[6]),
                           mail=Helper().decrypt(data[7]), mobile_number=Helper().decrypt(data[8]),
-                          registration_date=data[9], uuid=data[10])
+                          registration_date=data[9])
 
     def __str__(self):
         """ dit is to str() methode"""
         return f"Member: \n" \
                f"Id: {self.id}\n" \
-               f"UUID: {self.uuid}\n" \
                f"Firstname: {self.firstname} \n" \
                f"Lastname: {self.lastname} \n" \
                f"Street: {self.street} \n" \

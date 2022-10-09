@@ -4,12 +4,11 @@ from src.cdms.helperClass import Helper
 
 class SystemAdmin(User):
 
-    def __int__(self, username, password, firstname, lastname, uuid, registration_date):
-        super().__init__(username, password, firstname, lastname, uuid, registration_date)
+    def __int__(self, username, password, firstname, lastname, registration_date, id):
+        super().__init__(username, password, firstname, lastname, registration_date, id)
 
     def __str__(self):
         return f"SystemAdmin: \n" \
-               f"UUID: {self.uuid}\n" \
                f"Username: {self.username} \n" \
                f"Password: {self.password} \n" \
                f"Firstname: {self.firstname} \n" \
@@ -18,7 +17,7 @@ class SystemAdmin(User):
 
     @staticmethod
     def to_system_admin(data):
-        return SystemAdmin(uuid=data[4], username=data[0], password=data[1], firstname=data[2], lastname=data[3],
+        return SystemAdmin(id=data[4], username=data[0], password=data[1], firstname=data[2], lastname=data[3],
                            registration_date=data[5])
 
     @staticmethod
@@ -27,8 +26,8 @@ class SystemAdmin(User):
         if type(data) == SystemAdmin:
             return SystemAdmin(username=Helper().decrypt(data.username), password=Helper().decrypt(data.password),
                                firstname=Helper().decrypt(data.firstname), lastname=Helper().decrypt(data.lastname),
-                               registration_date=data.registration_date, uuid=data.uuid)
+                               registration_date=data.registration_date, id=data.id)
         else:
             return SystemAdmin(username=Helper().decrypt(data[0]), password=Helper().decrypt(data[1]),
                                firstname=Helper().decrypt(data[2]), lastname=Helper().decrypt(data[3]),
-                               registration_date=data[5], uuid=data[4])
+                               registration_date=data[5], id=data[4])

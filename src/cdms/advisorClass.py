@@ -7,12 +7,12 @@ from src.cdms.helperClass import Helper
 
 class Advisor(User):
 
-    def __init__(self, username, password, firstname, lastname, uuid, registration_date):
-        super().__init__(username, password, firstname, lastname, uuid, registration_date)
+    def __init__(self, username, password, firstname, lastname, registration_date, id):
+        super().__init__(username, password, firstname, lastname,  registration_date, id)
 
     @staticmethod
     def to_advisor(data):
-        return Advisor(uuid=data[4], username=data[0], password=data[1], firstname=data[2], lastname=data[3],
+        return Advisor(username=data[0], password=data[1], firstname=data[2], lastname=data[3],
                        registration_date=data[5])
 
     @staticmethod
@@ -21,18 +21,19 @@ class Advisor(User):
         if type(data) == Advisor:
             return Advisor(username=Helper().decrypt(data.username), password=Helper().decrypt(data.password),
                            firstname=Helper().decrypt(data.firstname), lastname=Helper().decrypt(data.lastname),
-                           registration_date=data.registration_date, uuid=data.uuid)
+                           registration_date=data.registration_date, id=data.id)
         else:
-            return Advisor(username=Helper().decrypt(data[0]), password=Helper().decrypt(data[1]),
-                           firstname=Helper().decrypt(data[2]), lastname=Helper().decrypt(data[3]),
-                           registration_date=data[5], uuid=data[4])
+            return Advisor(id=Helper().decrypt(data[0]), firstname=Helper().decrypt(data[1]), lastname=Helper().decrypt(data[2]),  username=Helper().decrypt(data[3]) ,password=Helper().decrypt(data[4]),
+                           registration_date=data[5])
 
     def __str__(self):
         """ dit is to str() methode"""
         return f"Advisor: \n" \
-               f"UUID: {self.uuid}\n" \
+               f"ID: {self.id}\n" \
                f"Username: {self.username} \n" \
-               f"Password: {self.password} \n" \
                f"Firstname: {self.firstname} \n" \
                f"Lastname: {self.lastname} \n" \
                f"Registration date: {self.registration_date} \n"
+
+    def search_advisor(self, search_term):
+        return self.search_user(search_term)

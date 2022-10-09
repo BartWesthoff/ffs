@@ -102,14 +102,9 @@ class Database:
 
     def create_member(self, member: Member):
         self.cursor.execute(
-            # f"INSERT INTO member (firstname,lastname,streetname,housenumber,zipcode,city,emailaddress,mobilephone, "
-            # f"date,uuid)VALUES (:first, :last,:street,:house,:zip,:city,:email,:mobile,:date,:uuid)",
-            # {"first": member.firstname, "last": member.lastname, "street": member.street, "house": member.house_number,
-            #  "zip": member.zipcode, "city": member.city, "email": member.mail, "mobile": member.mobile_number,
-            #  "date": member.registration_date, "uuid": member.uuid})
             "INSERT INTO member VALUES (?,?, ?, ?, ?, ?,?,?,?,?,?)", (
-            None, member.firstname, member.lastname, member.street, member.house_number, member.zipcode, member.city,
-            member.mail, member.mobile_number, member.registration_date, member.uuid))
+            member.id, member.firstname, member.lastname, member.street, member.house_number, member.zipcode, member.city,
+            member.mail, member.mobile_number, member.registration_date))
         self.commit()
 
     def delete_person(self, table, firstname, lastname):
@@ -133,29 +128,29 @@ class Database:
 
         try:
             self.query(
-                "CREATE TABLE 'systemadmin' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT "
+                "CREATE TABLE 'systemadmin' ('id' INTEGER PRIMARY KEY NOT NULL, 'firstname' VARCHAR(128) NOT "
                 "NULL, 'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'date' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) "
                 "NOT NULL)")
         except:
             pass
         try:
             self.query(
-                "CREATE TABLE 'advisor' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT NULL, "
+                "CREATE TABLE 'advisor' ('id' INTEGER PRIMARY KEY NOT NULL, 'firstname' VARCHAR(128) NOT NULL, "
                 "'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'date' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) NOT "
                 "NULL)")
         except:
             pass
         try:
             self.query(
-                "CREATE TABLE 'member' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT NULL, "
+                "CREATE TABLE 'member' ('id' INTEGER PRIMARY KEY NOT NULL, 'firstname' VARCHAR(128) NOT NULL, "
                 "'lastname' VARCHAR(128) NOT NULL, 'streetname' VARCHAR(128) NOT NULL, 'housenumber' INTEGER NOT "
                 "NULL, 'zipcode' VARCHAR(128) NOT NULL, 'city' VARCHAR(128) NOT NULL, 'emailaddress' VARCHAR(128) NOT "
-                "NULL, 'mobilephone' VARCHAR(128) NOT NULL, 'date' VARCHAR(128) NOT NULL,'uuid' VARCHAR(128) NOT NULL)")
+                "NULL, 'mobilephone' VARCHAR(128) NOT NULL, 'date' VARCHAR(128) NOT NULL)")
         except:
             pass
         try:
             self.query(
-                "CREATE TABLE 'superadmin' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT "
+                "CREATE TABLE 'superadmin' ('id' INTEGER PRIMARY KEY NOT NULL, 'firstname' VARCHAR(128) NOT "
                 "NULL, 'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) "
                 "NOT NULL)")
         except:

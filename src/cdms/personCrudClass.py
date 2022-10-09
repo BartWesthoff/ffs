@@ -52,15 +52,15 @@ class PersonCRUD:
 
         while loop:
 
-            uuid = input("ID?: ")
-            uuid = Validator().is_valid_number(uuid)
-            data = database.search_person_by_id(kind=kind, id=uuid)
+
+            id = Validator().is_valid_number(input("ID?: "))
+            data = database.search_person_by_id(kind=kind, id=id)
             database.commit()
             if data is not None:
 
                 member = Member().to_member(data)
                 # TODO hier kunnen we denk de __str__ in de member class gebruiken
-                print("UUID          |", member.uuid)
+                print("ID          |", member.id)
                 print("Firstname     |", Helper.decrypt(member.firstname))
                 print("Lastname      |", Helper.decrypt(member.lastname))
                 print("Street        |", Helper.decrypt(member.street))
@@ -129,13 +129,15 @@ class PersonCRUD:
                 member = Member.to_member_decrypt(row)
                 if member.search_member(search_term=search_key.lower()):
                     people.append(member)
+
+
         if kind == "advisor":
             attr = Advisor.get_attributes()
             for row in data:
                 print(row)
                 advisor = Advisor.to_advisor_decrypt(row)
 
-                if advisor.search_advisor(search_term=search_key.lower()):
+                if advisor.search_advisor(search_key.lower()):
                     people.append(advisor)
 
         for person in people:
@@ -178,6 +180,8 @@ class PersonCRUD:
                 new_data = Validator().is_valid_email(new_data)
 
         new_data = Helper().encrypt(new_data)
+
+        print(people[0].id)
         database.query(
             f"UPDATE {kind} SET {attr[choice - 1]} = ? WHERE id = ?;",
             (new_data, people[0].id))
