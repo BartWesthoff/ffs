@@ -16,18 +16,16 @@ class PersonCRUD:
         kind = kind.lower()
         database = Database("analyse.db")
         if kind.lower() in ["advisor", "systemadmin"]:
-            firstname = input("firstname?: ")
-            firstname = Validator().is_valid_name(firstname)
+            firstname = Validator().is_valid_name(input("What is your Firstname?: "))
             firstname = Helper().encrypt(firstname)
-            lastname = input("lastname?: ")
-            lastname = Validator().is_valid_name(lastname)
-            lastname = Helper().encrypt(lastname)
-            username = input("username?: ")
 
-            username = Helper().username_checker(username)
+            lastname = Validator().is_valid_name(input("What is your Lastname?: "))
+            lastname = Helper().encrypt(lastname)
+
+            username = Helper().username_checker(input("username?: "))
             username = Helper().encrypt(username)
-            password = input("password?: ")
-            password = Helper().password_checker(password)
+
+            password = Helper().password_checker(input("password?: "))
             password = Helper().encrypt(password)
 
             registration_date = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
@@ -43,8 +41,8 @@ class PersonCRUD:
     def search_person(kind):
         kind = kind.lower()
         loop = True
-        count = 0
-        user = Helper().check_logged_in()
+        # count = 0
+        # user = Helper().check_logged_in()
         database = Database("analyse.db")
         data = database.get(columns='*', table=kind)
         for row in data:
@@ -54,9 +52,9 @@ class PersonCRUD:
 
         while loop:
 
-            id = input("ID?: ")
-            id = Validator().is_valid_number(id)
-            data = database.search_person_by_id(kind=kind, id=id)
+            uuid = input("ID?: ")
+            uuid = Validator().is_valid_number(uuid)
+            data = database.search_person_by_id(kind=kind, id=uuid)
             database.commit()
             if data is not None:
 
@@ -94,14 +92,11 @@ class PersonCRUD:
             for row in data:
                 member = Member.to_member_decrypt(row)
                 members.append(member)
-        question = input("Who do you want to delete (ID)?: ")
-        firstname = input("firstname?: ")
-        firstname = Validator().is_valid_name(firstname)
 
-        lastname = input("lastname?: ")
-        lastname = Validator().is_valid_name(lastname)
-
+        firstname = Validator().is_valid_name(input("firstname?: "))
         firstname = Helper().encrypt(firstname)
+
+        lastname = Validator().is_valid_name(input("lastname?: "))
         lastname = Helper().encrypt(lastname)
 
         data = database.search_person(kind=kind, firstname=firstname, lastname=lastname)
@@ -140,7 +135,6 @@ class PersonCRUD:
                 print(row)
                 advisor = Advisor.to_advisor_decrypt(row)
 
-
                 if advisor.search_advisor(search_term=search_key.lower()):
                     people.append(advisor)
 
@@ -171,7 +165,7 @@ class PersonCRUD:
             if choice == 1 or choice == 2:
                 new_data = Validator().is_valid_name(new_data)
             elif choice == 3:
-                new_data = Validator().is_valid_streetname(new_data)
+                new_data = Validator().is_valid_name(new_data)
             elif choice == 4:
                 new_data = Validator().is_valid_number(new_data)
             elif choice == 5:
@@ -194,7 +188,7 @@ class PersonCRUD:
     def change_password(kind):
         kind = kind.lower()
         database = Database("analyse.db")
-        ## TODO even checken of kind permissie heeft voor het veranderen van wachtworden
+        # TODO even checken of kind permissie heeft voor het veranderen van wachtworden
         from src.cdms.userinterfaceClass import UserInterface
         from src.cdms.userinterfaceClass import Role
         # role = Role.EMPTY
@@ -260,7 +254,7 @@ class PersonCRUD:
         database = Database("analyse.db")
         while loop:
             choice = UserInterface().choices(
-                ["Check Advisors", "Check System Administrators", "Check Super Administrator", "All; users"])
+                ["Check Advisors", "Check System Administrators", "Check Super Administrator", "All users"])
             _type = None
             if choice == 1:
                 _type = "advisor"
@@ -276,23 +270,25 @@ class PersonCRUD:
             print(f'\n{_type}: \n')
 
             if _type == "all":
-                for type in ["advisor", "systemadmin", "superadmin"]:
-                    data = database.get(columns='*', table=type)
+                for user_type in ["advisor", "systemadmin", "superadmin"]:
+                    data = database.get(columns='*', table=user_type)
                     for row in data:
+                        print(f"Role        | {user_type}\n")
                         print("ID          |", row[0])
                         print("Firstname   |", Helper().decrypt(row[1]))
                         print("Lastname    |", Helper().decrypt(row[2]))
                         print("Username    |", Helper().decrypt(row[3]))
-                        print(f"Role        | {type}\n")
+
             else:
                 data = database.get(columns='*', table=_type)
                 for row in data:
-                    print(row)
+                    # print(row)
+                    print(f"Role        | {_type}\n")
                     print("ID          |", row[0])
                     print("Firstname   |", Helper().decrypt(row[1]))
                     print("Lastname    |", Helper().decrypt(row[2]))
                     print("Username    |", Helper().decrypt(row[3]))
-                    print(f"Role        | {_type}\n")
+
 
             loop = False
 

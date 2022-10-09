@@ -97,7 +97,7 @@ class Helper:
                     test += 1
                 break
 
-            if len(username) >= 6 and len(username) < 10:
+            if 6 <= len(username) < 10:
                 test += 1
             
             for row in dataAdvisor:
