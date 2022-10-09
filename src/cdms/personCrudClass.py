@@ -360,21 +360,30 @@ class PersonCRUD:
             if _type == "all":
                 for user_type in ["advisor", "systemadmin", "superadmin"]:
                     data = database.get(columns='*', table=user_type)
-                    for row in data:
-                        print(row)
-                        user = User.to_user_decrypt(row)
-                        print(f"Role: {user_type.capitalize()}")
-                        print(user)
+                    if not data:
+                        print("No users found.")
+                    else:
+                        for row in data:
+                            print(f"Role        | {user_type}\n")
+                            print("ID          |", row[0])
+                            print("Firstname   |", Helper().decrypt(row[1]))
+                            print("Lastname    |", Helper().decrypt(row[2]))
+                            print("Username    |", Helper().decrypt(row[3]))
 
-            elif _type in ["advisor", "systemadmin", "superadmin"]:
-                data = database.get(columns='*', table=_type)
-                for row in data:
-                    print(row)
-                    user = User.to_user_decrypt(row)
-                    print(f"Role: {_type.capitalize()}")
-                    print(user)
             else:
-                print("Wrong type of user, try again.")
-                PersonCRUD.check_users()
+                data = database.get(columns='*', table=_type)
+                if not data:
+                    print(f"No {_type}'s found.\n")
+                else:
+                    for row in data:
+                        # print(row)
+                        print(f"Role        | {_type}\n")
+                        print("ID          |", row[0])
+                        print("Firstname   |", Helper().decrypt(row[1]))
+                        print("Lastname    |", Helper().decrypt(row[2]))
+                        print("Username    |", Helper().decrypt(row[3]))
+
+
+            loop = False
 
         database.close()
