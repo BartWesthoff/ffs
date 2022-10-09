@@ -82,6 +82,9 @@ class PersonCRUD:
             print("Lastname    |", Helper().decrypt(row[2]))
             print(f"Role        | {kind}\n")
         people = []
+        if len(people) == 0:
+            print("No people found, try again.")
+            return people
         print("Please fill in ID, firstname, lastname, address, e-mailadress or phonenumber of the person you want to "
               "modify.")
         search_key = input("Who do you want to search?: ")
@@ -152,7 +155,7 @@ class PersonCRUD:
         print("Please fill in ID, firstname, lastname, address, e-mailadress or phonenumber of the person you want to "
               "modify.")
         search_key = input("Who do you want to modify?: ")
-        attr = Advisor.get_attributes()  # ["username", "password", "firstname", "lastname"]
+        attr = Advisor.get_attributes()  # ["username", "firstname", "lastname"]
         for row in data:
             print(row)
             user = User.to_user_decrypt(row)
@@ -261,9 +264,6 @@ class PersonCRUD:
             if choice == 2:
                 new_data = Validator().is_valid_name(new_data)
                 person_to_modify.lastname = new_data
-
-
-
             elif choice == 3:
                 new_data = Validator().is_valid_email(new_data)
                 person_to_modify.email = new_data
@@ -282,9 +282,6 @@ class PersonCRUD:
             elif choice == 8:
                 new_data = Validator().is_valid_phone_number(new_data)
                 person_to_modify.phone_number = new_data
-
-
-
         person_to_modify = Member.to_member_encrypt(person_to_modify)
         database.update_member(member=person_to_modify, old_firstname=old_firstname, old_lastname=old_lastname)
         database.close()
@@ -320,7 +317,9 @@ class PersonCRUD:
         if action_to_perform == "Reset an systemadmin password.":
             kind = "systemadmin"
         user = self.search_employee(kind=kind)
-
+        if user is None or len(user) == 0:
+            return None
+        print(user)
         username_user = Helper().check_logged_in()
         username_target = user[0].username
         new_password = input(

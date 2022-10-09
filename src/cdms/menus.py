@@ -68,11 +68,11 @@ def menu(user_access_level: int):
 
     logout = Action("logout", Role.ADVISOR, UserInterface().main_screen, None)
 
-    actions = [list_of_users, check_member, add_member, modify_member, change_password, add_new_advisor, modify_advisor,
+    actions = [list_of_users, check_member, add_member, modify_member,   delete_member, change_password, add_new_advisor, modify_advisor,
                delete_advisor,
                make_a_backup, restore_a_backup,
                see_logs,
-               delete_member, add_system_administrator,
+              add_system_administrator,
                modify_system_administrator, delete_system_administrator, logout]
 
 
