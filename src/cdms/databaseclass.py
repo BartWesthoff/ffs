@@ -69,9 +69,9 @@ class Database:
     def add_log(self, description, suspicious):
 
         username = Helper().check_logged_in()
-        username = Helper().encrypt(username)
-        description = Helper().encrypt(description)
-        suspicious = Helper().encrypt(suspicious)
+        # username = Helper().encrypt(username)
+        # description = Helper().encrypt(description)
+        # suspicious = Helper().encrypt(suspicious)
         now = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
         self.cursor.execute(
@@ -113,6 +113,13 @@ class Database:
         print(f"DELETE FROM {table} WHERE firstname = {firstname} AND lastname = {lastname};")
         args = (firstname, lastname)
         self.cursor.execute(query, args)
+    
+    def delete_person_by_id(self, table, id):
+
+        query = f"DELETE FROM {table} WHERE id = ?"
+        #print(f"DELETE FROM {table} WHERE firstname = {firstname} AND lastname = {lastname};")
+        args = (id,)
+        self.cursor.execute(query, args)
 
     def update_password(self, kind, password, username):
         print(f"UPDATE {kind} SET password = ? WHERE username = ?;", (password, username))
@@ -128,15 +135,15 @@ class Database:
 
         try:
             self.query(
-                "CREATE TABLE 'systemadmin' ('id' INTEGER PRIMARY KEY NOT NULL, 'firstname' VARCHAR(128) NOT "
-                "NULL, 'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'date' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) "
+                "CREATE TABLE 'systemadmin' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT "
+                "NULL, 'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) NOT NULL, 'date' VARCHAR(128) "
                 "NOT NULL)")
         except:
             pass
         try:
             self.query(
-                "CREATE TABLE 'advisor' ('id' INTEGER PRIMARY KEY NOT NULL, 'firstname' VARCHAR(128) NOT NULL, "
-                "'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'date' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) NOT "
+                "CREATE TABLE 'advisor' ('id' INTEGER PRIMARY KEY AUTOINCREMENT, 'firstname' VARCHAR(128) NOT NULL, "
+                "'lastname' VARCHAR(128) NOT NULL, 'username' VARCHAR(128) NOT NULL, 'password' VARCHAR(128) NOT NULL, 'date' VARCHAR(128) NOT "
                 "NULL)")
         except:
             pass

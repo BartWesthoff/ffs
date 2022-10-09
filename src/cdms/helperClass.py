@@ -8,6 +8,7 @@ class Helper:
 
     @staticmethod
     def stop_app():
+        Helper().log_username("")
         quit()
 
     @staticmethod
@@ -71,15 +72,26 @@ class Helper:
         return decrypted_message
 
     def password_checker(self, password):
-        x = re.search(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,30}$", password)
-        error = '''\n Please enter correct password. Min length of 8, no longer than 30 characters, 
-        MUST have at least one lowercase letter, one uppercase letter, one digit and one special character :'''
-        if not x:
-            password = input(error)
-            self.password_checker(password)
-        else:
-            print('\n Password is accepted.')
-            return password
+        from src.cdms.databaseclass import Database
+        database = Database("analyse.db")
+        tries = 0
+        while True:
+            x = re.search(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,30}$", password)
+            error = '''\n Please enter correct password. Min length of 8, no longer than 30 characters, 
+            MUST have at least one lowercase letter, one uppercase letter, one digit and one special character :'''
+            if tries == 2:
+                print("3 wrong tries, incident logged.")
+                Helper().log_username("")
+                database.add_log(
+                    description=f"3 wrong tries combinations for changing password.",
+                    suspicious="yes")
+                Helper().stop_app()
+            if not x:
+                password = input(error)
+                tries += 1
+            else:
+                print('\n Password is accepted.')
+                return password
 
     @staticmethod
     def username_checker(username):

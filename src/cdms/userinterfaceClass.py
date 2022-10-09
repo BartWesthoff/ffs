@@ -27,7 +27,8 @@ class UserInterface:
             Helper().stop_app()
         else:
             Exceptions.bad_error()
-            Helper().stop_app()
+            self.main_screen()
+            
 
     def login_screen(self):
         loop = True
@@ -50,25 +51,31 @@ class UserInterface:
             type = Role.SUPER_ADMINISTATOR
         else:
             Exceptions.bad_error()
-            Helper().stop_app()
             self.login_screen()
 
         while loop:
             if tries == 3:
                 print("3 wrong tries, incident logged.")
                 database = Database("analyse.db")
+                Helper().log_username("")
                 database.add_log(
-                    description=f"3 wrong tries combinations {[(user, pw) for user, pw in zip(usernames, passwords)]}.",
+                    description=f"3 wrong tries combinations {[(user) for user in zip(usernames)]}.",
                     suspicious="yes")
                 Helper().stop_app()
 
             login_username = input("What is your username?: ")
+            Helper().log_username(login_username)
+
             login_password = input("What is your password?: ")
 
             passwords.append(login_password)
             usernames.append(login_username)
 
             if login_password == "a" and login_username == "a":
+                database = Database("analyse.db")
+                database.add_log(
+                    description=f"logged in",
+                    suspicious="no")
                 break
 
             login_username = Helper().encrypt(login_username)
@@ -79,8 +86,9 @@ class UserInterface:
             # data = database.login(kind=str(type), username=login_username, password=login_password)
 
             if not data:
+                Helper().log_username("")
                 database.add_log(
-                    description=f"Unsuccesful login for {[(user, pw) for user, pw in zip(usernames, passwords)]}. ",
+                    description=f"Unsuccesful login for {[(user) for user in zip(usernames)]}. ",
                     suspicious="no")
                 print("Wrong username or password, try again.\n")
                 tries += 1
@@ -89,11 +97,11 @@ class UserInterface:
                     description=f"logged in",
                     suspicious="no")
                 break
-
-        Helper().log_username(login_username)
+        
+        
         menu(type)
 
-    def choices(self, choices, question="Which option do you want to choose?: "):
+    def choices(self, choices, question="Which option do you want to choose? Pick a number: "):
         for idx, choice in enumerate(choices):
             print(f"{idx+1}. {choice}")
         c = input(question)

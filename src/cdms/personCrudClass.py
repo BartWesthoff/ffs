@@ -1,5 +1,7 @@
 import datetime
 
+from numpy import empty
+
 from src.cdms.InputValidationClass import Validator
 from src.cdms.advisorClass import Advisor
 from src.cdms.databaseclass import Database
@@ -31,7 +33,9 @@ class PersonCRUD:
             registration_date = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
             database.create_employee(kind, firstname, lastname, username, password, registration_date)
-
+            database.add_log(
+                    description=f"{kind} created, with username {username}.",
+                    suspicious="no")
         elif kind.lower() == "member":
             Member().create_member()
         database.commit()
@@ -45,146 +49,184 @@ class PersonCRUD:
         # user = Helper().check_logged_in()
         database = Database("analyse.db")
         data = database.get(columns='*', table=kind)
-        for row in data:
-            print("ID          |", row[0])
-            print("Firstname   |", Helper().decrypt(row[1]))
-            print("Lastname    |", Helper().decrypt(row[2]) + "\n")
+        if not data:
+            print("No members found.\n")
+            database.add_log(
+                    description=f"Checked members, no members found",
+                    suspicious="no")
+        else: 
+            for row in data:
+                print("ID          |", row[0])
+                print("Firstname   |", Helper().decrypt(row[1]))
+                print("Lastname    |", Helper().decrypt(row[2]) + "\n")
 
-        while loop:
+            while loop:
 
+                uuid = input("ID?: ")
+                uuid = Validator().is_valid_number(uuid)
+                data = database.search_person_by_id(kind=kind, id=uuid)
+                database.commit()
+                if data is not None:
 
-            id = Validator().is_valid_number(input("ID?: "))
-            data = database.search_person_by_id(kind=kind, id=id)
-            database.commit()
-            if data is not None:
+                    member = Member().to_member(data)
+                    # TODO hier kunnen we denk de __str__ in de member class gebruiken
+                    print("UUID          |", member.uuid)
+                    print("Firstname     |", Helper.decrypt(member.firstname))
+                    print("Lastname      |", Helper.decrypt(member.lastname))
+                    print("Street        |", Helper.decrypt(member.street))
+                    print("Housenumber   |", Helper.decrypt(member.house_number))
+                    print("Zipcode       |", Helper.decrypt(member.zipcode))
+                    print("City          |", Helper.decrypt(member.city))
+                    print("mail          |", Helper.decrypt(member.mail))
+                    print("Phone         |", Helper.decrypt(member.mobile_number))
+                    print("creation date |", member.registration_date)
 
-                member = Member().to_member(data)
-                # TODO hier kunnen we denk de __str__ in de member class gebruiken
-                print("ID          |", member.id)
-                print("Firstname     |", Helper.decrypt(member.firstname))
-                print("Lastname      |", Helper.decrypt(member.lastname))
-                print("Street        |", Helper.decrypt(member.street))
-                print("Housenumber   |", Helper.decrypt(member.house_number))
-                print("Zipcode       |", Helper.decrypt(member.zipcode))
-                print("City          |", Helper.decrypt(member.city))
-                print("mail          |", Helper.decrypt(member.mail))
-                print("Phone         |", Helper.decrypt(member.mobile_number))
-                print("creation date |", member.registration_date)
-
-                loop = False
-            elif data is None:
-                print("Member not found, try again.")
+                    loop = False
+                    database.add_log(
+                        description=f"Checked member with uuid {uuid}",
+                        suspicious="no")
+                elif data is None:
+                    print("Member not found, try again.")
+                    database.add_log(
+                    description=f"Wrong input, member not found",
+                    suspicious="no")
 
         database.close()
 
     @staticmethod
     def delete_person(kind):
         kind = kind.lower()
+        tries = 0
+        username = ""
         database = Database("analyse.db")
         data = database.get(columns='*', table=kind)
-        for row in data:
-            print("ID          |", row[0])
-            print("Firstname   |", Helper().decrypt(row[1]))
-            print("Lastname    |", Helper().decrypt(row[2]))
-            print(f"Role        | {kind}\n")
-        if kind == "member":
-            members = []
-            for row in data:
-                member = Member.to_member_decrypt(row)
-                members.append(member)
-
-        firstname = Validator().is_valid_name(input("firstname?: "))
-        firstname = Helper().encrypt(firstname)
-
-        lastname = Validator().is_valid_name(input("lastname?: "))
-        lastname = Helper().encrypt(lastname)
-
-        data = database.search_person(kind=kind, firstname=firstname, lastname=lastname)
-        if data is not None:
-            database.delete_person(table=kind, firstname=firstname, lastname=lastname)
-            database.commit()
-            print("Deleted")
+        if not data:
+            print(f"There are no {kind}'s to delete.")
         else:
-            print("Person not found, Try again.\n")
+
+            for row in data:
+                print("ID          |", row[0])
+                print("Firstname   |", Helper().decrypt(row[1]))
+                print("Lastname    |", Helper().decrypt(row[2]))
+                print("Username    |", Helper.decrypt(row[3]))
+                print(f"Role        | {kind}\n")
+            while True:
+                if tries == 3:
+                    print("Multiple wrong tries while deleting user, incident logged.")
+                    database.add_log(
+                            description=f"3 times wrong input while deleting {kind}.",
+                            suspicious="yes")
+                    Helper().stop_app()
+                if kind == "member":
+                    members = []
+                    for row in data:
+                        member = Member.to_member_decrypt(row)
+                        members.append(member)
+
+                # firstname = Validator().is_valid_name(input("firstname?: "))
+                # firstname = Helper().encrypt(firstname)
+
+                # lastname = Validator().is_valid_name(input("lastname?: "))
+                # lastname = Helper().encrypt(lastname)
+                Id = Validator().is_valid_number(input("Id: "))
+                data = database.search_person_by_id(kind=kind, id=Id)
+                print(data)
+                if data is not None:
+                    database.delete_person_by_id(table=kind, id=Id)
+                    database.commit()
+                    print(f"Deleted {kind}")
+                    database.add_log(
+                            description=f"{kind} {Helper.decrypt(data[3])} has been deleted.",
+                            suspicious="no")
+                    break
+                else:
+                    tries += 1
+                    print("Person not found or wrong input, Try again.\n")
 
     def modify_person(self, kind):
         # TODO circulaire import
         from src.cdms.userinterfaceClass import UserInterface
         database = Database("analyse.db")
         data = database.get(columns='*', table=kind)
-        for row in data:
-            # print(row)
-            print("ID          |", row[0])
-            print("Firstname   |", Helper().decrypt(row[1]))
-            print("Lastname    |", Helper().decrypt(row[2]))
-            print(f"Role        | {kind}\n")
-        people = []
-        print("Please fill in ID, firstname, lastname, address, e-mailadress or phonenumber of the person you want to "
-              "modify.")
-        search_key = input("Who do you want to modify?: ")
-        attr = []
-        if kind == "member":
-            attr = Member.get_attributes()
+        if not data:
+            print(f"There are no {kind}'s to modify.")
+            database.add_log(
+                    description=f"Modify {kind} unsuccessful, no {kind} to modify.",
+                    suspicious="no")
+        else:
+
             for row in data:
-                member = Member.to_member_decrypt(row)
-                if member.search_member(search_term=search_key.lower()):
-                    people.append(member)
+                # print(row)
+                print("ID          |", row[0])
+                print("Firstname   |", Helper().decrypt(row[1]))
+                print("Lastname    |", Helper().decrypt(row[2]))
+                print(f"Role        | {kind}\n")
+            people = []
+            print("Please fill in ID, firstname, lastname, address, e-mailadress or phonenumber of the person you want to "
+                "modify.")
+            search_key = input("Who do you want to modify?: ")
+            attr = []
+            if kind == "member":
+                attr = Member.get_attributes()
+                for row in data:
+                    member = Member.to_member_decrypt(row)
+                    if member.search_member(search_term=search_key.lower()):
+                        people.append(member)
+            if kind == "advisor":
+                attr = Advisor.get_attributes()
+                for row in data:
+                    print(row)
+                    advisor = Advisor.to_advisor_decrypt(row)
 
+                    if advisor.search_advisor(search_term=search_key.lower()):
+                        people.append(advisor)
 
-        if kind == "advisor":
-            attr = Advisor.get_attributes()
-            for row in data:
-                print(row)
-                advisor = Advisor.to_advisor_decrypt(row)
+            for person in people:
+                print(person)
+                print("list of people found")
 
-                if advisor.search_advisor(search_key.lower()):
-                    people.append(advisor)
+            # _firstname = input(f"What is the firstname of the {kind}?: ")
+            # _firstname = Validator().is_valid_name(_firstname)
+            #
+            # _lastname = input(f"What is the lastname of the {kind}?: ")
+            # _lastname = Validator().is_valid_name(_lastname)
+            #
+            # _firstname = Helper().encrypt(_firstname)
+            # _lastname = Helper().encrypt(_lastname)
+            if len(people) == 0:
+                print("No people found, try again.")
+                self.modify_person(kind=kind)
 
-        for person in people:
-            print(person)
-            print("list of people found")
+            choices = []
+            for att in attr:
+                choices.append(f"Modify {att}")
+            choice = UserInterface().choices(choices)
 
-        # _firstname = input(f"What is the firstname of the {kind}?: ")
-        # _firstname = Validator().is_valid_name(_firstname)
-        #
-        # _lastname = input(f"What is the lastname of the {kind}?: ")
-        # _lastname = Validator().is_valid_name(_lastname)
-        #
-        # _firstname = Helper().encrypt(_firstname)
-        # _lastname = Helper().encrypt(_lastname)
-        if len(people) == 0:
-            print("No people found, try again.")
-            self.modify_person(kind=kind)
+            new_data = input(f"What will be the new {attr[choice - 1]}: ")
+            for _ in attr:
+                # TODO mooier neerzetten
+                if choice == 1 or choice == 2:
+                    new_data = Validator().is_valid_name(new_data)
+                elif choice == 3:
+                    new_data = Validator().is_valid_name(new_data)
+                elif choice == 4:
+                    new_data = Validator().is_valid_number(new_data)
+                elif choice == 5:
+                    new_data = Validator().is_valid_zipcode(new_data)
+                elif choice == 6:
+                    new_data = Validator().is_valid_zipcode(new_data)
+                elif choice == 7:
+                    new_data = Validator().is_valid_email(new_data)
+                elif choice == 8:
+                    new_data = Validator().is_valid_email(new_data)
 
-        choices = []
-        for att in attr:
-            choices.append(f"Modify {att}")
-        choice = UserInterface().choices(choices)
-
-        new_data = input(f"What will be the new {attr[choice - 1]}: ")
-        for _ in attr:
-            # TODO mooier neerzetten
-            if choice == 1 or choice == 2:
-                new_data = Validator().is_valid_name(new_data)
-            elif choice == 3:
-                new_data = Validator().is_valid_name(new_data)
-            elif choice == 4:
-                new_data = Validator().is_valid_number(new_data)
-            elif choice == 5:
-                new_data = Validator().is_valid_zipcode(new_data)
-            elif choice == 6:
-                new_data = Validator().is_valid_zipcode(new_data)
-            elif choice == 7:
-                new_data = Validator().is_valid_email(new_data)
-            elif choice == 8:
-                new_data = Validator().is_valid_email(new_data)
-
-        new_data = Helper().encrypt(new_data)
-
-        print(people[0].id)
-        database.query(
-            f"UPDATE {kind} SET {attr[choice - 1]} = ? WHERE id = ?;",
-            (new_data, people[0].id))
+            new_data = Helper().encrypt(new_data)
+            database.query(
+                f"UPDATE {kind} SET {attr[choice - 1]} = ? WHERE id = ?;",
+                (new_data, people[0].id))
+            database.add_log(
+                    description=f"Modified {kind} with id {people[0].id} succesfully.",
+                    suspicious="no")
         database.commit()
         database.close()
 
@@ -245,8 +287,8 @@ class PersonCRUD:
         database.update_password(kind=kind, username=username_to_change, password=password)
         username_user = Helper().decrypt(username_user)
         database.add_log(
-            description=f"{username_user} changed password for {username_to_change} to {Helper().decrypt(password)}",
-            suspicious="yes")
+            description=f"{username_user} changed password for {username_to_change}.",
+            suspicious="no")
 
         database.commit()
         database.close()
