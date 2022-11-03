@@ -155,7 +155,6 @@ class Helper:
         kind = "logging"
         data = database.get(columns='*', table=f'{kind}')
         database.commit()
-        print(data)
         try:
             for row in data:
                 print("ID             |", row[0])

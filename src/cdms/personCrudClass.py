@@ -138,7 +138,7 @@ class PersonCRUD:
             for person in people:
                 data = database.search_person(kind=kind, firstname=Helper.encrypt(person.firstname),
                                             lastname=Helper.encrypt(person.lastname))
-                print(data)
+
                 if data is not None:
                     database.delete_person(table=kind, firstname=Helper.encrypt(person.firstname),
                                         lastname=Helper.encrypt(person.lastname))
@@ -393,6 +393,7 @@ class PersonCRUD:
                     data = database.get(columns='*', table=user_type)
                     if not data:
                         print("No users found.")
+                        break
                     else:
                         for row in data:
                             print(f"Role        | {user_type}\n")
